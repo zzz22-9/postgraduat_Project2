@@ -1,0 +1,5 @@
+# These historical fixtures contain or are checked against byte-level hashes.
+# Do not normalize their line endings on checkout.
+minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/* -text
+minimal_factory/synthetic_images/rendered_v1/** -text
+minimal_factory/synthetic_signals/generated_v1/** -text

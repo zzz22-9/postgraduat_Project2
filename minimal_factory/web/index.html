@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>最小工厂 · 生产工作台</title>
+<style>
+:root{--nav:#142b32;--ink:#173138;--muted:#667b80;--line:#dce5e4;--paper:#f3f6f5;--accent:#147d70;--soft:#e4f4ed;--white:#fff;--red:#aa3b38;--amber:#996316}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.65 "Microsoft YaHei","Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button,a,input,select,textarea{outline-offset:3px}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}a{color:var(--accent);text-decoration:none}button{border:1px solid var(--line);background:white;color:var(--ink);border-radius:8px;padding:8px 15px;font-weight:600}button:hover:not(:disabled){background:#eef5f2;border-color:#a7c9bf}.primary{background:var(--accent);color:white;border-color:var(--accent)}.primary:hover:not(:disabled){background:#0d665b}.danger{color:var(--red)}.small{font-size:12px;padding:5px 10px}.ghost{background:transparent}.layout{display:grid;grid-template-columns:212px minmax(0,1fr);min-height:100vh}aside{background:var(--nav);color:#eff8f5;padding:30px 20px;display:flex;flex-direction:column;gap:32px}aside .brand{font-size:21px;font-weight:700;letter-spacing:2px}.brand small{display:block;color:#94b4b5;font-size:10px;letter-spacing:3px;margin-top:4px}.brand-icon{display:inline-block;color:#84ddbc;margin-right:9px}nav{display:grid;gap:8px}nav button{text-align:left;border:0;background:transparent;color:#b4c8c9;padding:12px 14px;font-weight:400}nav button.active{background:#2c484d;color:#bcf1db;font-weight:600}nav button:hover:not(:disabled){background:#254148}.nav-number{font-size:11px;opacity:.6;margin-right:14px}aside .aside-bottom{margin-top:auto;font-size:12px;color:#99b4b6}.local-dot{display:inline-block;width:7px;height:7px;background:#81d3b1;border-radius:50%;margin-right:7px}main{min-width:0;padding:24px 34px 40px;max-width:1800px;width:100%;margin:auto}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:28px;gap:12px}.muted{color:var(--muted)}.eyebrow{font-size:11px;font-weight:bold;letter-spacing:2px;color:var(--accent)}h1{font-size:29px;line-height:1.35;margin:8px 0}h2{font-size:18px;margin:0}h3{font-size:15px;margin:0}p{margin:6px 0 12px}.heading{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.panel{background:white;border:1px solid var(--line);border-radius:13px;padding:22px;margin-bottom:20px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}.metric{background:white;border:1px solid var(--line);border-radius:12px;padding:20px}.metric .value{display:block;font:500 34px/1.3 "Segoe UI",sans-serif;margin:9px 0 6px}.metric small{color:var(--muted)}.metric.accent{background:var(--nav);color:white;border-color:var(--nav)}.metric.accent small{color:#a3c1c1}.grid-two{display:grid;grid-template-columns:1.15fr 1fr;gap:20px}.flow{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.flow span{padding:6px 10px;background:#eef4f2;border-radius:6px;color:#56706c;font-size:12px}.flow .on{background:var(--soft);color:var(--accent);font-weight:700}.badge{display:inline-block;padding:3px 9px;font-size:12px;line-height:1.8;border-radius:5px;background:#edf1f3;white-space:nowrap;color:#586c76}.badge.in_progress,.badge.running{background:#e7f1fb;color:#366da3}.badge.completed,.badge.available{background:#e5f4eb;color:#237652}.badge.awaiting_quality,.badge.paused,.badge.maintenance{background:#fff0d9;color:var(--amber)}.badge.cancelled{background:#f2eaea;color:#986361}.badge.dispatched,.badge.released{background:#eaeefb;color:#656f9f}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;text-align:left;font-size:13px}th{color:var(--muted);font-weight:500;font-size:12px;background:#f7f9f8}th,td{padding:13px 12px;border-bottom:1px solid #eaf0ee;vertical-align:middle}tbody tr:last-child td{border-bottom:0}td .sub{display:block;font-size:11px;color:var(--muted)}.id{font-family:Consolas,monospace;font-size:12px;overflow-wrap:anywhere}.empty{text-align:center;color:var(--muted);padding:38px 15px}.search{max-width:300px;width:100%}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}.progress{height:6px;background:#e9efec;border-radius:8px;overflow:hidden;min-width:80px;margin-top:5px}.progress i{display:block;height:100%;background:#389784}.timeline{display:grid;gap:16px}.event{display:grid;grid-template-columns:9px 1fr;gap:12px}.event:before{content:"";width:7px;height:7px;background:#79ae99;border-radius:50%;margin-top:8px}.event small{display:block;color:var(--muted);font-size:11px}.event p{margin:0;font-size:13px;overflow-wrap:anywhere}.guide{background:#edf5f0;border:1px solid #d1e5d9;border-radius:10px;padding:14px 17px;color:#365f51;margin-bottom:18px;font-size:13px}.route-card{border:1px solid var(--line);border-radius:10px;padding:18px;margin:12px 0}.route-card.running{border-left:4px solid #508fbc}.route-card.completed{border-left:4px solid #539e7d}.route-card.paused{border-left:4px solid #c89545}.route-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.route-num{background:#edf3f1;padding:4px 8px;border-radius:5px;margin-right:8px;font-size:12px}.route-bottom{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:12px}.assign{display:flex;gap:7px;flex-wrap:wrap}.assign select{max-width:260px}.stats{display:flex;gap:24px;flex-wrap:wrap}.stats strong{display:block;font-size:18px}.stats small{color:var(--muted)}label{display:grid;gap:5px;color:#49605f;font-size:13px}input,select,textarea{background:#fff;border:1px solid #cbd9d5;border-radius:7px;padding:9px 11px;min-width:0;color:var(--ink)}textarea{resize:vertical;min-height:75px}input:focus,select:focus,textarea:focus{outline:2px solid #87c3b1;border-color:transparent}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.full{grid-column:1/-1}dialog{border:0;border-radius:15px;padding:0;width:min(600px,calc(100% - 28px));max-height:90vh;box-shadow:0 25px 80px #18333235;color:var(--ink)}dialog::backdrop{background:#102b3670}dialog form{padding:25px}dialog .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}dialog footer{margin-top:24px;display:flex;justify-content:flex-end;gap:9px}.route-input{display:grid;grid-template-columns:1.2fr 1fr 85px 35px;gap:7px;margin:10px 0;align-items:end}.route-input button{padding:8px}.error{background:#fff0ee;color:#993b32;border:1px solid #edc9c2;border-radius:7px;padding:10px 13px;margin:12px 0}.hidden,[hidden]{display:none!important}#notice{position:fixed;bottom:22px;right:22px;max-width:min(470px,calc(100% - 30px));background:#163e34;color:white;border-radius:9px;padding:13px 20px;box-shadow:0 8px 30px #142b3225;z-index:20}#notice.error{background:#8b3532;border:0}details{margin:15px 0}summary{cursor:pointer;font-weight:600}.plan-form{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.plan-form input{max-width:180px}.equipment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.equipment-card{background:white;border:1px solid var(--line);border-radius:12px;padding:21px}.equipment-card .kind{color:var(--muted);font-size:12px;margin:12px 0}.equipment-card .occupancy{min-height:56px;margin:16px 0}.equipment-card .occupancy strong{display:block}.footnote{font-size:12px;color:var(--muted);margin:16px 0}.link-button{border:0;background:transparent;padding:0;color:var(--accent);text-align:left}.wide-title{overflow-wrap:anywhere}
+@media(min-width:1600px){main{padding:30px 60px}}@media(max-width:1050px){.layout{grid-template-columns:168px minmax(0,1fr)}aside{padding:25px 12px}main{padding:22px}.metrics{grid-template-columns:repeat(2,1fr)}.grid-two{grid-template-columns:1fr}.equipment-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.layout{display:block}aside{padding:15px;gap:13px}.brand small,.aside-bottom{display:none}nav{grid-template-columns:repeat(4,1fr);gap:4px}nav button{text-align:center;padding:8px 3px;font-size:12px}.nav-number{display:none}main{padding:18px 13px}header{font-size:12px;gap:6px;margin-bottom:18px}h1{font-size:24px}.heading{align-items:flex-start}.heading .actions{justify-content:flex-end}.panel{padding:16px}.metrics{gap:10px}.metric{padding:14px}.metric .value{font-size:28px}.equipment-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.route-input{grid-template-columns:1fr 1fr}.route-input button{justify-self:end}.route-top{align-items:flex-start}.stats{gap:16px}.route-bottom{align-items:stretch}.assign{width:100%}.assign select{flex:1}.heading>div{min-width:0}}
+</style>
+<style>
+/* 窄面板把表格转换为带字段名的卡片，避免文字逐字换行或按钮被挤出屏幕。 */
+@media(max-width:650px){
+  .heading{flex-wrap:wrap}.heading .actions{justify-content:flex-start}
+  .table-wrap{overflow:visible}table,tbody{display:block}thead{display:none}
+  tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 12px;padding:13px 0;border-bottom:1px solid var(--line)}
+  td{display:block;border:0;padding:5px 0;min-width:0;overflow-wrap:anywhere}
+  td::before{content:attr(data-label);display:block;color:var(--muted);font-size:11px;margin-bottom:3px}
+  td:first-child,td:last-child{grid-column:1/-1}td:last-child button{width:100%}
+  .toolbar .search{max-width:none}
+}
+</style>
+<link rel="stylesheet" href="/web/simulation.css?v=20261020-2">
+</head>
+<body>
+<div class="layout">
+<aside><div class="brand"><span class="brand-icon">▦</span>最小工厂<small>FACTORY / MES</small></div>
+<nav aria-label="主导航">
+<button data-page="overview" class="active"><span class="nav-number">01</span>生产总览</button>
+<button data-page="orders"><span class="nav-number">02</span>ERP 订单</button>
+<button data-page="workorders"><span class="nav-number">03</span>MES 工单</button>
+<button data-page="equipment"><span class="nav-number">04</span>设备资源</button>
+<button data-page="simulation"><span class="nav-number">05</span>生产仿真</button>
+</nav><div class="aside-bottom"><span class="local-dot"></span>本地教学工厂<br>订单 · 执行 · 质量 · 追溯<br><a href="/docs" target="_blank" rel="noopener" style="color:#b7d9cc">接口文档 ↗</a></div></aside>
+<main>
+<header><span>生产执行 / <strong id="breadcrumb">生产总览</strong></span><div class="actions"><span id="connection" class="muted" aria-live="polite">正在连接…</span><button id="refresh" class="small">刷新数据</button></div></header>
+<div id="global-error" class="error" role="alert" hidden></div>
+<div id="content" aria-live="polite"><div class="empty">正在读取工厂数据…</div></div>
+<p class="footnote">本地教学版 · ERP／MES 记录人工执行；生产仿真使用独立副本和虚拟分钟，两者均未连接真实设备。</p>
+</main></div>
+<dialog id="modal" aria-labelledby="modal-title"><form id="modal-form"><div class="modal-head"><h2 id="modal-title"></h2><button type="button" id="close-modal" aria-label="关闭对话框">×</button></div><div id="modal-body"></div><div id="modal-error" class="error" role="alert" hidden></div><footer><button type="button" id="cancel-modal">取消</button><button class="primary" type="submit" id="submit-modal">确认保存</button></footer></form></dialog>
+<div id="notice" role="status" hidden></div>
+<script>
+// 页面只负责显示和发送请求；所有关键业务约束都在 Python 后端再次检查。
+const $=s=>document.querySelector(s), content=$('#content'), modal=$('#modal');
+const labels={pending:'待下发',dispatched:'已下发',draft:'待排产',released:'待开工',in_progress:'生产中',awaiting_quality:'待质量放行',completed:'已完成',cancelled:'已撤回',running:'执行中',paused:'已暂停',available:'可用',maintenance:'维护中'};
+const kinds={assembly:'组装',inspection:'质检',transport:'搬运'};
+const actions={dispatched:'订单下发',assigned:'设备分配',released:'下达执行',start:'工序开工',pause:'工序暂停',resume:'恢复执行',reported:'生产报工',operation_completed:'工序完成',awaiting_quality:'等待放行',completed:'完工反馈',quality_rework:'质量返工（旧规则）',cancelled:'撤回工单',plan_updated:'计划调整',equipment_created:'设备登记',equipment_state:'设备维护',inspection_held:'质检转返修',rework_created:'创建返修任务',rework_start:'返修开工',rework_finish:'返修完成',rework_inspect_start:'复检开工',rework_inspect_finish:'复检结果'};
+let state={orders:[],workorders:[],equipment:[],dashboard:{}},page='overview',selected=null,detail=null,busy=false,modalSubmit=null,noticeTimer;
+// 转义用户输入，产品名称或备注中的 HTML 也只会作为文字显示。
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const short=id=>id?`${id.slice(0,11)}…${id.slice(-4)}`:'—';
+const time=v=>v?new Date(v).toLocaleString('zh-CN',{hour12:false}):'—';
+const badge=(s,text)=>`<span class="badge ${esc(s)}">${esc(text||labels[s]||s)}</span>`;
+const idtag=id=>`<span class="id" title="${esc(id)}">${esc(short(id))}</span>`;
+const empty=text=>`<div class="empty">${text}</div>`;
+const bar=n=>`<span>${n}%</span><div class="progress"><i style="width:${n}%"></i></div>`;
+const options=(items,value)=>Object.entries(items).map(([k,v])=>`<option value="${esc(k)}" ${k===value?'selected':''}>${esc(v)}</option>`).join('');
+function notify(message,error=false){clearTimeout(noticeTimer);$('#notice').textContent=message;$('#notice').className=error?'error':'';$('#notice').hidden=false;noticeTimer=setTimeout(()=>$('#notice').hidden=true,6000)}
+async function api(path,method='GET',data){
+  let response;try{response=await fetch(path,{method,headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined})}catch{throw new Error('无法连接服务。请确认启动终端仍在运行，再重试。')}
+  const body=response.status===204?null:await response.json();
+  if(!response.ok){const message=Array.isArray(body?.detail)?body.detail.map(x=>`${x.loc.slice(1).join('.')}：${x.msg}`).join('；'):body?.detail;throw new Error(message||`请求失败（${response.status}）`)}return body;
+}
+async function refresh(){
+  $('#refresh').disabled=true;
+  try{
+    const [orders,workorders,equipment,dashboard]=await Promise.all(['/orders','/mes/work-orders','/mes/equipment','/mes/dashboard'].map(p=>api(p)));
+    state={orders,workorders,equipment,dashboard};
+    if(selected)detail=await api(`/mes/work-orders/${selected}`);
+    $('#global-error').hidden=true;$('#connection').textContent=`已更新 ${new Date().toLocaleTimeString('zh-CN',{hour12:false})}`;render();
+  }catch(error){$('#connection').textContent='更新失败';$('#global-error').textContent=error.message;$('#global-error').hidden=false;throw error}
+  finally{$('#refresh').disabled=false}
+}
+function navigate(next){page=next;selected=null;detail=null;render()}
+function heading(kicker,title,subtitle,buttons=''){return `<div class="heading"><div><div class="eyebrow">${kicker}</div><h1>${title}</h1><p class="muted">${subtitle}</p></div><div class="actions">${buttons}</div></div>`}
+function eventList(events){return events.length?`<div class="timeline">${events.map(ev=>`<div class="event"><div><p><strong>${esc(actions[ev.action]||ev.action)}</strong> · ${esc(ev.detail)}</p><small>${esc(time(ev.created_at))} · ${esc(ev.operator)} ${ev.work_order_id?`· ${esc(short(ev.work_order_id))}`:''}</small></div></div>`).join('')}</div>`:empty('执行下发、开工或报工后，这里会记录发生的事情。')}
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  $('#breadcrumb').textContent={overview:'生产总览',orders:'ERP 订单',workorders:'MES 工单',equipment:'设备资源',simulation:'生产仿真'}[page];
+  if(page==='simulation')renderSimulation();else if(typeof stopSimPolling==='function')stopSimPolling();
+  if(page==='overview')renderOverview();if(page==='orders')renderOrders();if(page==='workorders')selected?renderDetail():renderWorkorders();if(page==='equipment')renderEquipment();
+  labelTables();
+}
+function labelTables(){
+  // 同一份真实数据在宽屏显示为表格，在窄屏使用表头作为卡片字段名。
+  content.querySelectorAll('table').forEach(table=>{
+    const headers=[...table.querySelectorAll('thead th')].map(th=>th.textContent);
+    table.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>td.dataset.label=headers[i]||''));
+  });
+}
+function renderOverview(){
+ const d=state.dashboard,c=d.counts||{},active=(c.draft||0)+(c.released||0)+(c.in_progress||0);
+ content.innerHTML=heading('PRODUCTION OVERVIEW','生产总览','看清需求、执行进度与质量结果。','<button class="primary" data-action="new-order">＋ 新建订单</button>')+
+ `<div class="metrics"><div class="metric accent">待执行与在制工单<strong class="value">${active}</strong><small>已排入生产流程</small></div><div class="metric">等待质量放行<strong class="value">${c.awaiting_quality||0}</strong><small>全部工序已完成</small></div><div class="metric">累计完工数量<strong class="value">${d.completed_quantity||0}<small style="font-size:14px"> 件</small></strong><small>已通过最终整批质检</small></div><div class="metric">占用设备<strong class="value">${d.busy_equipment||0}<small style="font-size:14px"> / ${state.equipment.length}</small></strong><small>执行与暂停均计入占用</small></div></div>
+ <div class="guide"><strong>第一次使用</strong><div class="flow"><span>01 创建 ERP 订单</span><span>02 下发 MES</span><span>03 分配设备并下达</span><span>04 依次开工、报工</span><span>05 最终质检与完工</span></div>每一步的结果会保存；关闭页面不会丢失记录。</div>
+ <div class="grid-two"><section class="panel"><div class="panel-head"><h2>生产队列</h2><button class="link-button" data-action="go-workorders">查看全部 →</button></div>${workTable(state.workorders.filter(w=>!['completed','cancelled'].includes(w.status)).slice(0,5))}<p class="footnote">另有 ${d.pending_orders||0} 笔 ERP 订单等待下发。优先级与计划日期用于人工排产。</p></section><section class="panel"><div class="panel-head"><h2>最近动态</h2><span class="muted">可追溯记录</span></div>${eventList((d.recent_events||[]).slice(0,7))}</section></div>`;
+}
+function orderRows(list){return list.map(o=>{const wo=state.workorders.find(w=>w.order_id===o.order_id&&w.status!=='cancelled');return `<tr><td>${idtag(o.order_id)}<span class="sub">${esc(time(o.created_at))}</span></td><td><strong>${esc(o.product_name)}</strong><span class="sub">${esc(o.product_id)}</span></td><td>${o.quantity} 件</td><td>${esc(o.due_date||'未指定')}</td><td>${badge(o.status)}</td><td>${o.status==='pending'?`<button class="small primary" data-action="dispatch" data-id="${o.order_id}">下发 MES</button>`:wo?`<button class="small" data-action="detail" data-id="${wo.work_order_id}">查看工单</button>`:'—'}</td></tr>`}).join('')}
+function renderOrders(){
+  content.innerHTML=heading('ERP / DEMAND','订单管理','登记要生产什么、生产多少，以及交付日期。',
+    '<button class="primary" data-action="new-order">＋ 新建订单</button>')+`
+    <section class="panel">
+      <div class="toolbar">
+        <input class="search" id="order-search" aria-label="搜索订单" placeholder="搜索订单编号、产品编号或名称">
+        <button class="small" id="clear-order-search" hidden>清空搜索</button>
+        <span class="muted" id="order-count">共 ${state.orders.length} 笔订单</span>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>订单编号 / 创建时间</th><th>产品</th><th>需求数量</th><th>交期</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody id="order-rows">${orderRows(state.orders)}</tbody>
+      </table></div>
+      <div id="order-empty" ${state.orders.length?'hidden':''}>${empty('还没有订单。点击“新建订单”开始。')}</div>
+    </section>`;
+  // 搜索只过滤页面，不删除数据库记录；清空后重新显示全部订单。
+  function filterOrders(){
+    const q=$('#order-search').value.trim().toLowerCase();
+    const list=state.orders.filter(o=>`${o.order_id} ${o.product_id} ${o.product_name}`.toLowerCase().includes(q));
+    $('#order-rows').innerHTML=orderRows(list);
+    $('#order-empty').hidden=!!list.length;
+    $('#order-empty').innerHTML=empty(state.orders.length
+      ?'没有匹配的订单。请修改关键词或清空搜索。'
+      :'还没有订单。点击“新建订单”开始。');
+    $('#order-count').textContent=q?`找到 ${list.length} / 共 ${state.orders.length} 笔订单`:`共 ${state.orders.length} 笔订单`;
+    $('#clear-order-search').hidden=!$('#order-search').value;
+    labelTables();
+  }
+  $('#order-search').oninput=filterOrders;
+  $('#clear-order-search').onclick=()=>{$('#order-search').value='';filterOrders();$('#order-search').focus()};
+}
+function workTable(list){return list.length?`<div class="table-wrap"><table><thead><tr><th>工单 / 产品</th><th>计划</th><th>状态</th><th>工序进度</th><th></th></tr></thead><tbody>${list.map(w=>`<tr><td>${idtag(w.work_order_id)}<span class="sub">${esc(w.product_name)} · ${w.quantity} 件</span></td><td><span>P${w.priority}</span><span class="sub">${esc(w.planned_date||'日期未指定')}</span></td><td>${badge(w.status)}</td><td>${bar(w.progress)}</td><td><button class="small" data-action="detail" data-id="${w.work_order_id}">打开工单</button></td></tr>`).join('')}</tbody></table></div>`:empty('没有符合条件的工单。先从 ERP 订单下发生产任务。')}
+function renderWorkorders(){content.innerHTML=heading('MES / WORK ORDERS','生产工单','按工序推进，记录每次执行与质量结果。','<button data-action="go-orders">从订单下发 →</button>')+`<section class="panel"><div class="toolbar"><input class="search" id="wo-search" aria-label="搜索工单" placeholder="搜索工单、订单或产品"><select id="wo-filter" aria-label="工单状态筛选"><option value="">全部状态</option>${options({draft:'待排产',released:'待开工',in_progress:'生产中',awaiting_quality:'待质量放行',completed:'已完成',cancelled:'已撤回'})}</select></div><div id="wo-table">${workTable(state.workorders)}</div></section><p class="footnote">工序进度 = 已完成的合格加工量 ÷ 所有工序的计划加工量；100% 后仍需最终质量放行。</p>`;const filter=()=>{const q=$('#wo-search').value.toLowerCase(),s=$('#wo-filter').value;$('#wo-table').innerHTML=workTable(state.workorders.filter(w=>(!s||w.status===s)&&`${w.work_order_id} ${w.order_id} ${w.product_name} ${w.product_id}`.toLowerCase().includes(q)));labelTables()};$('#wo-search').oninput=filter;$('#wo-filter').onchange=filter}
+async function openDetail(id){selected=id;page='workorders';detail=await api(`/mes/work-orders/${id}`);render();window.scrollTo({top:0,behavior:'smooth'})}
+function renderDetail(){
+ const w=detail,closed=['completed','cancelled'].includes(w.status),canPlan=['draft','released'].includes(w.status);
+ let next=w.status==='draft'?'为每道工序选择设备并保存，然后点击“下达执行”。':w.status==='released'?'计划已下达，请从第一道工序点击“开工”。':w.status==='awaiting_quality'?'全部工序完成。请提交最终整批质检，全部合格后反馈 ERP。':w.status==='completed'?'已质量放行，来源 ERP 订单已同步为“已完工”。':w.status==='cancelled'?'此工单已撤回，历史仍保留；来源订单可重新下发。':'在当前工序报工。达到计划合格数后，下一道工序才能开工。';
+ if((w.reworks||[]).some(r=>r.status!=='completed'))next='本工单存在待处理的不合格品。请在下方返修与复检区域处理，复检通过后恢复正常流转。';
+ content.innerHTML=`<button class="link-button" data-action="go-workorders">← 返回工单列表</button>`+heading('MES / EXECUTION',esc(w.product_name),`<span class="id wide-title">${esc(w.work_order_id)}</span>`,`<a href="/mes/work-orders/${w.work_order_id}/export" class="id">下载追溯 JSON ↗</a>`)+
+ `<div class="guide"><strong>当前步骤：</strong>${next}</div><section class="panel"><div class="panel-head"><h2>工单信息</h2>${badge(w.status)}</div><div class="stats"><div><small>计划数量</small><strong>${w.quantity} 件</strong></div><div><small>工序进度</small><strong>${w.progress}%</strong></div><div><small>交期</small><strong>${esc(w.due_date||'未指定')}</strong></div><div><small>优先级</small><strong>P${w.priority}</strong></div></div><p class="footnote">来源订单：<span class="id">${esc(w.order_id)}</span><br>创建：${esc(time(w.created_at))}${w.completed_at?` · 完工：${esc(time(w.completed_at))}`:''}</p>${canPlan?`<details><summary>调整生产计划</summary><form id="plan-form" class="plan-form"><label>优先级<select name="priority">${options({'1':'P1 紧急','2':'P2 普通','3':'P3 低'},String(w.priority))}</select></label><label>计划日期<input name="planned_date" type="date" value="${esc(w.planned_date||'')}"></label><button type="submit">保存计划</button></form></details>`:''}<div class="actions">${w.status==='draft'?'<button class="primary" data-action="release">下达执行</button>':''}${canPlan?'<button class="danger" data-action="cancel">撤回工单</button>':''}${w.status==='awaiting_quality'?'<button class="primary" data-action="inspect">最终质量检验</button>':''}</div></section>
+ <section class="panel"><div class="panel-head"><h2>工序执行</h2><span class="muted">${w.operations.length} 道工序 · 整批顺序流转</span></div>${w.operations.map((op,i)=>operationCard(op,i,w,closed)).join('')}</section>
+ ${reworkPanel(w)}
+ <section class="panel"><h2>执行与质量记录</h2><details><summary>生产报工 · ${w.reports.length} 条</summary>${w.reports.length?`<div class="table-wrap"><table><thead><tr><th>时间 / 操作人</th><th>工序</th><th>合格</th><th>返工件次</th><th>说明</th></tr></thead><tbody>${w.reports.map(r=>`<tr><td>${esc(time(r.created_at))}<span class="sub">${esc(r.operator)}</span></td><td>${esc(r.operation_name)}</td><td>${r.good_quantity}</td><td>${r.rework_quantity}</td><td>${esc(r.note||'—')}</td></tr>`).join('')}</tbody></table></div>`:empty('尚未报工')}<p class="footnote">加工工序的返工在本工位处理；质检发现不合格会建立独立返修任务。复检通过才计入该质检工序的合格数。历史报工不含复检补入数量，完整过程请查看返修任务与追溯记录。</p></details><details ${w.inspections.length?'open':''}><summary>最终质量检验 · ${w.inspections.length} 次</summary>${w.inspections.length?`<div class="table-wrap"><table><thead><tr><th>时间 / 检验人</th><th>本次合格</th><th>退回返工</th><th>说明</th></tr></thead><tbody>${w.inspections.map(q=>`<tr><td>${esc(time(q.created_at))}<span class="sub">${esc(q.operator)}</span></td><td>${q.accepted_quantity}</td><td>${q.rework_quantity}</td><td>${esc(q.note||'整批通过')}</td></tr>`).join('')}</tbody></table></div>`:empty('所有工序完成后，才能进行最终整批检验。')}</details></section>
+ <section class="panel"><div class="panel-head"><h2>工单追溯</h2><span class="muted">${w.events.length} 条事件 · 最近在前</span></div>${eventList([...w.events].reverse())}</section>`;
+ if($('#plan-form'))$('#plan-form').onsubmit=async ev=>{ev.preventDefault();const f=new FormData(ev.target);await run(async()=>{await api(`/mes/work-orders/${w.work_order_id}/plan`,'PATCH',{priority:Number(f.get('priority')),planned_date:f.get('planned_date')||null});await refresh();notify('生产计划已保存')})};
+}
+function operationCard(op,i,w,closed){
+ const remaining=w.quantity-op.good_quantity,earlierDone=w.operations.slice(0,i).every(x=>x.status==='completed'),canStart=op.status==='pending'&&['released','in_progress'].includes(w.status)&&earlierDone&&op.equipment_id&&!(w.reworks||[]).some(r=>r.status!=='completed');
+ const available=state.equipment.filter(e=>e.kind===op.kind&&e.status==='available');
+ return `<article class="route-card ${op.status}"><div class="route-top"><h3><span class="route-num">${String(op.sequence).padStart(2,'0')}</span>${esc(op.name)}</h3>${badge(op.status,op.status==='pending'?'待执行':null)}</div><div class="muted">${esc(kinds[op.kind])} · 计划 ${op.minutes} 分钟 / 件 · 合格 ${op.good_quantity} / ${w.quantity} 件 · 剩余 ${remaining} 件</div>${bar(Math.round(op.good_quantity/w.quantity*100))}<div class="route-bottom">${op.status==='pending'&&!closed?`<div class="assign"><select id="eq-${op.operation_id}" aria-label="工序${op.sequence}设备"><option value="">选择设备</option>${available.map(e=>`<option value="${e.equipment_id}" ${op.equipment_id===e.equipment_id?'selected':''}>${esc(e.name)}${e.occupied_by?'（占用中）':''}</option>`).join('')}</select><button class="small" data-action="assign" data-id="${op.operation_id}">保存设备</button></div>`:`<span class="muted">设备：${esc(op.equipment_name||'未分配')}</span>`}<div class="actions">${op.status==='pending'&&!closed?`<button class="primary small" data-action="start" data-id="${op.operation_id}" ${canStart?'':'disabled'}>开工</button>`:''}${op.status==='running'?`<button class="small" data-action="pause" data-id="${op.operation_id}">暂停</button><button class="primary small" data-action="report" data-id="${op.operation_id}">生产报工</button>`:''}${op.status==='paused'?`<button class="primary small" data-action="resume" data-id="${op.operation_id}">恢复执行</button>`:''}</div></div>${op.status==='paused'?'<p class="footnote">暂停期间设备仍被此工序占用。</p>':''}${op.status==='pending'&&op.equipment_id?`<p class="footnote">已保存设备：${esc(op.equipment_name)}${!earlierDone?'；等待前序工序完成':''}</p>`:''}</article>`;
+}
+function renderEquipment(){content.innerHTML=heading('MES / RESOURCES','设备资源','分配时选择设备，开工后占用，完成工序后自动释放。','<button class="primary" data-action="new-equipment">＋ 登记设备</button>')+`<div class="equipment-grid">${state.equipment.map(e=>`<article class="equipment-card"><div class="panel-head"><h2>${esc(e.name)}</h2>${badge(e.occupied_by?'running':e.status,e.occupied_by?(e.operation_status==='paused'?'暂停占用':'占用中'):null)}</div><div class="kind">${esc(kinds[e.kind])} · ${idtag(e.equipment_id)}</div><div class="occupancy">${e.occupied_by?`<strong>${esc(e.operation_name)}</strong><button class="link-button id" data-action="detail" data-id="${e.work_order_id}">${esc(short(e.work_order_id))} →</button>`:`<strong>${e.status==='maintenance'?'暂不接受生产任务':'当前没有执行任务'}</strong><span class="muted">${e.status==='maintenance'?'维护完成后可恢复使用':'每台设备同一时刻执行一道工序'}</span>`}</div><button class="small" data-action="equipment-state" data-id="${e.equipment_id}" ${e.occupied_by?'disabled':''}>${e.status==='maintenance'?'恢复可用':'设备维护'}</button></article>`).join('')}</div><p class="footnote">教学设备是资源记录，没有连接物理设备。分配计划不会提前占用设备；开工时检查是否空闲。</p>`}
+function openModal(title,body,submit,label='确认保存'){$('#modal-title').textContent=title;$('#modal-body').innerHTML=body;$('#modal-error').hidden=true;$('#submit-modal').textContent=label;$('#submit-modal').disabled=false;modalSubmit=submit;modal.showModal()}
+function operatorField(){return `<label>操作人<input name="operator" required maxlength="50" placeholder="填写你的姓名" value="${esc(sessionStorage.getItem('mes-operator')||'')}"></label>`}
+function rememberOperator(f){const name=String(f.get('operator')).trim();sessionStorage.setItem('mes-operator',name);return name}
+function noteFields(reason=''){return `<div class="form-grid">${operatorField()}<label class="full">说明 / 原因<textarea name="note" required maxlength="300">${esc(reason)}</textarea></label></div>`}
+function newOrder(){openModal('新建 ERP 订单',`<p class="muted">保存需求后，再选择“下发 MES”安排生产。</p><div class="form-grid"><label>产品编号<input name="product_id" required maxlength="50" placeholder="例如 P001"></label><label>产品名称<input name="product_name" required maxlength="100" placeholder="例如 简易装配件"></label><label>需求数量<input name="quantity" type="number" min="1" step="1" required value="2"></label><label>交期（选填）<input name="due_date" type="date"></label></div>`,async f=>{await api('/orders','POST',{product_id:f.get('product_id'),product_name:f.get('product_name'),quantity:Number(f.get('quantity')),due_date:f.get('due_date')||null});page='orders';selected=null},'创建订单')}
+function routeInput(name,kind,minutes){return `<div class="route-input"><label>工序名称<input class="step-name" value="${esc(name)}" maxlength="80" required></label><label>所需设备类型<select class="step-kind">${options(kinds,kind)}</select></label><label>分钟 / 件<input class="step-minutes" type="number" min="1" max="10000" step="1" value="${minutes}" required></label><button type="button" class="remove-step" aria-label="移除此工序">×</button></div>`}
+function dispatchOrder(id){const o=state.orders.find(x=>x.order_id===id);openModal('下发 MES · 制定工艺路线',`<p><strong>${esc(o.product_name)}</strong> · ${o.quantity} 件</p><p class="muted">下方按执行顺序排列，保存后作为本工单的路线。</p><div class="form-grid"><label>优先级<select name="priority">${options({'1':'P1 紧急','2':'P2 普通','3':'P3 低'},'2')}</select></label><label>计划日期（选填）<input name="planned_date" type="date"></label></div><div id="route-inputs">${routeInput('组装','assembly',3)+routeInput('过程质检','inspection',2)+routeInput('搬运','transport',1)}</div><button type="button" id="add-step" class="small">＋ 添加工序</button><p class="footnote">一次下发生成一张工单；计划分钟数不会自动运行设备。</p>`,async f=>{const steps=[...document.querySelectorAll('.route-input')].map(el=>({name:el.querySelector('.step-name').value,kind:el.querySelector('.step-kind').value,minutes:Number(el.querySelector('.step-minutes').value)}));const w=await api('/mes/work-orders','POST',{order_id:id,priority:Number(f.get('priority')),planned_date:f.get('planned_date')||null,steps});selected=w.work_order_id;page='workorders'},'生成工单');$('#add-step').onclick=()=>{if(document.querySelectorAll('.route-input').length<12)$('#route-inputs').insertAdjacentHTML('beforeend',routeInput('','assembly',1))};$('#route-inputs').onclick=ev=>{if(ev.target.closest('.remove-step')&&document.querySelectorAll('.route-input').length>1)ev.target.closest('.route-input').remove()}}
+function reworkTargetFields(source=null){
+ const targets=detail.operations.filter(op=>op.status==='completed'&&op.kind!=='inspection'&&(!source||op.sequence<source.sequence));
+ return `<label class="full">不合格时返回哪道工序<select name="rework_operation_id"><option value="">请选择返修工序（全部合格时留空）</option>${targets.map(op=>`<option value="${op.operation_id}">${op.sequence}. ${esc(op.name)} · ${esc(kinds[op.kind])}</option>`).join('')}</select></label>`;
+}
+function reportOperation(id){
+ const op=detail.operations.find(x=>x.operation_id===id),left=detail.quantity-op.good_quantity,request_id=crypto.randomUUID(),quality=op.kind==='inspection';
+ openModal(`${quality?'过程质检结果':'生产报工'} · ${op.name}`,`<div class="guide">尚需 ${left} 件合格品。本次合格数 + 待返工数不能超过 ${left}。${quality?'不合格件将生成独立返修任务，释放质检设备；返修后必须复检。':'本工位返工期间继续占用当前设备，修复后再报合格。'}</div><div class="form-grid">${operatorField()}<label>本次合格数量<input name="good_quantity" type="number" min="0" max="${left}" step="1" value="${left}" required></label><label>本次待返工数量<input name="rework_quantity" type="number" min="0" max="${left}" step="1" value="0" required></label>${quality?reworkTargetFields(op):''}<label class="full">说明（有返工必须填写）<textarea name="note" maxlength="300"></textarea></label></div>`,async f=>api(`/mes/operations/${id}/reports`,'POST',{request_id,operator:rememberOperator(f),good_quantity:Number(f.get('good_quantity')),rework_quantity:Number(f.get('rework_quantity')),rework_operation_id:f.get('rework_operation_id')||null,note:f.get('note')}),'提交结果');
+}
+function inspectWork(){
+ const request_id=crypto.randomUUID(),id=detail.work_order_id;
+ openModal('最终整批质量放行',`<div class="guide">本次确认 ${detail.quantity} 件。返工数量为 0 时整批放行并反馈 ERP；有不合格品时必须指定返修工序。返修及设备复检通过后，再回到这里整批放行。本窗口记录放行结论，不模拟检验设备运行。</div><div class="form-grid">${operatorField()}<label>退回返工数量<input name="rework_quantity" type="number" min="0" max="${detail.quantity}" step="1" value="0" required></label>${reworkTargetFields()}<label class="full">检验说明（返工必须填写原因）<textarea name="note" maxlength="300"></textarea></label></div>`,async f=>api(`/mes/work-orders/${id}/inspections`,'POST',{request_id,operator:rememberOperator(f),rework_quantity:Number(f.get('rework_quantity')),rework_operation_id:f.get('rework_operation_id')||null,note:f.get('note')}),'提交质量结果');
+}
+function reworkPanel(w){
+ if(!(w.reworks||[]).length)return '';
+ const labels={pending:'等待返修',repairing:'返修中',awaiting_reinspection:'等待复检',inspecting:'复检中',completed:'复检通过'};
+ const actions={pending:['start','返修开工'],repairing:['finish','返修完成'],awaiting_reinspection:['inspect-start','开始复检'],inspecting:['inspect-finish','提交复检结果']};
+ return `<section class="panel"><h2>返修与复检 · ${w.reworks.length} 项</h2><p class="muted">返修占用对应加工设备，复检占用质检设备；等待期间不占设备。同一返修任务按整批返修件处理，复检失败则整批再返修。</p>${w.reworks.map(r=>{
+   const a=actions[r.status];
+   return `<article class="route-card"><div class="panel-head"><h3>${esc(r.target_name)} · ${r.quantity} 件返修</h3><span class="badge">${labels[r.status]}</span></div><p>来源：${esc(r.source_name||'最终质量检验')} → 返回：${esc(r.target_name)} → 设备复检</p><p>原因：${esc(r.reason)}</p><p class="muted">第 ${r.cycle} 轮 · 当前设备：${esc(r.equipment_name||'未占用')}<br><span class="id">${esc(r.rework_id)}</span></p>${a?`<button class="primary" data-action="rework-${a[0]}" data-id="${r.rework_id}">${a[1]}</button>`:'<p>复检已通过，原始生产报工和返修记录均保留。</p>'}</article>`;
+ }).join('')}</section>`;
+}
+function reworkAction(id,action){
+ const r=detail.reworks.find(x=>x.rework_id===id),request_id=crypto.randomUUID();
+ const starting=['start','inspect-start'].includes(action),kind=action==='start'?r.target_kind:'inspection';
+ const devices=state.equipment.filter(e=>e.kind===kind&&e.status==='available');
+ const title={start:'返修开工',finish:'完成返修并释放设备','inspect-start':'开始复检','inspect-finish':'提交复检结果'}[action];
+ const deviceField=starting?`<label class="full">本次使用的设备<select name="equipment_id" required><option value="">请选择空闲设备</option>${devices.map(e=>`<option value="${e.equipment_id}" ${e.occupied_by?'disabled':''}>${esc(e.name)}${e.occupied_by?'（占用中，请等待）':''}</option>`).join('')}</select></label>`:'';
+ const resultField=action==='inspect-finish'?'<label class="full">复检结果<select name="passed" required><option value="">请选择检验结果</option><option value="true">本批返修件全部合格</option><option value="false">仍有不合格，本批返修件全部再次返修</option></select></label>':'';
+ openModal(title,`<div class="guide">${esc(r.target_name)} · ${r.quantity} 件 · 第 ${r.cycle} 轮。${action==='finish'?'完成返修后仍需占用质检设备进行复检。':'等待设备时不占用其他设备。'}</div><div class="form-grid">${operatorField()}${deviceField}${resultField}<label class="full">说明（复检失败必填）<textarea name="note" maxlength="300"></textarea></label></div>`,async f=>api(`/mes/reworks/${id}/${action}`,'POST',{request_id,operator:rememberOperator(f),note:f.get('note'),equipment_id:f.get('equipment_id')||null,passed:action==='inspect-finish'?f.get('passed')==='true':null}),title);
+}
+async function run(fn){if(busy)return;busy=true;try{await fn()}catch(error){notify(error.message,true)}finally{busy=false}}
+content.addEventListener('click',ev=>{const b=ev.target.closest('[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;
+ if(a.startsWith('rework-'))return reworkAction(id,a.slice(7));
+ if(a==='new-order')return newOrder();if(a==='go-orders')return navigate('orders');if(a==='go-workorders')return navigate('workorders');if(a==='dispatch')return dispatchOrder(id);if(a==='report')return reportOperation(id);if(a==='inspect')return inspectWork();
+ if(['start','pause','resume','cancel'].includes(a)){const title={start:'确认工序开工',pause:'暂停工序',resume:'恢复工序',cancel:'撤回未开工工单'}[a],path=a==='cancel'?`/mes/work-orders/${detail.work_order_id}/cancel`:`/mes/operations/${id}/${a}`;return openModal(title,noteFields({start:'按计划开工',resume:'恢复生产'}[a]||''),async f=>api(path,'POST',{operator:rememberOperator(f),note:f.get('note')}),title)}
+ if(a==='new-equipment')return openModal('登记设备',`<div class="form-grid"><label>设备名称<input name="name" required maxlength="80"></label><label>设备类型<select name="kind">${options(kinds,'assembly')}</select></label></div>`,async f=>api('/mes/equipment','POST',{name:f.get('name'),kind:f.get('kind')}));
+ if(a==='equipment-state'){const eq=state.equipment.find(x=>x.equipment_id===id),status=eq.status==='maintenance'?'available':'maintenance';return openModal(status==='available'?'恢复设备可用':'登记设备维护',`<p>${esc(eq.name)}</p><label>原因<textarea name="reason" required maxlength="300"></textarea></label>`,async f=>api(`/mes/equipment/${id}`,'PATCH',{status,reason:f.get('reason')}))}
+ run(async()=>{b.disabled=true;try{if(a==='detail')return await openDetail(id);if(a==='assign'){const eq=$(`#eq-${id}`).value;if(!eq)throw new Error('请先选择设备');await api(`/mes/operations/${id}/equipment`,'PUT',{equipment_id:eq})}if(a==='release')await api(`/mes/work-orders/${detail.work_order_id}/release`,'POST');await refresh();notify(a==='assign'?'设备分配已保存':'操作已完成')}finally{b.disabled=false}})
+});
+$('#modal-form').onsubmit=async ev=>{ev.preventDefault();if($('#submit-modal').disabled)return;$('#submit-modal').disabled=true;$('#modal-error').hidden=true;try{await modalSubmit(new FormData(ev.target));modal.close();notify('已保存');try{await refresh()}catch{notify('操作已保存，但刷新失败。请点击“刷新数据”，不要重复提交。',true)}}catch(error){$('#modal-error').textContent=error.message;$('#modal-error').hidden=false}finally{$('#submit-modal').disabled=false}};
+$('#close-modal').onclick=$('#cancel-modal').onclick=()=>{if(!$('#submit-modal').disabled)modal.close()};modal.addEventListener('cancel',ev=>{if($('#submit-modal').disabled)ev.preventDefault()});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>navigate(b.dataset.page));$('#refresh').onclick=()=>refresh().catch(()=>{});
+refresh().catch(()=>{});
+</script>
+<script src="/web/simulation.js?v=20261020-3"></script>
+</body>
+</html>

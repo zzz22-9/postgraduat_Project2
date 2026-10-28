@@ -1,0 +1,24 @@
+{
+  "normal": {
+    "sample_count": 541,
+    "state_counts": {
+      "processing": 360,
+      "idle": 181
+    },
+    "minimum_A": 0.168341,
+    "maximum_A": 3.200585,
+    "above_4A_count": 0,
+    "sha256": "bf8a916b8f6232869a68383ae0c52089f85283e0979b433703f3804705904d7c"
+  },
+  "injected_surge": {
+    "sample_count": 541,
+    "state_counts": {
+      "processing": 360,
+      "idle": 181
+    },
+    "minimum_A": 0.168341,
+    "maximum_A": 5.659302,
+    "above_4A_count": 12,
+    "sha256": "903bfa0b5b79e0abbcc7c0266d9cd949466d8da8fe24a5a5385fac067322968a"
+  }
+}

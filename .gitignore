@@ -1,0 +1,29 @@
+# Local runtimes, scratch work and generated service output.
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.task_work/
+**/.vscode/
+*.py[cod]
+*.log
+*.db
+*.db-*
+*.sqlite3
+*.sqlite3-*
+*.zip
+.env
+.env.*
+!.env.example
+/项目资料/
+/md/项目索引.md
+/minimal_factory/logs/
+/task2_1_prototype/artifacts/
+
+# Preserve only the small, immutable demo fixture required by existing tests.
+/minimal_factory/data/*
+!/minimal_factory/data/erp.simulations/
+/minimal_factory/data/erp.simulations/*
+!/minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/
+/minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/*
+!/minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/input.json
+!/minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/events.jsonl

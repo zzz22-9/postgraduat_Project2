@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "scope": "assembly-only synthetic replay; no downstream quality result imported",
+  "source_run_id": "SIM-97bdfc0915964e5ba0b0a33c3466a301",
+  "equipment_id": "E-ASM",
+  "image_work_order_id": "DEMO-WO-2",
+  "image_operation_id": "DEMO-2-OP-1",
+  "image_observations": {"before_s": 180, "after_s": 359},
+  "image_binding_basis": "manually_assigned_synthetic_scenario_not_observed_capture",
+  "hierarchy": [
+    {"id": "TEACH-ENTERPRISE", "type": "Enterprise", "domain": "enterprise", "level": "enterprise"},
+    {"id": "TEACH-FACTORY", "type": "Factory", "domain": "manufacturing", "level": "factory"},
+    {"id": "TEACH-LINE", "type": "Line", "domain": "manufacturing", "level": "line"}
+  ],
+  "scenarios": [
+    {"id": "normal", "title": "正常装配", "signal_source": "normal", "after_image_state": "complete"},
+    {"id": "current_surge", "title": "电流升高对照", "signal_source": "injected_surge", "after_image_state": "complete"},
+    {"id": "missing_bolt", "title": "缺螺栓对照", "signal_source": "normal", "after_image_state": "missing_bolt"}
+  ]
+}

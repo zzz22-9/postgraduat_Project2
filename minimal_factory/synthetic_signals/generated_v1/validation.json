@@ -1,0 +1,11 @@
+{
+  "total_samples": 1082,
+  "finite_nonnegative": true,
+  "boundary_180s_and_360s_correct": true,
+  "deterministic_regeneration": true,
+  "injection_only_240_through_251s": true,
+  "jsonl_roundtrip": true,
+  "source_events_unchanged": true,
+  "business_tests_run": false,
+  "simpy_rerun": false
+}

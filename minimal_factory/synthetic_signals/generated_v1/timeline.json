@@ -1,0 +1,20 @@
+[
+  {
+    "start_s": 0,
+    "end_s": 180,
+    "order_id": "DEMO-ORD-1",
+    "work_order_id": "DEMO-WO-1",
+    "operation_id": "DEMO-1-OP-1",
+    "start_event_sequence": 6,
+    "end_event_sequence": 7
+  },
+  {
+    "start_s": 180,
+    "end_s": 360,
+    "order_id": "DEMO-ORD-2",
+    "work_order_id": "DEMO-WO-2",
+    "operation_id": "DEMO-2-OP-1",
+    "start_event_sequence": 13,
+    "end_event_sequence": 20
+  }
+]

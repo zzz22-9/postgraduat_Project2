@@ -1,0 +1,357 @@
+{
+  "objects": [
+    {
+      "kind": "box",
+      "name": "work_surface",
+      "lo": [
+        -200,
+        -200,
+        -0.16
+      ],
+      "hi": [
+        200,
+        200,
+        0
+      ],
+      "color": [
+        0.29,
+        0.34,
+        0.39
+      ],
+      "label": 1
+    },
+    {
+      "kind": "box",
+      "name": "blue_base",
+      "lo": [
+        -1.58,
+        -1.17,
+        0.02
+      ],
+      "hi": [
+        1.58,
+        1.17,
+        0.24
+      ],
+      "color": [
+        0.045,
+        0.27,
+        0.36
+      ],
+      "label": 2
+    },
+    {
+      "kind": "box",
+      "name": "cover_plate",
+      "lo": [
+        -1.37,
+        -0.98,
+        0.24
+      ],
+      "hi": [
+        1.37,
+        0.98,
+        0.38
+      ],
+      "color": [
+        0.59,
+        0.66,
+        0.7
+      ],
+      "label": 3
+    },
+    {
+      "kind": "cylinder",
+      "name": "central_housing",
+      "center": [
+        0,
+        0
+      ],
+      "radius": 0.49,
+      "low": 0.38,
+      "high": 0.88,
+      "color": [
+        0.045,
+        0.31,
+        0.42
+      ],
+      "label": 4
+    },
+    {
+      "kind": "cylinder",
+      "name": "housing_cap",
+      "center": [
+        0,
+        0
+      ],
+      "radius": 0.51,
+      "low": 0.88,
+      "high": 0.97,
+      "color": [
+        0.55,
+        0.64,
+        0.7
+      ],
+      "label": 4
+    },
+    {
+      "kind": "cylinder",
+      "name": "center_inset",
+      "center": [
+        0,
+        0
+      ],
+      "radius": 0.31,
+      "low": 0.9701,
+      "high": 0.974,
+      "color": [
+        0.1,
+        0.16,
+        0.21
+      ],
+      "label": 4
+    },
+    {
+      "kind": "cylinder",
+      "name": "hole_0",
+      "center": [
+        -0.94,
+        0.58
+      ],
+      "radius": 0.115,
+      "low": 0.3801,
+      "high": 0.382,
+      "color": [
+        0.018,
+        0.025,
+        0.03
+      ],
+      "label": 5
+    },
+    {
+      "kind": "cylinder",
+      "name": "washer_0",
+      "center": [
+        -0.94,
+        0.58
+      ],
+      "radius": 0.19,
+      "low": 0.382,
+      "high": 0.415,
+      "color": [
+        0.36,
+        0.43,
+        0.49
+      ],
+      "label": 10
+    },
+    {
+      "kind": "cylinder",
+      "name": "bolt_head_0",
+      "center": [
+        -0.94,
+        0.58
+      ],
+      "radius": 0.135,
+      "low": 0.415,
+      "high": 0.59,
+      "color": [
+        0.64,
+        0.69,
+        0.73
+      ],
+      "label": 10
+    },
+    {
+      "kind": "cylinder",
+      "name": "socket_0",
+      "center": [
+        -0.94,
+        0.58
+      ],
+      "radius": 0.058,
+      "low": 0.5901,
+      "high": 0.592,
+      "color": [
+        0.028,
+        0.037,
+        0.043
+      ],
+      "label": 10
+    },
+    {
+      "kind": "cylinder",
+      "name": "hole_1",
+      "center": [
+        0.94,
+        0.58
+      ],
+      "radius": 0.115,
+      "low": 0.3801,
+      "high": 0.382,
+      "color": [
+        0.018,
+        0.025,
+        0.03
+      ],
+      "label": 5
+    },
+    {
+      "kind": "cylinder",
+      "name": "washer_1",
+      "center": [
+        0.94,
+        0.58
+      ],
+      "radius": 0.19,
+      "low": 0.382,
+      "high": 0.415,
+      "color": [
+        0.36,
+        0.43,
+        0.49
+      ],
+      "label": 11
+    },
+    {
+      "kind": "cylinder",
+      "name": "bolt_head_1",
+      "center": [
+        0.94,
+        0.58
+      ],
+      "radius": 0.135,
+      "low": 0.415,
+      "high": 0.59,
+      "color": [
+        0.64,
+        0.69,
+        0.73
+      ],
+      "label": 11
+    },
+    {
+      "kind": "cylinder",
+      "name": "socket_1",
+      "center": [
+        0.94,
+        0.58
+      ],
+      "radius": 0.058,
+      "low": 0.5901,
+      "high": 0.592,
+      "color": [
+        0.028,
+        0.037,
+        0.043
+      ],
+      "label": 11
+    },
+    {
+      "kind": "cylinder",
+      "name": "hole_2",
+      "center": [
+        -0.94,
+        -0.58
+      ],
+      "radius": 0.115,
+      "low": 0.3801,
+      "high": 0.382,
+      "color": [
+        0.018,
+        0.025,
+        0.03
+      ],
+      "label": 5
+    },
+    {
+      "kind": "cylinder",
+      "name": "washer_2",
+      "center": [
+        -0.94,
+        -0.58
+      ],
+      "radius": 0.19,
+      "low": 0.382,
+      "high": 0.415,
+      "color": [
+        0.36,
+        0.43,
+        0.49
+      ],
+      "label": 12
+    },
+    {
+      "kind": "cylinder",
+      "name": "bolt_head_2",
+      "center": [
+        -0.94,
+        -0.58
+      ],
+      "radius": 0.135,
+      "low": 0.415,
+      "high": 0.59,
+      "color": [
+        0.64,
+        0.69,
+        0.73
+      ],
+      "label": 12
+    },
+    {
+      "kind": "cylinder",
+      "name": "socket_2",
+      "center": [
+        -0.94,
+        -0.58
+      ],
+      "radius": 0.058,
+      "low": 0.5901,
+      "high": 0.592,
+      "color": [
+        0.028,
+        0.037,
+        0.043
+      ],
+      "label": 12
+    },
+    {
+      "kind": "cylinder",
+      "name": "hole_3",
+      "center": [
+        0.94,
+        -0.58
+      ],
+      "radius": 0.115,
+      "low": 0.3801,
+      "high": 0.382,
+      "color": [
+        0.018,
+        0.025,
+        0.03
+      ],
+      "label": 5
+    }
+  ],
+  "camera": [
+    -5.5,
+    -5.8,
+    6.7
+  ],
+  "target": [
+    0,
+    0,
+    0.35
+  ],
+  "projection": "orthographic",
+  "horizontal_span": 4.8,
+  "directional_light": [
+    -3,
+    -4,
+    8
+  ],
+  "resolution": [
+    800,
+    600
+  ]
+}

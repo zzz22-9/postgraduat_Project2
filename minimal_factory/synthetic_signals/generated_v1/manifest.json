@@ -1,0 +1,34 @@
+{
+  "dataset_id": "SYNTH-CURRENT-V1",
+  "source_run_id": "SIM-97bdfc0915964e5ba0b0a33c3466a301",
+  "source_events_path": "data\\erp.simulations\\SIM-97bdfc0915964e5ba0b0a33c3466a301\\events.jsonl",
+  "source_events_sha256": "618d763f0221de8ca0c33a27aba349750e325fc2ba1b9eb88bed527355bb9492",
+  "generated_at": "2026-10-26T08:17:28.404900+00:00",
+  "script_sha256": "b91eac09fef9e04346774dea8cee6af099b537029813c0cfa0c3dfeeea2ebb28",
+  "parameters": {
+    "seed": 20261026,
+    "sample_interval_s": 1,
+    "idle_mean_A": 0.2,
+    "running_mean_A": 3.0,
+    "running_ripple_amplitude_A": 0.12,
+    "ripple_period_s": 12.0,
+    "running_noise_std_A": 0.04,
+    "idle_noise_std_A": 0.01,
+    "injected_interval_s": [
+      240,
+      252
+    ],
+    "injected_increment_A": 2.5,
+    "demonstration_threshold_A": 4.0
+  },
+  "sample_range_s": [
+    0,
+    540
+  ],
+  "endpoint_included": true,
+  "meaning": "Synthetic low-rate current envelope, not an AC waveform or measured RMS current",
+  "time_semantics": "processing intervals [start,end); all same-time source events applied before sample",
+  "context_semantics": "Source business IDs are replay references; run_id identifies new synthetic scenario",
+  "image_binding": null,
+  "database_ingested": false
+}

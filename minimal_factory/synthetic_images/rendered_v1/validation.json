@@ -1,0 +1,12 @@
+{
+  "image_count": 6,
+  "resolution": [
+    800,
+    600
+  ],
+  "unique_images": 6,
+  "masks_match_configured_bolt_presence": true,
+  "repeated_render_pixel_equal": true,
+  "business_binding": "unbound",
+  "business_tests_run": false
+}
