@@ -1,6 +1,6 @@
-# 任务2.1原型：共享契约、WP1—WP3
+# 任务2.1原型：共享契约、WP1—WP4
 
-2026-10-28：本目录完成共享契约、多模态/多协议数据源、WP2多源接入与WP3语义对象化。WP4关系/图服务、WP5统一网关尚未实现。接入说明见[Connector](services/connector_service/README.md)；七字段映射、同刻信号融合、故障恢复、SQLite历史与FastAPI见[Semantic Object Service](services/semantic_object_service/README.md)。
+2026-10-28：本目录完成共享契约、多模态/多协议数据源、WP2多源接入、WP3语义对象化与WP4动态关联/四层时空图。接入说明见[Connector](services/connector_service/README.md)；七字段映射与融合见[Semantic Object Service](services/semantic_object_service/README.md)；新增[Relation Service](services/relation_service/README.md)和[Spatiotemporal Model Service](services/spatiotemporal_model_service/README.md)。WP5统一网关与端到端脚本等待下一轮指令。
 
 ## 从项目根目录运行
 
@@ -49,11 +49,12 @@ WP1 的 transport_records.jsonl 保持源信封格式；已实现的 WP2 Connect
 - 每工序/阶段使用独立`random.Random`；相同输入快照、映射、seed、epoch、run_id和相同Pillow版本重放时，新增信号、日志、PLC字节和PNG可逐字节复现。重新调用ERP创建订单会产生新的UUID和墙钟时间，不把这种新业务运行称为所有文件完全相同。
 - 业务events.jsonl中的recorded_at是墙钟，天然不纳入字节复现。协议事件投影用仿真时间，原墙钟仍可从原事件追溯。
 - 工序结束的Timeout先于采样任务创建；采样末次等待直接复用该完成事件，不创建结束后的Timeout。注意SimPy Timeout.triggered在构造时即为True，实际完成判断使用processed与时间边界。
-- 观察器是观测扩展，不改变MES的业务状态机；故障信号不会实际阻塞排程。WP3现已提取并融合故障/恢复状态；跨层影响推理仍待WP4实现。
+- 观察器是观测扩展，不改变MES的业务状态机；故障信号不会实际阻塞排程。WP3提取并融合故障/恢复状态，WP4按活动关联传播诊断风险；风险视图不改写MES实际业务状态。
 
 ## 验收命令
 
 ```powershell
+& '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp4*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp3*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp2*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp1*.py' -v
@@ -67,4 +68,6 @@ WP2 交付时本轮重新执行29项WP2、24项WP1测试和44项旧测试，全�
 
 WP3交付时再次执行33项WP3及以上97项回归，共130项通过；证据在`../md/agent_reports/evidence/2026-10-28_wp3_*`。真实WP2批次2206条映射为12个七字段对象、2215条历史和360个物理采样周期，CNC_01故障[60,90)后明确恢复。运行入口为 `python -m task2_1_prototype.services.semantic_object_service.pipeline --input <WP2目录> --output <新WP3目录>`；完整验收入口为 `python -m task2_1_prototype.tests.verify_wp3 --wp1 <原WP1目录> --input <原WP2目录> --output <新WP3目录> --evidence-prefix <证据前缀>`。
 
-JSON Schema通过`python -m task2_1_prototype.contracts.export_schema`导出；三模型顶层字段严格固定，嵌套JSON禁止NaN/Inf。组织节点模型保持5类枚举。NetworkX仅完成环境准备，本轮没有建图服务。
+WP4新增NetworkX/SQLite图、时间切片、故障风险及反向依赖查询。批次入口：`python -m task2_1_prototype.services.spatiotemporal_model_service.pipeline --input <WP3目录> --output <新WP4目录> --repeat 2`。真实批次为12节点、19关系、4快照；59/75/95/360秒活跃风险0/1/0/0。28项WP4专项测试与全量验收命令见[时空模型README](services/spatiotemporal_model_service/README.md)。Neo4j当前仅离线参数化Cypher导出。
+
+JSON Schema通过`python -m task2_1_prototype.contracts.export_schema`导出；三模型顶层字段严格固定，嵌套JSON禁止NaN/Inf。组织节点模型保持5类枚举，WP4风险不增加SemanticObject顶层字段。

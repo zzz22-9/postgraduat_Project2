@@ -1,0 +1,89 @@
+{
+  "status": "completed",
+  "mode": "local_networkx_sqlite",
+  "neo4j_connected": false,
+  "input_history_records": 2215,
+  "accepted_events": 2215,
+  "duplicate_events": 2215,
+  "input_root": "D:\\AAA-Myproject\\postgraduate\\Project 2\\task2_1_prototype\\artifacts\\wp3_smoke_20261028",
+  "rules": {
+    "rule_set_id": "WP4_DEMO_EXPLICIT_BINDINGS_V1",
+    "description": "Teaching scenario bindings only; this is not evidence of actual material issue or consumption.",
+    "organization_bindings": [
+      {
+        "source": "ORDER_A",
+        "target": "ENT_01",
+        "rule_id": "ORDER_A_ENTERPRISE"
+      },
+      {
+        "source": "RES_MAT_01",
+        "target": "FAC_01",
+        "rule_id": "MATERIAL_FACTORY"
+      }
+    ],
+    "material_bindings": [
+      {
+        "source": "OP20",
+        "work_order": "WO023",
+        "target": "RES_MAT_01",
+        "rule_id": "DEMO_OP20_BLANK_BOM",
+        "quantity_per_workpiece": 1
+      }
+    ]
+  },
+  "nodes": 12,
+  "edges": 19,
+  "edge_types": {
+    "executes": 3,
+    "located_in": 9,
+    "managed_by": 1,
+    "part_of": 1,
+    "belongs_to": 3,
+    "uses_resource": 1,
+    "maps_to": 1
+  },
+  "level_counts": {
+    "device": 3,
+    "enterprise": 2,
+    "factory": 3,
+    "line": 4
+  },
+  "object_type_counts": {
+    "equipment": 3,
+    "resource": 4,
+    "process": 3,
+    "order": 1,
+    "work_order": 1
+  },
+  "checkpoint_active_impacts": {
+    "59.0": 0,
+    "75.0": 1,
+    "95.0": 0,
+    "360.0": 0
+  },
+  "risk_episodes": [
+    {
+      "path": [
+        "CNC_01",
+        "OP20",
+        "WO023",
+        "ORDER_A"
+      ],
+      "start_s": 60.0,
+      "end_s": 90.0,
+      "status": "resolved",
+      "fault_codes": [
+        "0x84"
+      ],
+      "closure_reason": "fault_cleared"
+    }
+  ],
+  "database_counts": {
+    "semantic_catalog": 12,
+    "model_events": 2215,
+    "relation_edges": 19,
+    "graph_snapshots": 4,
+    "impact_events": 1
+  },
+  "scope": "WP4 only; WP5 gateway and run_e2e_demo not implemented"
+}
