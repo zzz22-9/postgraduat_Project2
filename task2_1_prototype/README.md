@@ -1,6 +1,6 @@
-# 任务2.1原型：共享契约、WP1与WP2
+# 任务2.1原型：共享契约、WP1—WP3
 
-2026-10-28：本目录完成共享契约、多模态/多协议数据源与 WP2 多源接入。WP3语义服务、WP4图服务、WP5网关尚未实现。WP2 命令、Python 接口、诊断机制及交接约束见 [Connector 说明](services/connector_service/README.md)。
+2026-10-28：本目录完成共享契约、多模态/多协议数据源、WP2多源接入与WP3语义对象化。WP4关系/图服务、WP5统一网关尚未实现。接入说明见[Connector](services/connector_service/README.md)；七字段映射、同刻信号融合、故障恢复、SQLite历史与FastAPI见[Semantic Object Service](services/semantic_object_service/README.md)。
 
 ## 从项目根目录运行
 
@@ -49,11 +49,12 @@ WP1 的 transport_records.jsonl 保持源信封格式；已实现的 WP2 Connect
 - 每工序/阶段使用独立`random.Random`；相同输入快照、映射、seed、epoch、run_id和相同Pillow版本重放时，新增信号、日志、PLC字节和PNG可逐字节复现。重新调用ERP创建订单会产生新的UUID和墙钟时间，不把这种新业务运行称为所有文件完全相同。
 - 业务events.jsonl中的recorded_at是墙钟，天然不纳入字节复现。协议事件投影用仿真时间，原墙钟仍可从原事件追溯。
 - 工序结束的Timeout先于采样任务创建；采样末次等待直接复用该完成事件，不创建结束后的Timeout。注意SimPy Timeout.triggered在构造时即为True，实际完成判断使用processed与时间边界。
-- 观察器是观测扩展，不改变MES的业务状态机；本轮故障信号不会实际阻塞排程。WP3/4的风险推理和状态融合待后续实现，不能拿本轮数据生成代替语义服务。
+- 观察器是观测扩展，不改变MES的业务状态机；故障信号不会实际阻塞排程。WP3现已提取并融合故障/恢复状态；跨层影响推理仍待WP4实现。
 
 ## 验收命令
 
 ```powershell
+& '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp3*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp2*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp1*.py' -v
 

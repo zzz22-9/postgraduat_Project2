@@ -1,0 +1,117 @@
+{
+  "status": "completed",
+  "input_messages": 2206,
+  "deliveries": 4412,
+  "duplicate_deliveries": 2206,
+  "asset_root": "D:\\AAA-Myproject\\postgraduate\\Project 2\\task2_1_prototype\\artifacts\\wp1_smoke_20261028",
+  "input_root": "D:\\AAA-Myproject\\postgraduate\\Project 2\\task2_1_prototype\\artifacts\\wp2_smoke_20261028",
+  "rules": {
+    "window_size": 10,
+    "temperature_warning": 72.0,
+    "vibration_warning": 3.8,
+    "load_warning": 0.82,
+    "temperature_fault": 90.0,
+    "vibration_fault": 8.0,
+    "load_fault": 0.95
+  },
+  "scope": "WP3 semantic objects only; WP4 relations/graphs not implemented",
+  "semantic_objects": 12,
+  "semantic_state_history": 2215,
+  "processed_messages": 2206,
+  "signal_cycles": 360,
+  "objects_by_type": {
+    "equipment": 3,
+    "resource": 4,
+    "process": 3,
+    "order": 1,
+    "work_order": 1
+  },
+  "objects_by_level": {
+    "device": 3,
+    "enterprise": 2,
+    "factory": 3,
+    "line": 4
+  },
+  "cycles_by_device": {
+    "CNC_01": 180,
+    "MOVE_01": 60,
+    "QC_01": 120
+  },
+  "complete_cycles": 360,
+  "cycles_with_all_three_protocols": 360,
+  "transitions": [
+    {
+      "object_id": "CNC_01",
+      "timestamp": "2026-10-28T02:30:00.000000Z",
+      "sim_time_s": 0,
+      "status": "running",
+      "fault_count": 0,
+      "recovery_count": 0
+    },
+    {
+      "object_id": "CNC_01",
+      "timestamp": "2026-10-28T02:31:00.000000Z",
+      "sim_time_s": 60.0,
+      "status": "fault",
+      "fault_count": 1,
+      "recovery_count": 0
+    },
+    {
+      "object_id": "CNC_01",
+      "timestamp": "2026-10-28T02:31:30.000000Z",
+      "sim_time_s": 90.0,
+      "status": "running",
+      "fault_count": 1,
+      "recovery_count": 1
+    },
+    {
+      "object_id": "CNC_01",
+      "timestamp": "2026-10-28T02:33:00.000000Z",
+      "sim_time_s": 180,
+      "status": "idle",
+      "fault_count": 1,
+      "recovery_count": 1
+    },
+    {
+      "object_id": "MOVE_01",
+      "timestamp": "2026-10-28T02:35:00.000000Z",
+      "sim_time_s": 300,
+      "status": "running",
+      "fault_count": 0,
+      "recovery_count": 0
+    },
+    {
+      "object_id": "MOVE_01",
+      "timestamp": "2026-10-28T02:36:00.000000Z",
+      "sim_time_s": 360,
+      "status": "idle",
+      "fault_count": 0,
+      "recovery_count": 0
+    },
+    {
+      "object_id": "QC_01",
+      "timestamp": "2026-10-28T02:33:00.000000Z",
+      "sim_time_s": 180,
+      "status": "running",
+      "fault_count": 0,
+      "recovery_count": 0
+    },
+    {
+      "object_id": "QC_01",
+      "timestamp": "2026-10-28T02:35:00.000000Z",
+      "sim_time_s": 300,
+      "status": "idle",
+      "fault_count": 0,
+      "recovery_count": 0
+    }
+  ],
+  "fault_intervals": [
+    {
+      "object_id": "CNC_01",
+      "start_s": 60.0,
+      "start_timestamp": "2026-10-28T02:31:00.000000Z",
+      "end_s": 90.0,
+      "end_timestamp": "2026-10-28T02:31:30.000000Z"
+    }
+  ]
+}
