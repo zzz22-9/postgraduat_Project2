@@ -40,7 +40,7 @@ uv pip install --python '.\minimal_factory\.venv\Scripts\python.exe' -r task2_1_
 
 `REST_API`通过FastAPI TestClient在进程内调用真实ASGI路由；`SQLITE`是真实独立表；MQTT为内存发布/订阅Mock，OPC UA为命名节点存储/读取Mock，PLC为自定义二进制帧。不是实网协议验收。所有图像/信号是合成数据，图像标签不是视觉识别结果。
 
-WP2须自行把源信封解析成RawIngestMessage；本轮只在测试中检查预期8字段封装。不要直接把transport_records.jsonl宣称为已经运行的Connector。PLC帧不含时间与工单；需要结合地址注册、采集时间和调度上下文补齐。详情见[契约](contracts/README.md)和[PLC字节约定](contracts/plc_frame.md)。
+WP1 的 transport_records.jsonl 保持源信封格式；已实现的 WP2 Connector 将其解析为 raw_ingest_messages.jsonl 中的八字段 RawIngestMessage，并保留完整原始载荷。PLC帧不含时间与工单；接入器结合地址注册、采集时间和调度上下文核对后封装。详情见[接入说明](services/connector_service/README.md)、[契约](contracts/README.md)和[PLC字节约定](contracts/plc_frame.md)。
 
 ## 时间、复现与兼容
 
@@ -54,6 +54,7 @@ WP2须自行把源信封解析成RawIngestMessage；本轮只在测试中检查�
 ## 验收命令
 
 ```powershell
+& '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp2*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp1*.py' -v
 
 # 旧系统采用顶层erp/mes导入。从根目录执行旧测试时需指定旧包路径。
@@ -61,6 +62,6 @@ $env:PYTHONPATH = (Resolve-Path '.\minimal_factory').Path
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s minimal_factory/tests -v
 ```
 
-本轮24项WP1测试和44项旧测试分别执行，日志在`../md/agent_reports/evidence/`。旧事件金样本来自改造前提交d53fb7b：默认36事件、返修48事件。只归一化run_id、recorded_at和随机返修ID，不忽略事件序号、时刻、设备、工序、数量或先后顺序。
+WP2 交付时本轮重新执行29项WP2、24项WP1测试和44项旧测试，全部通过，日志在`../md/agent_reports/evidence/2026-10-28_wp2_*`。一键生成测试与批次验收证据可运行 `python -m task2_1_prototype.tests.verify_wp2 --input <WP1目录> --output <新WP2目录> --evidence-prefix <证据文件前缀>`。旧事件金样本来自改造前提交d53fb7b：默认36事件、返修48事件。只归一化run_id、recorded_at和随机返修ID，不忽略事件序号、时刻、设备、工序、数量或先后顺序。
 
 JSON Schema通过`python -m task2_1_prototype.contracts.export_schema`导出；三模型顶层字段严格固定，嵌套JSON禁止NaN/Inf。组织节点模型保持5类枚举。NetworkX仅完成环境准备，本轮没有建图服务。
