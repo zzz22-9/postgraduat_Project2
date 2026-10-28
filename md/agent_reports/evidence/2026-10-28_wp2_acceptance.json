@@ -1,0 +1,178 @@
+{
+  "executed_at_utc": "2026-10-28T07:59:57.029603+00:00",
+  "commands": [
+    {
+      "name": "tests",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "task2_1_prototype/tests",
+        "-p",
+        "test_wp2*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp2_tests.txt",
+      "tests": 29,
+      "seconds": 8.363
+    },
+    {
+      "name": "wp1_regression",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "task2_1_prototype/tests",
+        "-p",
+        "test_wp1*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp2_wp1_regression.txt",
+      "tests": 24,
+      "seconds": 5.373
+    },
+    {
+      "name": "legacy_regression",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "minimal_factory/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp2_legacy_regression.txt",
+      "PYTHONPATH": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory",
+      "tests": 44,
+      "seconds": 12.292
+    },
+    {
+      "name": "cli",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "task2_1_prototype.services.connector_service.pipeline",
+        "--input",
+        "task2_1_prototype\\artifacts\\wp1_smoke_20261028",
+        "--output",
+        "task2_1_prototype\\artifacts\\wp2_smoke_20261028",
+        "--exercise-invalid",
+        "--repeat",
+        "2"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp2_cli.txt"
+    }
+  ],
+  "original_erp_sha256_before": "D98A81A49CB950AC8DF38B4B164856D48295E10EDF44BE564A080048D4F0424A",
+  "connector_summary": {
+    "counts": {
+      "accepted": 2206,
+      "duplicates": 2202,
+      "rejected": 7
+    },
+    "by_protocol": {
+      "REST_API": 1,
+      "SQLITE": 5,
+      "MQTT": 400,
+      "OPC_UA": 1440,
+      "PLC_FRAME": 360
+    },
+    "by_modality": {
+      "structured_record": 29,
+      "log_text": 8,
+      "timeseries_signal": 2160,
+      "image": 9
+    },
+    "by_connector": {
+      "RestApiConnector": 1,
+      "DatabaseConnector": 5,
+      "MqttConnector": 400,
+      "OpcUaAndPlcConnector": 1800
+    },
+    "pydantic_validated": 2206,
+    "json_schema_validated": 2206,
+    "batch_id": "0a0004a2caa59b2423d091154141dd66aa5b580209779e1504719cee16555005",
+    "asset_root": "D:\\AAA-Myproject\\postgraduate\\Project 2\\task2_1_prototype\\artifacts\\wp1_smoke_20261028",
+    "source_batches": [
+      {
+        "accepted": 2202
+      },
+      {
+        "duplicates": 2202
+      }
+    ],
+    "supplemental": {
+      "accepted": 4
+    },
+    "diagnostic_fixtures": {
+      "rejected": 7
+    },
+    "source_sha256": "be65b3c444a27dc02146a9df10ec363a6d94fa4ce6cb31711a1dab60d8690ff6",
+    "limitations": [
+      "MQTT/OPC use WP1 in-process mocks",
+      "PostgreSQL adapter tested with DB-API double; no live server",
+      "No WP3 semantic_mapping implemented",
+      "Deduplication is session scoped"
+    ],
+    "status": "completed"
+  },
+  "original_erp_sha256_after": "D98A81A49CB950AC8DF38B4B164856D48295E10EDF44BE564A080048D4F0424A",
+  "source_files_unchanged": true,
+  "source_files_sha256": {
+    "config.json": "51115a793c8e8dc8fa861930936c4b4ef154ed47444419c010380151d466b46c",
+    "demo_erp.sqlite3": "6be3ba3e046d23c9d2e586157734b0f08188d36cd3deb30b292042bb0be729bd",
+    "device_logs.jsonl": "e7c8c766d20c98fc489f0ed2d3c3f604111a32e336b286a7952bad4012544502",
+    "equipment.log": "93c8e83c6cdc72872312ccd96652147735c3ed06131f6f87d966024354042b47",
+    "events.jsonl": "fc30298b1304d34f105ec2ebde5547feef98997aa8997bd5660e974b91ad08f4",
+    "id_registry.json": "1bb3c703f5b17bd9aeb0127138968847a341ff436d845c0ad72aac8ec50ef684",
+    "images.jsonl": "036ddffd8882bde145a7b5ba06290ffdfa4a243e2edbe798a3556b98f8b7dd1a",
+    "input.json": "dec78548df79a5a98a1f500a39fce70d9be0807d6219d6a16df0c89c15954bfb",
+    "mes.db": "d84eb06972c1634e60105fdf408a49b6efc08055c5f818ca62afd8c871df3145",
+    "mqtt_received.jsonl": "1c95562780de92a4e4310714fbfde8f3c34d143a162d8645af6fb216067dcd13",
+    "plc_frames.bin": "503e157ad5c7d973301be29a23cecee45e77baa21514feb7140240fcbe1a2fd5",
+    "plc_frame_examples.json": "58fc2054da4fed5247eb39d40cd534e1f234a79b553876c867532973d25b3e42",
+    "run.json": "6e5cd963e8f9785191eb544f0d6745ed711df197ffa3c40be770294f352c8fdb",
+    "signals.jsonl": "3a1a0a43d59f539c55b984dc7ef47619b8ff3451da0b4f1e00530e70d2b04f88",
+    "summary.json": "26d95ca4f4ccc941a5ca89c419453f87a4b093b6517df27d88ea132591ccdc01",
+    "transport_records.jsonl": "be65b3c444a27dc02146a9df10ec363a6d94fa4ce6cb31711a1dab60d8690ff6",
+    "demo_erp.simulations/.execution.lock": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "sim_images/frame_00000_start.png": "64369436fb5b52b2d8b3644caea909416818c6eb692e4082648992486b7b5d67",
+    "sim_images/frame_00001_alarm.png": "a1e96f1517d33b876b0293d2c9b566c8a7c09c2f4e976e95683b7def4b2e6f7b",
+    "sim_images/frame_00002_recovery.png": "eb6abc66eaa9e96595d6e1235fb9de8aad3878b299bc39f7e0c22a2cf84b3b8e",
+    "sim_images/frame_00003_processing.png": "f837b053d5865e5aec7b804335ef3c8e32309259eb6db9bc42172f7b78f2334e",
+    "sim_images/frame_00004_start.png": "45b6fc8e17f4581ac03aedafed4b7a735a542753f28a5a4f03d5886bac3c5474",
+    "sim_images/frame_00005_processing.png": "182f4e5171f72e725b1c5c771dca2b84ccb5074fe784dc6d3f0421bcad9fe078",
+    "sim_images/frame_00006_quality.png": "0a01a5cf6060f8defeafced28c6094522cb2c7c6c3b7e775b91da4ea86d4d5d2",
+    "sim_images/frame_00007_start.png": "474b0a5f6bb4b553868b1f9d033368bf2d7d14682485a9090686a573e95ce18a",
+    "sim_images/frame_00008_processing.png": "49cedc7be655fecf8cb07fdef3d28a1c044c4dcbf8125d2f662042256c4d7610"
+  },
+  "all_messages_double_validated": 2206,
+  "source_payloads_and_contexts_preserved": 2202,
+  "artifact_hashes": {
+    "connector_summary.json": "e5fedf1e0197091901f964dedfb26dd6fdf5e9b0594234a644e5c0c4bb7e2bd5",
+    "organization_reference.sqlite3": "f81c7b32f1aaa999812c1938125b1487296c8e28728ca607c83fe92e8096f086",
+    "raw_ingest_messages.jsonl": "3dedf93081b0cc216e931d00a8f32434c5a5142a4c7c3671eeb0847b55cfd29f",
+    "rejected_messages.jsonl": "bc1aa51368a5b307beb1a5ba88b0688a8d85993b502c67176c6f678470d47b4f"
+  }
+}
