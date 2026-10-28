@@ -1,0 +1,75 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "object_id": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Object Id",
+      "type": "string"
+    },
+    "object_type": {
+      "enum": [
+        "equipment",
+        "process",
+        "work_order",
+        "order",
+        "resource"
+      ],
+      "title": "Object Type",
+      "type": "string"
+    },
+    "domain": {
+      "enum": [
+        "manufacturing",
+        "enterprise"
+      ],
+      "title": "Domain",
+      "type": "string"
+    },
+    "level": {
+      "enum": [
+        "device",
+        "line",
+        "factory",
+        "enterprise"
+      ],
+      "title": "Level",
+      "type": "string"
+    },
+    "state": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "State",
+      "type": "object"
+    },
+    "context": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Context",
+      "type": "object"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2})$",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "object_id",
+    "object_type",
+    "domain",
+    "level",
+    "state",
+    "context",
+    "timestamp"
+  ],
+  "title": "SemanticObject",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

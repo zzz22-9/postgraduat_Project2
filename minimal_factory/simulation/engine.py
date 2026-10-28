@@ -36,7 +36,12 @@ def seed_database(path, snapshot):
         mes.release(path, wo["work_order_id"])
 
 
-def simulate(folder: Path, run_id, snapshot, stop, progress):
+def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
+    """Optional observer only adds source observations; None preserves legacy scheduling.
+
+    observe(env, context, completed, stop) must end with the existing completion
+    event and must not schedule timeouts beyond context['end_min'].
+    """
     path = folder / "mes.db"
     seed_database(path, snapshot)
     env = simpy.Environment()
@@ -66,6 +71,8 @@ def simulate(folder: Path, run_id, snapshot, stop, progress):
                          phase=phase, rework_id=rework_id, recorded_at=mes.now(), **extra)
             event_file.write(json.dumps(event, ensure_ascii=False) + "\n")
             event_file.flush()
+            if observer is not None:
+                observer.on_event(dict(event))
 
         def processing(wo, op, quantity, phase, start, finish, rework_id=None):
             asked = env.now
@@ -77,7 +84,14 @@ def simulate(folder: Path, run_id, snapshot, stop, progress):
                 began = env.now
                 emit("resource_acquired", wo, op, quantity, phase, rework_id, wait_min=began-asked)
                 emit("processing_started", wo, op, quantity, phase, rework_id)
-                yield env.timeout(op["minutes"] * quantity)
+                completed = env.timeout(op["minutes"] * quantity)
+                if observer is not None:
+                    observation_context = dict(run_id=run_id, order_id=wo["order_id"],
+                        work_order_id=wo["work_order_id"], operation_id=op["operation_id"],
+                        equipment_id=op["equipment_id"], quantity=quantity, phase=phase,
+                        rework_id=rework_id, start_min=began, end_min=began + op["minutes"] * quantity)
+                    env.process(observer.observe(env, observation_context, completed, stop))
+                yield completed
                 emit("processing_finished", wo, op, quantity, phase, rework_id)
                 finish()
                 intervals.append(dict(work_order_id=wo["work_order_id"], operation_id=op["operation_id"],

@@ -1,0 +1,20 @@
+{
+  "simulation_epoch": "2026-10-28T10:30:00+08:00",
+  "seed": 20261028,
+  "sample_interval_s": 1.0,
+  "hierarchy": [
+    {"object_id":"ENT_01","object_type":"resource","domain":"enterprise","level":"enterprise","context":{"resource_kind":"organization"}},
+    {"object_id":"FAC_01","object_type":"resource","domain":"manufacturing","level":"factory","context":{"resource_kind":"organization","parent":"ENT_01"}},
+    {"object_id":"LINE_01","object_type":"resource","domain":"manufacturing","level":"line","context":{"resource_kind":"organization","parent":"FAC_01"}},
+    {"object_id":"CNC_01","object_type":"equipment","domain":"manufacturing","level":"device","context":{"parent":"LINE_01"}}
+  ],
+  "equipment": [
+    {"legacy_id":"E-ASM","object_id":"CNC_01","address":1,"aliases":["DEV_CNC_01","0x01","RES_M01"],"normal":{"spindle_speed_rpm":4200.0,"temperature_c":65.0,"vibration_mm_s":1.4,"load_ratio":0.65}},
+    {"legacy_id":"E-QC","object_id":"QC_01","address":2,"aliases":["DEV_QC_01","0x02"],"normal":{"spindle_speed_rpm":0.0,"temperature_c":28.0,"vibration_mm_s":0.1,"load_ratio":0.2}},
+    {"legacy_id":"E-MOVE","object_id":"MOVE_01","address":3,"aliases":["DEV_MOVE_01","0x03"],"normal":{"spindle_speed_rpm":1200.0,"temperature_c":35.0,"vibration_mm_s":0.6,"load_ratio":0.4}}
+  ],
+  "noise_amplitude":{"spindle_speed_rpm":30.0,"temperature_c":0.5,"vibration_mm_s":0.08,"load_ratio":0.02},
+  "fault":{"enabled":true,"equipment_id":"CNC_01","process_id":"OP20","phase":"normal","start_offset_s":60.0,"end_offset_s":90.0,"code":"0x84","values":{"spindle_speed_rpm":3800.0,"temperature_c":98.0,"vibration_mm_s":12.0,"load_ratio":0.98}},
+  "demo_aliases":{"order":"ORDER_A","work_order":"WO023","processes":["OP20","OP30","OP40"]},
+  "material":{"resource_id":"RES_MAT_01","name":"Teaching workpiece blank","quantity":100,"unit":"piece"}
+}
