@@ -65,4 +65,6 @@ $env:PYTHONPATH = (Resolve-Path '.\minimal_factory').Path
 
 WP2 交付时本轮重新执行29项WP2、24项WP1测试和44项旧测试，全部通过，日志在`../md/agent_reports/evidence/2026-10-28_wp2_*`。一键生成测试与批次验收证据可运行 `python -m task2_1_prototype.tests.verify_wp2 --input <WP1目录> --output <新WP2目录> --evidence-prefix <证据文件前缀>`。旧事件金样本来自改造前提交d53fb7b：默认36事件、返修48事件。只归一化run_id、recorded_at和随机返修ID，不忽略事件序号、时刻、设备、工序、数量或先后顺序。
 
+WP3交付时再次执行33项WP3及以上97项回归，共130项通过；证据在`../md/agent_reports/evidence/2026-10-28_wp3_*`。真实WP2批次2206条映射为12个七字段对象、2215条历史和360个物理采样周期，CNC_01故障[60,90)后明确恢复。运行入口为 `python -m task2_1_prototype.services.semantic_object_service.pipeline --input <WP2目录> --output <新WP3目录>`；完整验收入口为 `python -m task2_1_prototype.tests.verify_wp3 --wp1 <原WP1目录> --input <原WP2目录> --output <新WP3目录> --evidence-prefix <证据前缀>`。
+
 JSON Schema通过`python -m task2_1_prototype.contracts.export_schema`导出；三模型顶层字段严格固定，嵌套JSON禁止NaN/Inf。组织节点模型保持5类枚举。NetworkX仅完成环境准备，本轮没有建图服务。
