@@ -1,6 +1,14 @@
-# 任务2.1原型：共享契约、WP1—WP4
+# 任务2.1原型：共享契约、WP1—WP5 本地阶段
 
-2026-10-28：本目录完成共享契约、多模态/多协议数据源、WP2多源接入、WP3语义对象化与WP4动态关联/四层时空图。接入说明见[Connector](services/connector_service/README.md)；七字段映射与融合见[Semantic Object Service](services/semantic_object_service/README.md)；新增[Relation Service](services/relation_service/README.md)和[Spatiotemporal Model Service](services/spatiotemporal_model_service/README.md)。WP5统一网关与端到端脚本等待下一轮指令。
+2026-10-29：完成共享契约、WP1多模态/多协议数据源、WP2接入、WP3语义融合、WP4关联/时空图，以及WP5统一网关、一键演示、五问报告和离线看板。当前为阶段1本地Python，Docker按用户要求暂缓。详见[网关与操作指南](services/api_gateway/README.md)、[Connector](services/connector_service/README.md)、[Semantic Object Service](services/semantic_object_service/README.md)、[Relation Service](services/relation_service/README.md)、[Spatiotemporal Model Service](services/spatiotemporal_model_service/README.md)。
+
+## 一键完整演示
+
+```powershell
+& '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 run_e2e_demo.py --output task2_1_prototype/artifacts/my_e2e_run
+```
+
+从项目根目录执行，output使用新目录。运行从真实ERP创建订单开始，默认结束即退出；直接打开输出目录的`e2e_dashboard.html`查看四个时间切片、风险图、对象和九张PNG。加`--serve --host 127.0.0.1 --port 8010`启动本机交互演示；已有运行可通过`python -m task2_1_prototype.services.api_gateway.main --workspace <输出目录>/gateway`恢复服务。HTTP文档在`/docs`，离线“五问”在`weekly_5q_report.md`。
 
 ## 从项目根目录运行
 
@@ -54,6 +62,7 @@ WP1 的 transport_records.jsonl 保持源信封格式；已实现的 WP2 Connect
 ## 验收命令
 
 ```powershell
+& '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp5*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp4*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp3*.py' -v
 & '.\minimal_factory\.venv\Scripts\python.exe' -B -X utf8 -m unittest discover -s task2_1_prototype/tests -p 'test_wp2*.py' -v

@@ -1,0 +1,853 @@
+{
+  "executed_at": "2026-10-29T10:39:01.742566+08:00",
+  "commands": [
+    {
+      "name": "wp5_tests",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "task2_1_prototype/tests",
+        "-p",
+        "test_wp5*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp5_wp5_tests.txt",
+      "tests": 31,
+      "seconds": 147.054
+    },
+    {
+      "name": "wp4_tests",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "task2_1_prototype/tests",
+        "-p",
+        "test_wp4*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp5_wp4_tests.txt",
+      "tests": 28,
+      "seconds": 55.276
+    },
+    {
+      "name": "wp3_tests",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "task2_1_prototype/tests",
+        "-p",
+        "test_wp3*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp5_wp3_tests.txt",
+      "tests": 33,
+      "seconds": 44.473
+    },
+    {
+      "name": "wp2_tests",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "task2_1_prototype/tests",
+        "-p",
+        "test_wp2*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp5_wp2_tests.txt",
+      "tests": 29,
+      "seconds": 12.656
+    },
+    {
+      "name": "wp1_tests",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "task2_1_prototype/tests",
+        "-p",
+        "test_wp1*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp5_wp1_tests.txt",
+      "tests": 24,
+      "seconds": 6.996
+    },
+    {
+      "name": "legacy_regression",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "minimal_factory/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp5_legacy_regression.txt",
+      "PYTHONPATH": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory",
+      "tests": 44,
+      "seconds": 12.625
+    },
+    {
+      "name": "e2e_cli",
+      "argv": [
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "run_e2e_demo.py",
+        "--output",
+        "D:\\AAA-Myproject\\postgraduate\\Project 2\\task2_1_prototype\\artifacts\\wp5_e2e_20261028"
+      ],
+      "exit_code": 0,
+      "log": "md\\agent_reports\\evidence\\2026-10-28_wp5_e2e_cli.txt"
+    }
+  ],
+  "input_hashes_before": {
+    "wp1": {
+      "config.json": "51115a793c8e8dc8fa861930936c4b4ef154ed47444419c010380151d466b46c",
+      "demo_erp.simulations/.execution.lock": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "demo_erp.sqlite3": "6be3ba3e046d23c9d2e586157734b0f08188d36cd3deb30b292042bb0be729bd",
+      "device_logs.jsonl": "e7c8c766d20c98fc489f0ed2d3c3f604111a32e336b286a7952bad4012544502",
+      "equipment.log": "93c8e83c6cdc72872312ccd96652147735c3ed06131f6f87d966024354042b47",
+      "events.jsonl": "fc30298b1304d34f105ec2ebde5547feef98997aa8997bd5660e974b91ad08f4",
+      "id_registry.json": "1bb3c703f5b17bd9aeb0127138968847a341ff436d845c0ad72aac8ec50ef684",
+      "images.jsonl": "036ddffd8882bde145a7b5ba06290ffdfa4a243e2edbe798a3556b98f8b7dd1a",
+      "input.json": "dec78548df79a5a98a1f500a39fce70d9be0807d6219d6a16df0c89c15954bfb",
+      "mes.db": "d84eb06972c1634e60105fdf408a49b6efc08055c5f818ca62afd8c871df3145",
+      "mqtt_received.jsonl": "1c95562780de92a4e4310714fbfde8f3c34d143a162d8645af6fb216067dcd13",
+      "plc_frame_examples.json": "58fc2054da4fed5247eb39d40cd534e1f234a79b553876c867532973d25b3e42",
+      "plc_frames.bin": "503e157ad5c7d973301be29a23cecee45e77baa21514feb7140240fcbe1a2fd5",
+      "run.json": "6e5cd963e8f9785191eb544f0d6745ed711df197ffa3c40be770294f352c8fdb",
+      "signals.jsonl": "3a1a0a43d59f539c55b984dc7ef47619b8ff3451da0b4f1e00530e70d2b04f88",
+      "sim_images/frame_00000_start.png": "64369436fb5b52b2d8b3644caea909416818c6eb692e4082648992486b7b5d67",
+      "sim_images/frame_00001_alarm.png": "a1e96f1517d33b876b0293d2c9b566c8a7c09c2f4e976e95683b7def4b2e6f7b",
+      "sim_images/frame_00002_recovery.png": "eb6abc66eaa9e96595d6e1235fb9de8aad3878b299bc39f7e0c22a2cf84b3b8e",
+      "sim_images/frame_00003_processing.png": "f837b053d5865e5aec7b804335ef3c8e32309259eb6db9bc42172f7b78f2334e",
+      "sim_images/frame_00004_start.png": "45b6fc8e17f4581ac03aedafed4b7a735a542753f28a5a4f03d5886bac3c5474",
+      "sim_images/frame_00005_processing.png": "182f4e5171f72e725b1c5c771dca2b84ccb5074fe784dc6d3f0421bcad9fe078",
+      "sim_images/frame_00006_quality.png": "0a01a5cf6060f8defeafced28c6094522cb2c7c6c3b7e775b91da4ea86d4d5d2",
+      "sim_images/frame_00007_start.png": "474b0a5f6bb4b553868b1f9d033368bf2d7d14682485a9090686a573e95ce18a",
+      "sim_images/frame_00008_processing.png": "49cedc7be655fecf8cb07fdef3d28a1c044c4dcbf8125d2f662042256c4d7610",
+      "summary.json": "26d95ca4f4ccc941a5ca89c419453f87a4b093b6517df27d88ea132591ccdc01",
+      "transport_records.jsonl": "be65b3c444a27dc02146a9df10ec363a6d94fa4ce6cb31711a1dab60d8690ff6"
+    },
+    "wp2": {
+      "connector_summary.json": "e5fedf1e0197091901f964dedfb26dd6fdf5e9b0594234a644e5c0c4bb7e2bd5",
+      "organization_reference.sqlite3": "f81c7b32f1aaa999812c1938125b1487296c8e28728ca607c83fe92e8096f086",
+      "raw_ingest_messages.jsonl": "3dedf93081b0cc216e931d00a8f32434c5a5142a4c7c3671eeb0847b55cfd29f",
+      "rejected_messages.jsonl": "bc1aa51368a5b307beb1a5ba88b0688a8d85993b502c67176c6f678470d47b4f"
+    },
+    "wp3": {
+      "semantic_objects.jsonl": "db0d5376ed5fd84345cd74560d0f62be7a7cdcf94185a682ecf4db1effe69fd6",
+      "semantic_objects.sqlite3": "08cd39c7b6d1311c54fe04ce6354ff3b434bf6fe110b1eb710744e91bcfc78bf",
+      "semantic_state_history.jsonl": "388df8dad7adb392f05205ffc167c2405e3bf8361d6b16dafc1eda5c8ae039dd",
+      "semantic_summary.json": "eac7755fc61c4a48cd5a50195068e9513d67047f2909aef310e61f6f969c3bff"
+    },
+    "wp4": {
+      "graph_snapshots.json": "665c9c6537feb76de4199b1b46d8b3118c444411b05d2437e51fc894e6bd1326",
+      "impact_report.json": "e1c29e2c3405afde55ff9a5be0e8669ca2a090d03fab8737d549afe7bd044812",
+      "neo4j_export.json": "b4b6268f00445fe90905f592688a590736475f0eb6ed812288bb452400084d4d",
+      "relations.jsonl": "1516203e0ec482b1ef66edcaec6b70b6f749f014481e24a1171c188e56d9b3d7",
+      "spatiotemporal_model.sqlite3": "487be4242afb500c8eccebc4dff287f5b2014f5e768f37e2bbce1cf5aa1ad9bd",
+      "spatiotemporal_summary.json": "c937f8d0edddbc72bacc2fa96011633ec56216dc13ca3ea159909a4670ca873a"
+    },
+    "original_erp": "D98A81A49CB950AC8DF38B4B164856D48295E10EDF44BE564A080048D4F0424A"
+  },
+  "historical_hashes_match_wp4_acceptance": true,
+  "input_hashes_after": {
+    "wp1": {
+      "config.json": "51115a793c8e8dc8fa861930936c4b4ef154ed47444419c010380151d466b46c",
+      "demo_erp.simulations/.execution.lock": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "demo_erp.sqlite3": "6be3ba3e046d23c9d2e586157734b0f08188d36cd3deb30b292042bb0be729bd",
+      "device_logs.jsonl": "e7c8c766d20c98fc489f0ed2d3c3f604111a32e336b286a7952bad4012544502",
+      "equipment.log": "93c8e83c6cdc72872312ccd96652147735c3ed06131f6f87d966024354042b47",
+      "events.jsonl": "fc30298b1304d34f105ec2ebde5547feef98997aa8997bd5660e974b91ad08f4",
+      "id_registry.json": "1bb3c703f5b17bd9aeb0127138968847a341ff436d845c0ad72aac8ec50ef684",
+      "images.jsonl": "036ddffd8882bde145a7b5ba06290ffdfa4a243e2edbe798a3556b98f8b7dd1a",
+      "input.json": "dec78548df79a5a98a1f500a39fce70d9be0807d6219d6a16df0c89c15954bfb",
+      "mes.db": "d84eb06972c1634e60105fdf408a49b6efc08055c5f818ca62afd8c871df3145",
+      "mqtt_received.jsonl": "1c95562780de92a4e4310714fbfde8f3c34d143a162d8645af6fb216067dcd13",
+      "plc_frame_examples.json": "58fc2054da4fed5247eb39d40cd534e1f234a79b553876c867532973d25b3e42",
+      "plc_frames.bin": "503e157ad5c7d973301be29a23cecee45e77baa21514feb7140240fcbe1a2fd5",
+      "run.json": "6e5cd963e8f9785191eb544f0d6745ed711df197ffa3c40be770294f352c8fdb",
+      "signals.jsonl": "3a1a0a43d59f539c55b984dc7ef47619b8ff3451da0b4f1e00530e70d2b04f88",
+      "sim_images/frame_00000_start.png": "64369436fb5b52b2d8b3644caea909416818c6eb692e4082648992486b7b5d67",
+      "sim_images/frame_00001_alarm.png": "a1e96f1517d33b876b0293d2c9b566c8a7c09c2f4e976e95683b7def4b2e6f7b",
+      "sim_images/frame_00002_recovery.png": "eb6abc66eaa9e96595d6e1235fb9de8aad3878b299bc39f7e0c22a2cf84b3b8e",
+      "sim_images/frame_00003_processing.png": "f837b053d5865e5aec7b804335ef3c8e32309259eb6db9bc42172f7b78f2334e",
+      "sim_images/frame_00004_start.png": "45b6fc8e17f4581ac03aedafed4b7a735a542753f28a5a4f03d5886bac3c5474",
+      "sim_images/frame_00005_processing.png": "182f4e5171f72e725b1c5c771dca2b84ccb5074fe784dc6d3f0421bcad9fe078",
+      "sim_images/frame_00006_quality.png": "0a01a5cf6060f8defeafced28c6094522cb2c7c6c3b7e775b91da4ea86d4d5d2",
+      "sim_images/frame_00007_start.png": "474b0a5f6bb4b553868b1f9d033368bf2d7d14682485a9090686a573e95ce18a",
+      "sim_images/frame_00008_processing.png": "49cedc7be655fecf8cb07fdef3d28a1c044c4dcbf8125d2f662042256c4d7610",
+      "summary.json": "26d95ca4f4ccc941a5ca89c419453f87a4b093b6517df27d88ea132591ccdc01",
+      "transport_records.jsonl": "be65b3c444a27dc02146a9df10ec363a6d94fa4ce6cb31711a1dab60d8690ff6"
+    },
+    "wp2": {
+      "connector_summary.json": "e5fedf1e0197091901f964dedfb26dd6fdf5e9b0594234a644e5c0c4bb7e2bd5",
+      "organization_reference.sqlite3": "f81c7b32f1aaa999812c1938125b1487296c8e28728ca607c83fe92e8096f086",
+      "raw_ingest_messages.jsonl": "3dedf93081b0cc216e931d00a8f32434c5a5142a4c7c3671eeb0847b55cfd29f",
+      "rejected_messages.jsonl": "bc1aa51368a5b307beb1a5ba88b0688a8d85993b502c67176c6f678470d47b4f"
+    },
+    "wp3": {
+      "semantic_objects.jsonl": "db0d5376ed5fd84345cd74560d0f62be7a7cdcf94185a682ecf4db1effe69fd6",
+      "semantic_objects.sqlite3": "08cd39c7b6d1311c54fe04ce6354ff3b434bf6fe110b1eb710744e91bcfc78bf",
+      "semantic_state_history.jsonl": "388df8dad7adb392f05205ffc167c2405e3bf8361d6b16dafc1eda5c8ae039dd",
+      "semantic_summary.json": "eac7755fc61c4a48cd5a50195068e9513d67047f2909aef310e61f6f969c3bff"
+    },
+    "wp4": {
+      "graph_snapshots.json": "665c9c6537feb76de4199b1b46d8b3118c444411b05d2437e51fc894e6bd1326",
+      "impact_report.json": "e1c29e2c3405afde55ff9a5be0e8669ca2a090d03fab8737d549afe7bd044812",
+      "neo4j_export.json": "b4b6268f00445fe90905f592688a590736475f0eb6ed812288bb452400084d4d",
+      "relations.jsonl": "1516203e0ec482b1ef66edcaec6b70b6f749f014481e24a1171c188e56d9b3d7",
+      "spatiotemporal_model.sqlite3": "487be4242afb500c8eccebc4dff287f5b2014f5e768f37e2bbce1cf5aa1ad9bd",
+      "spatiotemporal_summary.json": "c937f8d0edddbc72bacc2fa96011633ec56216dc13ca3ea159909a4670ca873a"
+    },
+    "original_erp": "D98A81A49CB950AC8DF38B4B164856D48295E10EDF44BE564A080048D4F0424A"
+  },
+  "all_inputs_unchanged": true,
+  "preserved_artifact_files": 40,
+  "total_tests": 189,
+  "independent_contract_validation": {
+    "wp2/raw_ingest_messages.jsonl": 2206,
+    "wp3/semantic_objects.jsonl": 12,
+    "wp3/semantic_state_history.jsonl": 2215,
+    "wp4/relations.jsonl": 19
+  },
+  "dashboard_data_matches_outputs": true,
+  "dashboard_decodable_pngs": 9,
+  "summary": {
+    "status": "completed",
+    "run_id": "wp5_e2e_20261028",
+    "executed_at": "2026-10-29T10:43:50+08:00",
+    "stage": "stage_1_local_python",
+    "dockerized": false,
+    "source_records": 2202,
+    "signal_samples": 360,
+    "image_count": 9,
+    "log_count": 8,
+    "makespan_min": 6,
+    "protocol_counts": {
+      "REST_API": 1,
+      "SQLITE": 5,
+      "MQTT": 400,
+      "OPC_UA": 1440,
+      "PLC_FRAME": 360
+    },
+    "modality_counts": {
+      "structured_record": 29,
+      "log_text": 8,
+      "timeseries_signal": 2160,
+      "image": 9
+    },
+    "raw_messages": 2206,
+    "rejected_messages": 7,
+    "duplicate_messages": 2202,
+    "objects": 12,
+    "semantic_history": 2215,
+    "signal_cycles": 360,
+    "relations": 19,
+    "snapshots": 4,
+    "risk_episodes": [
+      {
+        "path": [
+          "CNC_01",
+          "OP20",
+          "WO023",
+          "ORDER_A"
+        ],
+        "start_s": 60.0,
+        "end_s": 90.0,
+        "status": "resolved",
+        "fault_codes": [
+          "0x84"
+        ],
+        "closure_reason": "fault_cleared"
+      }
+    ],
+    "api_checks": [
+      {
+        "method": "POST",
+        "path": "/api/v1/events/trigger",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "f991b349408cccdf6b7c80d5889e6feba6741921d1c6baac6871c01e75b8137b"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/events/trigger",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "5b23de6bb9c7dba5a4eab9a7c41df9681d94bc10fcb6fa1850f5fda2f08e91a2"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "357ac8e4f5dcc356c000a066b6815b8771b183d8e23dd8054076d90719f416dc"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "30cacfa3122eaa4992cf02142ef250fc71753503245ba941e2269151aaf72133"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "200be918513270b3317d9d21d8ed22df0591de88e7b1853034235b92cd2ca554"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/objects",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "464f41e01df87258e87d079fb7578a6df0be490def17e148700f51e2c85c4ac8"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/objects",
+        "params": {
+          "object_type": "equipment",
+          "domain": "manufacturing",
+          "level": "device"
+        },
+        "status_code": 200,
+        "response_sha256": "4e425446223cc8330affd8d831e6a781fc77adb61ccacfb547e9092b0f62a0f6"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/states/CNC_01",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "a235c1c97ff13007255617d5fdc56cb49c433a8b1a2da7e323671f2193f5a3b1"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/states/CNC_01/history",
+        "params": {
+          "scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z"
+        },
+        "status_code": 200,
+        "response_sha256": "6a7e5729db60ee2c409ebd12440b90cf1708eb529608a480f7be2dbbda550014"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/states/UNKNOWN",
+        "params": null,
+        "status_code": 404,
+        "response_sha256": "4099e5d25c9e7484013e03b141aed1982e5871ad4c82bdaf9ab97379c055da3e"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/relations",
+        "params": {
+          "source": "CNC_01",
+          "relation": "executes",
+          "active": true,
+          "as_of": 75
+        },
+        "status_code": 200,
+        "response_sha256": "9d4cea00bb10008ff5a2c015220d596deda1c9228bc43c04bfca02e9cbb8fb4a"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/relations/infer",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "17b01e3a92f035a42f15cdad1ac9f5cb4818b59f09718a34b28c1cddd52532f3"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/graph",
+        "params": {
+          "as_of": 59
+        },
+        "status_code": 200,
+        "response_sha256": "dd0106eb5c6d04ce217f6432c21ad05be451d0001003a1fd0f4650a3e9d23db8"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/impact/CNC_01",
+        "params": {
+          "as_of": 59
+        },
+        "status_code": 200,
+        "response_sha256": "073ba5790b55e1a8b37ea06a5ce987e2110ac00c892fa281c4a58437249301a0"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/graph",
+        "params": {
+          "as_of": 75
+        },
+        "status_code": 200,
+        "response_sha256": "4d723cd8e619255e09fad4d04859889b4c6f239c748ad7f1b7bff92e974d4ff0"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/impact/CNC_01",
+        "params": {
+          "as_of": 75
+        },
+        "status_code": 200,
+        "response_sha256": "079fd06124e890cf28ad0603aef6b58afdd26a8bb866db207b1b9e893a10d40b"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/graph",
+        "params": {
+          "as_of": 95
+        },
+        "status_code": 200,
+        "response_sha256": "e3b82b840ac293bf28734bc6a69ef8a1ca5a0df08109d7f12c06527650763220"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/impact/CNC_01",
+        "params": {
+          "as_of": 95
+        },
+        "status_code": 200,
+        "response_sha256": "773baaafe34a1c8979b7d3cd1a3884ce64a37d98764fb9ca4101c3569db09dea"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/graph",
+        "params": {
+          "as_of": 360
+        },
+        "status_code": 200,
+        "response_sha256": "f2d58294031c8d75247ad9c1ac68bf178388b36b87d5e7381aeb61214de69001"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/impact/CNC_01",
+        "params": {
+          "as_of": 360
+        },
+        "status_code": 200,
+        "response_sha256": "af1653ea01ca51eea1b9406b3a83c9f53531a814b99c73f4106c16d31d7d6b1d"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/snapshots",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "f83f158f34bad5a89d663cca9b16cce1df91359de5308fc97b717c60d0cc0531"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/model/impact/ORDER_A",
+        "params": {
+          "as_of": 75,
+          "direction": "downstream"
+        },
+        "status_code": 200,
+        "response_sha256": "caf65dd9f9f8a3fd5678f0529f9d0ac3b45a75a17d524786b03f699d0165a2b5"
+      },
+      {
+        "method": "GET",
+        "path": "/semantic/objects",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "464f41e01df87258e87d079fb7578a6df0be490def17e148700f51e2c85c4ac8"
+      },
+      {
+        "method": "GET",
+        "path": "/semantic/objects/CNC_01/history",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "6a7e5729db60ee2c409ebd12440b90cf1708eb529608a480f7be2dbbda550014"
+      },
+      {
+        "method": "POST",
+        "path": "/semantic/object",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "200be918513270b3317d9d21d8ed22df0591de88e7b1853034235b92cd2ca554"
+      },
+      {
+        "method": "GET",
+        "path": "/relations",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "5234f545f230e56e3a2e748ddf4e79668974bf7f21e717151d653a9192cd945e"
+      },
+      {
+        "method": "POST",
+        "path": "/relations/infer",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "ba7e49dff76b9475279a6e669e58f8cf0ff6deb56e08f57a27e08d05af580788"
+      },
+      {
+        "method": "GET",
+        "path": "/model/graph",
+        "params": {
+          "as_of": 75
+        },
+        "status_code": 200,
+        "response_sha256": "4d723cd8e619255e09fad4d04859889b4c6f239c748ad7f1b7bff92e974d4ff0"
+      },
+      {
+        "method": "GET",
+        "path": "/model/impact/CNC_01",
+        "params": {
+          "as_of": 75
+        },
+        "status_code": 200,
+        "response_sha256": "fb2dd1eb83f541bb1d8c5a27143f1516f75228a49a459d39c2f21bd46e81608e"
+      },
+      {
+        "method": "GET",
+        "path": "/model/snapshots",
+        "params": null,
+        "status_code": 200,
+        "response_sha256": "f83f158f34bad5a89d663cca9b16cce1df91359de5308fc97b717c60d0cc0531"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 422,
+        "response_sha256": "fba15a667b2f7cedcb1fd8c4d61daf8a15f79336a1eec0bf8c00aee64496c41a"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 422,
+        "response_sha256": "5226d0a482dff0f0342dcd4bc8c8e89bd2e734e25b6621936f8dbdd335ad4011"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 422,
+        "response_sha256": "91bab1140c95b5f1074ffa075878eb9b518cdfb653037124029c002ca1665544"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 422,
+        "response_sha256": "7ce63f7ceb974b130ea04e5617e11882969d8e78da651653fedcef4400382f81"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 422,
+        "response_sha256": "becb12a016579e46b5d6e3575885b764daa3863385e93e44ce4d34513f894173"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 422,
+        "response_sha256": "7ce63f7ceb974b130ea04e5617e11882969d8e78da651653fedcef4400382f81"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/objects/ingest",
+        "params": null,
+        "status_code": 422,
+        "response_sha256": "28368b9a232bb314f649bc0310783986325215ea04e84d5c8c1879b883af10d9"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/events/trigger",
+        "params": null,
+        "status_code": 422,
+        "response_sha256": "59fbc73d2a55597e6e99e94c8c9c2998147a0a427fb1c16260070099779aff0b"
+      }
+    ],
+    "api_standard_routes": 10,
+    "routes": [
+      "/api/v1/events/trigger",
+      "/api/v1/model/graph",
+      "/api/v1/model/impact/{object_id}",
+      "/api/v1/model/snapshots",
+      "/api/v1/objects",
+      "/api/v1/objects/ingest",
+      "/api/v1/relations",
+      "/api/v1/relations/infer",
+      "/api/v1/states/{object_id}",
+      "/api/v1/states/{object_id}/history"
+    ],
+    "gateway_counts": {
+      "semantic": {
+        "semantic_objects": 12,
+        "semantic_state_history": 2215,
+        "processed_messages": 2206,
+        "signal_cycles": 360
+      },
+      "graph": {
+        "semantic_catalog": 12,
+        "model_events": 2215,
+        "relation_edges": 19,
+        "graph_snapshots": 4,
+        "impact_events": 1
+      },
+      "connector": {
+        "counts": {
+          "accepted": 2206,
+          "duplicates": 3,
+          "rejected": 7
+        },
+        "by_protocol": {
+          "REST_API": 1,
+          "SQLITE": 5,
+          "MQTT": 400,
+          "OPC_UA": 1440,
+          "PLC_FRAME": 360
+        },
+        "by_modality": {
+          "structured_record": 29,
+          "log_text": 8,
+          "timeseries_signal": 2160,
+          "image": 9
+        },
+        "by_connector": {
+          "RestApiConnector": 1,
+          "DatabaseConnector": 5,
+          "MqttConnector": 400,
+          "OpcUaAndPlcConnector": 1800
+        },
+        "pydantic_validated": 2206,
+        "json_schema_validated": 2206
+      }
+    },
+    "checkpoints": [
+      {
+        "as_of": 59,
+        "status": "running",
+        "active_impacts": 0,
+        "paths": [],
+        "impact_events": []
+      },
+      {
+        "as_of": 75,
+        "status": "fault",
+        "active_impacts": 1,
+        "paths": [
+          [
+            "CNC_01",
+            "OP20",
+            "WO023",
+            "ORDER_A"
+          ]
+        ],
+        "impact_events": [
+          {
+            "path": [
+              "CNC_01",
+              "OP20",
+              "WO023",
+              "ORDER_A"
+            ],
+            "start_s": 60.0,
+            "end_s": null,
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "as_of": 95,
+        "status": "running",
+        "active_impacts": 0,
+        "paths": [],
+        "impact_events": [
+          {
+            "path": [
+              "CNC_01",
+              "OP20",
+              "WO023",
+              "ORDER_A"
+            ],
+            "start_s": 60.0,
+            "end_s": 90.0,
+            "status": "resolved"
+          }
+        ]
+      },
+      {
+        "as_of": 360,
+        "status": "idle",
+        "active_impacts": 0,
+        "paths": [],
+        "impact_events": [
+          {
+            "path": [
+              "CNC_01",
+              "OP20",
+              "WO023",
+              "ORDER_A"
+            ],
+            "start_s": 60.0,
+            "end_s": 90.0,
+            "status": "resolved"
+          }
+        ]
+      }
+    ],
+    "online_event_summary": [
+      {
+        "kind": "fault",
+        "status": "fault",
+        "active_impacts": 1
+      },
+      {
+        "kind": "fault_cleared",
+        "status": "running",
+        "active_impacts": 0
+      }
+    ]
+  },
+  "output_root": "D:\\AAA-Myproject\\postgraduate\\Project 2\\task2_1_prototype\\artifacts\\wp5_e2e_20261028",
+  "artifact_hashes": {
+    "e2e_dashboard.html": "7ac44f75a7415389aeb0c5cc4926e4b129398cecb880991974c69ce347647187",
+    "e2e_summary.json": "83a40c34c1159bd0859c97f9881a3f91a74f23a499702f4116036ab334aeadde",
+    "event_session/gateway_config.json": "45f5ff8f2e243427214632854fe318f2f6a38c51d8e5a1ae3e0ce2679fc046d5",
+    "event_session/graph/spatiotemporal_model.sqlite3": "8d4957c5ee24a7a125f1761bc30c279c44d8e10c4f3d7cca75b5ba5fa9f90bfb",
+    "event_session/semantic/semantic_objects.sqlite3": "bebf8a0c6eeeecb01f59e2649eb23385221a1c5e8f8a3865f4b0faf7c2b79446",
+    "gateway/gateway_config.json": "b7c96971d231fff24151675656be6fe0ab98df40e58d64281cee11638aec8921",
+    "gateway/graph/spatiotemporal_model.sqlite3": "73c56d7598f52c212788f233d3289330a48adedf8922187cee03d228261c9393",
+    "gateway/rejected_messages.jsonl": "207d98b4f7d76c4c8b8fea26ff8bfbbd9bc2f6014df06a072cff82e6c15946a5",
+    "gateway/semantic/semantic_objects.sqlite3": "5ebd5a1f37d75788b0ea34799aa4ce437a0ec8b79a715c83548c98534b8926da",
+    "online_event_evidence.json": "dabc5bac05900ae549fb5612403e51d2e0ae99799f1cd303c7579953cc757c45",
+    "weekly_5q_report.md": "1a6f325bc9e3c8e2bfba4da2f420c8971e189e6fb33f6dd111a0d06cecffabdb",
+    "wp1/config.json": "51115a793c8e8dc8fa861930936c4b4ef154ed47444419c010380151d466b46c",
+    "wp1/demo_erp.simulations/.execution.lock": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "wp1/demo_erp.sqlite3": "8103b7515ac1cb119abab1b799dbc9796432a6293d8eb37cde8329bb397e3162",
+    "wp1/device_logs.jsonl": "c2a37d2672db457258b79097984fd6f852ed4bdf69157adc76275afc120041f8",
+    "wp1/equipment.log": "93c8e83c6cdc72872312ccd96652147735c3ed06131f6f87d966024354042b47",
+    "wp1/events.jsonl": "1743ffdc711d5a081106a3b7ef80a56881237788fd2944386860396360b09cbb",
+    "wp1/id_registry.json": "409238337f42a3c8478c653d2c7ee0e1f76763fe24e4ee8b6d1f45ab56409e52",
+    "wp1/images.jsonl": "93496bc5d1a83daceb5a12a2784e5470a6373eb59b074470d2a3366778f60f67",
+    "wp1/input.json": "f6cc70f89f044c5376d05abf685fd6754c8791038056aa92abbadfb37ebb1e3e",
+    "wp1/mes.db": "cbf86318d032cb8474701980e499cf7a469a721559a8f206a784dc5e22d48476",
+    "wp1/mqtt_received.jsonl": "300ba4fb9a199f35d2caebfd140b36425fb12b08057dad1273c232132d68ecc4",
+    "wp1/plc_frame_examples.json": "58fc2054da4fed5247eb39d40cd534e1f234a79b553876c867532973d25b3e42",
+    "wp1/plc_frames.bin": "503e157ad5c7d973301be29a23cecee45e77baa21514feb7140240fcbe1a2fd5",
+    "wp1/run.json": "b1fffb47a8f03c9fc065af08ddb7ea16d93fecd59286011c4e90e43094f15ca6",
+    "wp1/signals.jsonl": "e03c2500593accb0570884b7779babed443272f1db96e311d54bc4ac680f9854",
+    "wp1/sim_images/frame_00000_start.png": "67d21bac2e6e53203f02fc23d478f5d2f9467c1514950b8191a29071c29899dc",
+    "wp1/sim_images/frame_00001_alarm.png": "74200ff535b3dc47244f1d956de3847d327f7fcb8c5eb16974fa5b2c98717f0e",
+    "wp1/sim_images/frame_00002_recovery.png": "9453f504611e0c8821ef4d58d223f3afcfb27785e62defda1dd06d30215febac",
+    "wp1/sim_images/frame_00003_processing.png": "2e3d100672414714fc615f8cb0986859b0c418eb7fe89d061266f17b1523ab60",
+    "wp1/sim_images/frame_00004_start.png": "f5e42c85b99672d7c0ffcfe34a23fe417df9ad1299bdaf9be67931c6ed4f14ba",
+    "wp1/sim_images/frame_00005_processing.png": "428b349b833ae1d526c237aff05bb167226e129a359f194cea27a1b9c4398214",
+    "wp1/sim_images/frame_00006_quality.png": "634de2a29a5b4a5a65ccd4135726943f609c3159c0fa1c290b40f0bdbd9ddf83",
+    "wp1/sim_images/frame_00007_start.png": "b8345442621379eae0d5593666e223f6b7c309030e6c3684327a2c47b7f721c1",
+    "wp1/sim_images/frame_00008_processing.png": "1059de8f14214b01615c4e8d236826e6633b11353e710a384c02feafebcb62f2",
+    "wp1/summary.json": "13244d81b723de5867b3eaa8574769c110d8206e572a1d8804912dc4b26bf10a",
+    "wp1/transport_records.jsonl": "f99f1212f74b46c31aacb7a72f32b18cd80a609afb0a7fe0064e5c4fe3a06f39",
+    "wp2/connector_summary.json": "a33de261346f57a00118c1a6693347103eab7861dbebb6e4baebd71c17140715",
+    "wp2/organization_reference.sqlite3": "f81c7b32f1aaa999812c1938125b1487296c8e28728ca607c83fe92e8096f086",
+    "wp2/raw_ingest_messages.jsonl": "24ad08bac43b0195a1a4f14407cec608dfef63af3dba5341dfd281119cdf6c8c",
+    "wp2/rejected_messages.jsonl": "ee665fa1ee94aa51398a8dc34b9648daee8eb5a9b4aa68c8a963ea799f13e4bd",
+    "wp3/semantic_objects.jsonl": "5b336baa10cd404e1d283cddefceb8a54d85058c3fbbe83e0c6fd7613978252b",
+    "wp3/semantic_objects.sqlite3": "1bccf50e8883192ba55e289f9e792d66bba320400c4fd44d39a2e7e0dd1dbcf4",
+    "wp3/semantic_state_history.jsonl": "20dcf811b951453eaf797dfced1462e156b7f92990f0f26454e68ec29285575f",
+    "wp3/semantic_summary.json": "8ce1cc9f2855c2c204bd1ea5221508379f706ca2272a108a947c1941c93b625a",
+    "wp4/graph_snapshots.json": "9b0a741033d9a45427fe710e2ea7ebe4c80a2ee3674a95723aa6611b15e48485",
+    "wp4/impact_report.json": "4624e9830f5c5b3f0b46a2baa66010c710787cffba865d0ca332941313cff5ab",
+    "wp4/neo4j_export.json": "3919a19ca163a04f22eb059e48934d13a8e2f9cdb6b66685c329585c6400e1cb",
+    "wp4/relations.jsonl": "16981ebac64261c7e7c30b18a57cbc178b0f437478a9426e2640c3db8303d47a",
+    "wp4/spatiotemporal_model.sqlite3": "864df429609c0454dc659ee72a5227d5191e9b5c984c3aefdbb2008ac99bc926",
+    "wp4/spatiotemporal_summary.json": "a9bfab1fed8559fb4747cf35301354f640d89a0e19b168b11c326ca0ee7261fc"
+  },
+  "postfix_verification": {
+    "reason": "missing WP2 provenance also returns 422 through the compatible /semantic/object route",
+    "argv": [
+      "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "task2_1_prototype/tests",
+      "-p",
+      "test_wp5*.py",
+      "-v"
+    ],
+    "tests": 31,
+    "seconds": 103.77,
+    "exit_code": 0,
+    "log": "md/agent_reports/evidence/2026-10-28_wp5_postfix_tests.txt",
+    "all_historical_hashes_rechecked": true
+  },
+  "browser_verification": {
+    "run": "wp5_dev3_20261029",
+    "url": "http://127.0.0.1:8010/",
+    "time_switch_to_95": "running; active risks 0",
+    "online_fault": {
+      "time": 85,
+      "active_impacts": 1,
+      "path": [
+        "CNC_01",
+        "OP20",
+        "WO023",
+        "ORDER_A"
+      ]
+    },
+    "online_recovery": {
+      "time": 90,
+      "active_impacts": 0
+    },
+    "screenshots": [
+      "2026-10-28_wp5_browser_graph.png",
+      "2026-10-28_wp5_browser_fault.png",
+      "2026-10-28_wp5_browser_recovery.png"
+    ],
+    "temporary_server_stopped": true,
+    "file_scheme_browser_check": "blocked by browser URL policy; no workaround attempted; self-contained HTML and embedded data/PNG validation passed"
+  }
+}

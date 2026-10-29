@@ -1,0 +1,1943 @@
+{
+  "session": "isolated_cut_at_59s",
+  "results": [
+    {
+      "event_id": "e2e-fault",
+      "pipeline": [
+        "WP2",
+        "WP3",
+        "WP4"
+      ],
+      "objects": [
+        {
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "clock_states": {
+              "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z": {
+                "state": {
+                  "active_fault_codes": [
+                    "0x84"
+                  ],
+                  "fault_count": 1,
+                  "fault_latched": true,
+                  "fault_started_at": "2026-10-28T02:31:10.000000Z",
+                  "latest_signal": {
+                    "load_ratio": 0.98,
+                    "spindle_speed_rpm": 3800.0,
+                    "temperature_c": 98.0,
+                    "vibration_mm_s": 12.0
+                  },
+                  "latest_signal_timestamp": "2026-10-28T02:31:10.000000Z",
+                  "load_ratio": 0.98,
+                  "log": {
+                    "fault_codes": [
+                      "0x84"
+                    ],
+                    "level": "ERROR",
+                    "message": "[2026-10-28T02:31:10.000000Z] [PLC-0x01] [ERROR] Code 0x84: fault on CNC_01 while executing OP20 for WO023 order ORDER_A",
+                    "state_action": null,
+                    "summary": "fault on CNC_01 while executing OP20 for WO023 order ORDER_A",
+                    "timestamp": "2026-10-28T02:31:10.000000Z"
+                  },
+                  "sample_count": 61,
+                  "signal_complete": true,
+                  "signal_health": "fault",
+                  "spindle_speed_rpm": 3800.0,
+                  "status": "fault",
+                  "temperature_c": 98.0,
+                  "vibration_mm_s": 12.0,
+                  "visual_inspection": {
+                    "annotation_source": "synthetic_label",
+                    "image_ref": "sim_images/frame_00000_start.png",
+                    "sha256": "67d21bac2e6e53203f02fc23d478f5d2f9467c1514950b8191a29071c29899dc",
+                    "source_annotation": "generator_metadata_not_vision",
+                    "stage": "start",
+                    "synthetic_label": "normal"
+                  },
+                  "window_features": {
+                    "load_ratio": {
+                      "count": 10,
+                      "latest": 0.98,
+                      "mean": 0.67946,
+                      "peak": 0.98
+                    },
+                    "spindle_speed_rpm": {
+                      "count": 10,
+                      "latest": 3800.0,
+                      "mean": 4161.94329,
+                      "peak": 4229.4265
+                    },
+                    "temperature_c": {
+                      "count": 10,
+                      "latest": 98.0,
+                      "mean": 68.37472,
+                      "peak": 98.0
+                    },
+                    "vibration_mm_s": {
+                      "count": 10,
+                      "latest": 12.0,
+                      "mean": 2.45648,
+                      "peak": 12.0
+                    }
+                  },
+                  "window_sample_count": 10,
+                  "window_size": 10
+                },
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "timestamp_basis": "simulation_epoch"
+              }
+            },
+            "enterprise": "ENT_01",
+            "equipment": "CNC_01",
+            "factory": "FAC_01",
+            "last_message_id": "MSG_9ffe22048725a9b5aeb2c0c0fbc3771bb9f0461a94d8ad8863e38f470d5db55e",
+            "legacy_ids": {
+              "equipment_id": "E-ASM",
+              "operation_id": "OP-7ac4dfa5c936456fb1a26cc85acea0b3",
+              "order_id": "ORD-4bb60eaaa30d4a618ed48730fee42ca9",
+              "work_order_id": "WO-54681c093c984f968e21ac711ecdbc4e"
+            },
+            "line": "LINE_01",
+            "observed_protocols": [
+              "MQTT"
+            ],
+            "order": "ORDER_A",
+            "phase": "normal",
+            "process": "OP20",
+            "process_instance_key": [
+              "WO023",
+              "OP20"
+            ],
+            "raw_context": {
+              "_ingest": {
+                "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                "channel": "factory/CNC_01/logs",
+                "event_key": "gateway/e2e-fault/1",
+                "resolved_ids": {
+                  "equipment_id": "CNC_01",
+                  "object_id": "CNC_01",
+                  "order_id": "ORDER_A",
+                  "process_id": "OP20",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "work_order_id": "WO023"
+                },
+                "source_sequence": 153989541,
+                "source_timestamp": "2026-10-28T02:31:10.000000Z"
+              },
+              "active_end_s": 180,
+              "active_start_s": 0,
+              "clock": "simulation",
+              "enterprise_id": "ENT_01",
+              "equipment_id": "CNC_01",
+              "factory_id": "FAC_01",
+              "gateway_event_id": "e2e-fault",
+              "legacy_ids": {
+                "equipment_id": "E-ASM",
+                "operation_id": "OP-7ac4dfa5c936456fb1a26cc85acea0b3",
+                "order_id": "ORD-4bb60eaaa30d4a618ed48730fee42ca9",
+                "work_order_id": "WO-54681c093c984f968e21ac711ecdbc4e"
+              },
+              "line_id": "LINE_01",
+              "order_id": "ORDER_A",
+              "phase": "normal",
+              "process_id": "OP20",
+              "rework_id": null,
+              "run_id": "WP1_DEMO",
+              "sequence": 153989541,
+              "sim_time_s": 70.0,
+              "simulation_epoch": "2026-10-28T02:30:00.000000Z",
+              "synthetic": true,
+              "work_order_id": "WO023"
+            },
+            "rework_id": null,
+            "run_id": "WP1_DEMO",
+            "sequence": 153989541,
+            "signal_fusion": {
+              "count_basis": "distinct_device_scope_timestamp",
+              "cycle_timestamp": "2026-10-28T02:31:10.000000Z",
+              "plc_quantization_step": {
+                "load_ratio": 0.0001,
+                "spindle_speed_rpm": 1.0,
+                "temperature_c": 0.01,
+                "vibration_mm_s": 0.01
+              },
+              "policy": "MQTT_then_OPC_UA_then_PLC_FRAME"
+            },
+            "sim_time_s": 70.0,
+            "simulation_epoch": "2026-10-28T02:30:00.000000Z",
+            "source_sequence": 153989541,
+            "sources": {
+              "MQTT/image": {
+                "message_id": "MSG_5eb788b0291b0dc82f767255632ba2ab8dc4a3ce3424a9c538bb34b8eccf2919",
+                "source_sequence": 19,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:30:00.000000Z"
+              },
+              "MQTT/log_text": {
+                "message_id": "MSG_9ffe22048725a9b5aeb2c0c0fbc3771bb9f0461a94d8ad8863e38f470d5db55e",
+                "source_sequence": 153989541,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:31:10.000000Z"
+              },
+              "MQTT/timeseries_signal": {
+                "message_id": "MSG_265b7d44cb8362c856be6f5bc621b86a814eebf99ce0da1ccc2d6ed188f2fecf",
+                "source_sequence": 153989540,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:31:10.000000Z"
+              },
+              "OPC_UA/timeseries_signal": {
+                "message_id": "MSG_a397b490ef7adf2d40060a44e7158d11c0b54d9be8e9be318a20029f7ede5d27",
+                "source_sequence": 372,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:30:59.000000Z"
+              },
+              "PLC_FRAME/timeseries_signal": {
+                "message_id": "MSG_788880783d822bde3c8b9a148ff37d6d6af038bd730df3a47a608cfdda8ab7b5",
+                "source_sequence": 373,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:30:59.000000Z"
+              }
+            },
+            "timestamp_basis": "simulation_epoch",
+            "work_order": "WO023"
+          },
+          "domain": "manufacturing",
+          "level": "device",
+          "object_id": "CNC_01",
+          "object_type": "equipment",
+          "state": {
+            "active_fault_codes": [
+              "0x84"
+            ],
+            "fault_count": 1,
+            "fault_latched": true,
+            "fault_started_at": "2026-10-28T02:31:10.000000Z",
+            "latest_signal": {
+              "load_ratio": 0.98,
+              "spindle_speed_rpm": 3800.0,
+              "temperature_c": 98.0,
+              "vibration_mm_s": 12.0
+            },
+            "latest_signal_timestamp": "2026-10-28T02:31:10.000000Z",
+            "load_ratio": 0.98,
+            "log": {
+              "fault_codes": [
+                "0x84"
+              ],
+              "level": "ERROR",
+              "message": "[2026-10-28T02:31:10.000000Z] [PLC-0x01] [ERROR] Code 0x84: fault on CNC_01 while executing OP20 for WO023 order ORDER_A",
+              "state_action": null,
+              "summary": "fault on CNC_01 while executing OP20 for WO023 order ORDER_A",
+              "timestamp": "2026-10-28T02:31:10.000000Z"
+            },
+            "sample_count": 61,
+            "signal_complete": true,
+            "signal_health": "fault",
+            "spindle_speed_rpm": 3800.0,
+            "status": "fault",
+            "temperature_c": 98.0,
+            "vibration_mm_s": 12.0,
+            "visual_inspection": {
+              "annotation_source": "synthetic_label",
+              "image_ref": "sim_images/frame_00000_start.png",
+              "sha256": "67d21bac2e6e53203f02fc23d478f5d2f9467c1514950b8191a29071c29899dc",
+              "source_annotation": "generator_metadata_not_vision",
+              "stage": "start",
+              "synthetic_label": "normal"
+            },
+            "window_features": {
+              "load_ratio": {
+                "count": 10,
+                "latest": 0.98,
+                "mean": 0.67946,
+                "peak": 0.98
+              },
+              "spindle_speed_rpm": {
+                "count": 10,
+                "latest": 3800.0,
+                "mean": 4161.94329,
+                "peak": 4229.4265
+              },
+              "temperature_c": {
+                "count": 10,
+                "latest": 98.0,
+                "mean": 68.37472,
+                "peak": 98.0
+              },
+              "vibration_mm_s": {
+                "count": 10,
+                "latest": 12.0,
+                "mean": 2.45648,
+                "peak": 12.0
+              }
+            },
+            "window_sample_count": 10,
+            "window_size": 10
+          },
+          "timestamp": "2026-10-28T02:31:10.000000Z"
+        }
+      ],
+      "relations": [
+        {
+          "relation_id": "REL_a290a7601f933f90a2de6a91cd29af744c6e7965d21bcd9c34566acab6cdc833",
+          "source": "CNC_01",
+          "relation": "executes",
+          "target": "OP20",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "normal",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP20"
+            ],
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_6099e964e88bfd128c347494019408fc611a0d1d4c38efc85d34fca9a9616ffb",
+          "source": "CNC_01",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_7c49a8009d92fe9b93580f87168a803d53db5931b68a245043544cc64c66f1f7",
+          "source": "FAC_01",
+          "relation": "managed_by",
+          "target": "ENT_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_fe6c8ff65aa72d4b6106fe4734e123d336190063489b06d98c46c23c4d84be9f",
+          "source": "LINE_01",
+          "relation": "part_of",
+          "target": "FAC_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_f0d2f6122d14a7365cb79cf7aa30056e82afdd13cf5cb28d9b7a2c4b2f7b0fe1",
+          "source": "MOVE_01",
+          "relation": "executes",
+          "target": "OP40",
+          "weight": 0.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": false,
+            "phase": "not_started",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP40"
+            ],
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_e9857be0d56ffa5bd7f041c69d6ba6e28a17a1ad1e62fefa6a5c069201ecf9f9",
+          "source": "MOVE_01",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_24b7caa1f54c868bae039d25bfa61fb1466a6c7561455b8e5efe7db22cd58da0",
+          "source": "OP20",
+          "relation": "belongs_to",
+          "target": "WO023",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "normal",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP20"
+            ],
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_12a9e23df774016acb71d37f6e7b5bfd01a4f97db234c58236d5c3b6fc948348",
+          "source": "OP20",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_585be03d04e7729e043afc0e7c15769016736946c28dffcf8360c79d26259d99",
+          "source": "OP20",
+          "relation": "uses_resource",
+          "target": "RES_MAT_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "normal",
+            "evidence_source": "configured_bom_rule",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "rule_id": "DEMO_OP20_BLANK_BOM",
+            "work_order": "WO023",
+            "configured_rule": {
+              "source": "OP20",
+              "work_order": "WO023",
+              "target": "RES_MAT_01",
+              "rule_id": "DEMO_OP20_BLANK_BOM",
+              "quantity_per_workpiece": 1
+            },
+            "actual_consumption_asserted": false,
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_02d88f927c16fa5a3bee5676c118ec27d137959f36c5b3f1b1809f8f5c03971c",
+          "source": "OP30",
+          "relation": "belongs_to",
+          "target": "WO023",
+          "weight": 0.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": false,
+            "phase": "not_started",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP30"
+            ],
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_7697986040ef3f9376c4331ab83f7a76549e2fc6bde4321bf9ff7c4b6cbdd7bb",
+          "source": "OP30",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_9a6a0eef022b707b3507f510aba5454e585c8cf707e79559524d5f0ab49b01dc",
+          "source": "OP40",
+          "relation": "belongs_to",
+          "target": "WO023",
+          "weight": 0.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": false,
+            "phase": "not_started",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP40"
+            ],
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_80e3e2a4460c4b1d41de8a3dc4ec77c7c380a55463c092bbf1c1e31c8745e2d9",
+          "source": "OP40",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_3a396f22855ffda41de9d36bef2b3810c4099c1c249ab3f6ce2e262a8676fc3f",
+          "source": "ORDER_A",
+          "relation": "located_in",
+          "target": "ENT_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "configured_organization_rule",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "rule_id": "ORDER_A_ENTERPRISE",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_e064c12c37820972f415bc1055a65535cc18fd094810abddd8a4d246072f9913",
+          "source": "QC_01",
+          "relation": "executes",
+          "target": "OP30",
+          "weight": 0.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": false,
+            "phase": "not_started",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP30"
+            ],
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_38154eee15c895417b79c0a156360fcf4a1ec4c7c0cbefbe179d6893d1a47db8",
+          "source": "QC_01",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_8bb8fec45f8963368c8e7751d8f4d59b87edda5b4dd4b79999c03b65e1536610",
+          "source": "RES_MAT_01",
+          "relation": "located_in",
+          "target": "FAC_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "configured_organization_rule",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "rule_id": "MATERIAL_FACTORY",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_1c57ed669ea39967023973fb60546be4dfffd47ecf2049ffc5e88cc6fd8a37ea",
+          "source": "WO023",
+          "relation": "located_in",
+          "target": "FAC_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 70.0
+          }
+        },
+        {
+          "relation_id": "REL_23303280f437613adc957a8ceeac52f0327914099f7565827574445297649edf",
+          "source": "WO023",
+          "relation": "maps_to",
+          "target": "ORDER_A",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:10.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "normal",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "as_of_s": 70.0
+          }
+        }
+      ],
+      "impact": {
+        "object_id": "CNC_01",
+        "direction": "upstream",
+        "assessment_kind": "diagnostic_risk_only",
+        "active_impacts": [
+          {
+            "impact_id": "RISK_ef3fd5f578ce26dad4accf73edbc902ae62b0561b1dc315040f8290596ee096e",
+            "path": [
+              "CNC_01",
+              "OP20",
+              "WO023",
+              "ORDER_A"
+            ],
+            "relations": [
+              {
+                "relation_id": "REL_a290a7601f933f90a2de6a91cd29af744c6e7965d21bcd9c34566acab6cdc833",
+                "source": "CNC_01",
+                "relation": "executes",
+                "target": "OP20",
+                "weight": 1.0,
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "context": {
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "active": true,
+                  "phase": "normal",
+                  "evidence_source": "semantic_context",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "work_order": "WO023",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "as_of_s": 70.0
+                }
+              },
+              {
+                "relation_id": "REL_24b7caa1f54c868bae039d25bfa61fb1466a6c7561455b8e5efe7db22cd58da0",
+                "source": "OP20",
+                "relation": "belongs_to",
+                "target": "WO023",
+                "weight": 1.0,
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "context": {
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "active": true,
+                  "phase": "normal",
+                  "evidence_source": "semantic_context",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "work_order": "WO023",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "as_of_s": 70.0
+                }
+              },
+              {
+                "relation_id": "REL_23303280f437613adc957a8ceeac52f0327914099f7565827574445297649edf",
+                "source": "WO023",
+                "relation": "maps_to",
+                "target": "ORDER_A",
+                "weight": 1.0,
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "context": {
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "active": true,
+                  "phase": "normal",
+                  "evidence_source": "semantic_context",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "work_order": "WO023",
+                  "as_of_s": 70.0
+                }
+              }
+            ],
+            "steps": [
+              {
+                "object_id": "CNC_01",
+                "object_type": "equipment",
+                "observed_status": "fault",
+                "risk_status": "fault"
+              },
+              {
+                "object_id": "OP20",
+                "object_type": "process",
+                "observed_status": "running",
+                "risk_status": "blocked_risk"
+              },
+              {
+                "object_id": "WO023",
+                "object_type": "work_order",
+                "observed_status": "running",
+                "risk_status": "delay_risk"
+              },
+              {
+                "object_id": "ORDER_A",
+                "object_type": "order",
+                "observed_status": "reference_only",
+                "risk_status": "delivery_risk"
+              }
+            ],
+            "fault_codes": [
+              "0x84"
+            ],
+            "fault_started_at": "2026-10-28T02:31:10.000000Z",
+            "active": true
+          }
+        ],
+        "cycles_detected": [],
+        "semantic_states_modified": false,
+        "clock": "simulation",
+        "as_of": 70.0,
+        "timestamp": "2026-10-28T02:31:10.000000Z",
+        "historical_impacts": [],
+        "impact_events": [
+          {
+            "active": true,
+            "assessment_kind": "diagnostic_risk_only",
+            "end_s": null,
+            "fault_codes": [
+              "0x84"
+            ],
+            "fault_started_at": "2026-10-28T02:31:10.000000Z",
+            "impact_id": "RISK_ef3fd5f578ce26dad4accf73edbc902ae62b0561b1dc315040f8290596ee096e",
+            "mes_schedule_changed": false,
+            "path": [
+              "CNC_01",
+              "OP20",
+              "WO023",
+              "ORDER_A"
+            ],
+            "relations": [
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "work_order": "WO023"
+                },
+                "relation": "executes",
+                "relation_id": "REL_a290a7601f933f90a2de6a91cd29af744c6e7965d21bcd9c34566acab6cdc833",
+                "source": "CNC_01",
+                "target": "OP20",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              },
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "work_order": "WO023"
+                },
+                "relation": "belongs_to",
+                "relation_id": "REL_24b7caa1f54c868bae039d25bfa61fb1466a6c7561455b8e5efe7db22cd58da0",
+                "source": "OP20",
+                "target": "WO023",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              },
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "work_order": "WO023"
+                },
+                "relation": "maps_to",
+                "relation_id": "REL_23303280f437613adc957a8ceeac52f0327914099f7565827574445297649edf",
+                "source": "WO023",
+                "target": "ORDER_A",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              }
+            ],
+            "start_s": 70.0,
+            "status": "active",
+            "steps": [
+              {
+                "object_id": "CNC_01",
+                "object_type": "equipment",
+                "observed_status": "fault",
+                "risk_status": "fault"
+              },
+              {
+                "object_id": "OP20",
+                "object_type": "process",
+                "observed_status": "running",
+                "risk_status": "blocked_risk"
+              },
+              {
+                "object_id": "WO023",
+                "object_type": "work_order",
+                "observed_status": "running",
+                "risk_status": "delay_risk"
+              },
+              {
+                "object_id": "ORDER_A",
+                "object_type": "order",
+                "observed_status": "reference_only",
+                "risk_status": "delivery_risk"
+              }
+            ]
+          }
+        ]
+      },
+      "source_records": [
+        {
+          "source_system": "SIMPY_PLC",
+          "protocol": "MQTT",
+          "object_hint": {
+            "domain_hint": "manufacturing",
+            "level_hint": "device",
+            "raw_id": "E-ASM",
+            "suggested_type": "equipment"
+          },
+          "context": {
+            "active_end_s": 180,
+            "active_start_s": 0,
+            "clock": "simulation",
+            "enterprise_id": "ENT_01",
+            "equipment_id": "CNC_01",
+            "factory_id": "FAC_01",
+            "legacy_ids": {
+              "equipment_id": "E-ASM",
+              "operation_id": "OP-7ac4dfa5c936456fb1a26cc85acea0b3",
+              "order_id": "ORD-4bb60eaaa30d4a618ed48730fee42ca9",
+              "work_order_id": "WO-54681c093c984f968e21ac711ecdbc4e"
+            },
+            "line_id": "LINE_01",
+            "order_id": "ORDER_A",
+            "phase": "normal",
+            "process_id": "OP20",
+            "rework_id": null,
+            "run_id": "WP1_DEMO",
+            "sequence": 153989540,
+            "sim_time_s": 70.0,
+            "simulation_epoch": "2026-10-28T02:30:00.000000Z",
+            "synthetic": true,
+            "work_order_id": "WO023",
+            "gateway_event_id": "e2e-fault"
+          },
+          "modality": "timeseries_signal",
+          "channel": "factory/CNC_01/telemetry",
+          "payload": {
+            "spindle_speed_rpm": 3800.0,
+            "temperature_c": 98.0,
+            "vibration_mm_s": 12.0,
+            "load_ratio": 0.98
+          },
+          "sequence": 153989540,
+          "event_key": "gateway/e2e-fault/0",
+          "timestamp": "2026-10-28T02:31:10.000000Z"
+        },
+        {
+          "source_system": "SIMPY_PLC",
+          "protocol": "MQTT",
+          "object_hint": {
+            "domain_hint": "manufacturing",
+            "level_hint": "device",
+            "raw_id": "E-ASM",
+            "suggested_type": "equipment"
+          },
+          "context": {
+            "active_end_s": 180,
+            "active_start_s": 0,
+            "clock": "simulation",
+            "enterprise_id": "ENT_01",
+            "equipment_id": "CNC_01",
+            "factory_id": "FAC_01",
+            "legacy_ids": {
+              "equipment_id": "E-ASM",
+              "operation_id": "OP-7ac4dfa5c936456fb1a26cc85acea0b3",
+              "order_id": "ORD-4bb60eaaa30d4a618ed48730fee42ca9",
+              "work_order_id": "WO-54681c093c984f968e21ac711ecdbc4e"
+            },
+            "line_id": "LINE_01",
+            "order_id": "ORDER_A",
+            "phase": "normal",
+            "process_id": "OP20",
+            "rework_id": null,
+            "run_id": "WP1_DEMO",
+            "sequence": 153989541,
+            "sim_time_s": 70.0,
+            "simulation_epoch": "2026-10-28T02:30:00.000000Z",
+            "synthetic": true,
+            "work_order_id": "WO023",
+            "gateway_event_id": "e2e-fault"
+          },
+          "modality": "log_text",
+          "channel": "factory/CNC_01/logs",
+          "payload": {
+            "log_message": "[2026-10-28T02:31:10.000000Z] [PLC-0x01] [ERROR] Code 0x84: fault on CNC_01 while executing OP20 for WO023 order ORDER_A",
+            "synthetic": true
+          },
+          "sequence": 153989541,
+          "event_key": "gateway/e2e-fault/1",
+          "timestamp": "2026-10-28T02:31:10.000000Z"
+        }
+      ],
+      "semantic_counts": {
+        "semantic_objects": 8,
+        "semantic_state_history": 380,
+        "processed_messages": 379,
+        "signal_cycles": 61
+      },
+      "graph_counts": {
+        "semantic_catalog": 12,
+        "model_events": 380,
+        "relation_edges": 19,
+        "graph_snapshots": 0,
+        "impact_events": 1
+      }
+    },
+    {
+      "event_id": "e2e-fault_cleared",
+      "pipeline": [
+        "WP2",
+        "WP3",
+        "WP4"
+      ],
+      "objects": [
+        {
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "clock_states": {
+              "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z": {
+                "state": {
+                  "fault_count": 1,
+                  "fault_latched": false,
+                  "fault_started_at": "2026-10-28T02:31:10.000000Z",
+                  "last_fault_codes": [
+                    "0x84"
+                  ],
+                  "latest_signal": {
+                    "load_ratio": 0.65,
+                    "spindle_speed_rpm": 4200.0,
+                    "temperature_c": 65.0,
+                    "vibration_mm_s": 1.4
+                  },
+                  "latest_signal_timestamp": "2026-10-28T02:31:20.000000Z",
+                  "load_ratio": 0.65,
+                  "log": {
+                    "fault_codes": [
+                      "0x84"
+                    ],
+                    "level": "INFO",
+                    "message": "[2026-10-28T02:31:20.000000Z] [PLC-0x01] [INFO] Code 0x84: fault_cleared on CNC_01 while executing OP20 for WO023 order ORDER_A",
+                    "state_action": "fault_cleared",
+                    "summary": "fault_cleared on CNC_01 while executing OP20 for WO023 order ORDER_A",
+                    "timestamp": "2026-10-28T02:31:20.000000Z"
+                  },
+                  "recovered_at": "2026-10-28T02:31:20.000000Z",
+                  "recovery_count": 1,
+                  "recovery_log_timestamp": "2026-10-28T02:31:20.000000Z",
+                  "sample_count": 62,
+                  "signal_complete": true,
+                  "signal_health": "running",
+                  "spindle_speed_rpm": 4200.0,
+                  "status": "running",
+                  "temperature_c": 65.0,
+                  "vibration_mm_s": 1.4,
+                  "visual_inspection": {
+                    "annotation_source": "synthetic_label",
+                    "image_ref": "sim_images/frame_00000_start.png",
+                    "sha256": "67d21bac2e6e53203f02fc23d478f5d2f9467c1514950b8191a29071c29899dc",
+                    "source_annotation": "generator_metadata_not_vision",
+                    "stage": "start",
+                    "synthetic_label": "normal"
+                  },
+                  "window_features": {
+                    "load_ratio": {
+                      "count": 10,
+                      "latest": 0.65,
+                      "mean": 0.68133,
+                      "peak": 0.98
+                    },
+                    "spindle_speed_rpm": {
+                      "count": 10,
+                      "latest": 4200.0,
+                      "mean": 4160.39736,
+                      "peak": 4229.4265
+                    },
+                    "temperature_c": {
+                      "count": 10,
+                      "latest": 65.0,
+                      "mean": 68.35537,
+                      "peak": 98.0
+                    },
+                    "vibration_mm_s": {
+                      "count": 10,
+                      "latest": 1.4,
+                      "mean": 2.45462,
+                      "peak": 12.0
+                    }
+                  },
+                  "window_sample_count": 10,
+                  "window_size": 10
+                },
+                "timestamp": "2026-10-28T02:31:20.000000Z",
+                "timestamp_basis": "simulation_epoch"
+              }
+            },
+            "enterprise": "ENT_01",
+            "equipment": "CNC_01",
+            "factory": "FAC_01",
+            "last_message_id": "MSG_a64823ddfdeac4e2867e4e07ae6a1d80f8c889e78f23618403eff17c4d9d00cd",
+            "legacy_ids": {
+              "equipment_id": "E-ASM",
+              "operation_id": "OP-7ac4dfa5c936456fb1a26cc85acea0b3",
+              "order_id": "ORD-4bb60eaaa30d4a618ed48730fee42ca9",
+              "work_order_id": "WO-54681c093c984f968e21ac711ecdbc4e"
+            },
+            "line": "LINE_01",
+            "observed_protocols": [
+              "MQTT"
+            ],
+            "order": "ORDER_A",
+            "phase": "normal",
+            "process": "OP20",
+            "process_instance_key": [
+              "WO023",
+              "OP20"
+            ],
+            "raw_context": {
+              "_ingest": {
+                "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                "channel": "factory/CNC_01/logs",
+                "event_key": "gateway/e2e-fault_cleared/1",
+                "resolved_ids": {
+                  "equipment_id": "CNC_01",
+                  "object_id": "CNC_01",
+                  "order_id": "ORDER_A",
+                  "process_id": "OP20",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "work_order_id": "WO023"
+                },
+                "source_sequence": 243456183,
+                "source_timestamp": "2026-10-28T02:31:20.000000Z"
+              },
+              "active_end_s": 180,
+              "active_start_s": 0,
+              "clock": "simulation",
+              "enterprise_id": "ENT_01",
+              "equipment_id": "CNC_01",
+              "factory_id": "FAC_01",
+              "gateway_event_id": "e2e-fault_cleared",
+              "legacy_ids": {
+                "equipment_id": "E-ASM",
+                "operation_id": "OP-7ac4dfa5c936456fb1a26cc85acea0b3",
+                "order_id": "ORD-4bb60eaaa30d4a618ed48730fee42ca9",
+                "work_order_id": "WO-54681c093c984f968e21ac711ecdbc4e"
+              },
+              "line_id": "LINE_01",
+              "order_id": "ORDER_A",
+              "phase": "normal",
+              "process_id": "OP20",
+              "rework_id": null,
+              "run_id": "WP1_DEMO",
+              "sequence": 243456183,
+              "sim_time_s": 80.0,
+              "simulation_epoch": "2026-10-28T02:30:00.000000Z",
+              "synthetic": true,
+              "work_order_id": "WO023"
+            },
+            "rework_id": null,
+            "run_id": "WP1_DEMO",
+            "sequence": 243456183,
+            "signal_fusion": {
+              "count_basis": "distinct_device_scope_timestamp",
+              "cycle_timestamp": "2026-10-28T02:31:20.000000Z",
+              "plc_quantization_step": {
+                "load_ratio": 0.0001,
+                "spindle_speed_rpm": 1.0,
+                "temperature_c": 0.01,
+                "vibration_mm_s": 0.01
+              },
+              "policy": "MQTT_then_OPC_UA_then_PLC_FRAME"
+            },
+            "sim_time_s": 80.0,
+            "simulation_epoch": "2026-10-28T02:30:00.000000Z",
+            "source_sequence": 243456183,
+            "sources": {
+              "MQTT/image": {
+                "message_id": "MSG_5eb788b0291b0dc82f767255632ba2ab8dc4a3ce3424a9c538bb34b8eccf2919",
+                "source_sequence": 19,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:30:00.000000Z"
+              },
+              "MQTT/log_text": {
+                "message_id": "MSG_a64823ddfdeac4e2867e4e07ae6a1d80f8c889e78f23618403eff17c4d9d00cd",
+                "source_sequence": 243456183,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:31:20.000000Z"
+              },
+              "MQTT/timeseries_signal": {
+                "message_id": "MSG_5c108b589e8ab80bf35876456840b722dc3faef4c7457960bf64ae15bdc87835",
+                "source_sequence": 243456182,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:31:20.000000Z"
+              },
+              "OPC_UA/timeseries_signal": {
+                "message_id": "MSG_a397b490ef7adf2d40060a44e7158d11c0b54d9be8e9be318a20029f7ede5d27",
+                "source_sequence": 372,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:30:59.000000Z"
+              },
+              "PLC_FRAME/timeseries_signal": {
+                "message_id": "MSG_788880783d822bde3c8b9a148ff37d6d6af038bd730df3a47a608cfdda8ab7b5",
+                "source_sequence": 373,
+                "source_system": "SIMPY_PLC",
+                "timestamp": "2026-10-28T02:30:59.000000Z"
+              }
+            },
+            "timestamp_basis": "simulation_epoch",
+            "work_order": "WO023"
+          },
+          "domain": "manufacturing",
+          "level": "device",
+          "object_id": "CNC_01",
+          "object_type": "equipment",
+          "state": {
+            "fault_count": 1,
+            "fault_latched": false,
+            "fault_started_at": "2026-10-28T02:31:10.000000Z",
+            "last_fault_codes": [
+              "0x84"
+            ],
+            "latest_signal": {
+              "load_ratio": 0.65,
+              "spindle_speed_rpm": 4200.0,
+              "temperature_c": 65.0,
+              "vibration_mm_s": 1.4
+            },
+            "latest_signal_timestamp": "2026-10-28T02:31:20.000000Z",
+            "load_ratio": 0.65,
+            "log": {
+              "fault_codes": [
+                "0x84"
+              ],
+              "level": "INFO",
+              "message": "[2026-10-28T02:31:20.000000Z] [PLC-0x01] [INFO] Code 0x84: fault_cleared on CNC_01 while executing OP20 for WO023 order ORDER_A",
+              "state_action": "fault_cleared",
+              "summary": "fault_cleared on CNC_01 while executing OP20 for WO023 order ORDER_A",
+              "timestamp": "2026-10-28T02:31:20.000000Z"
+            },
+            "recovered_at": "2026-10-28T02:31:20.000000Z",
+            "recovery_count": 1,
+            "recovery_log_timestamp": "2026-10-28T02:31:20.000000Z",
+            "sample_count": 62,
+            "signal_complete": true,
+            "signal_health": "running",
+            "spindle_speed_rpm": 4200.0,
+            "status": "running",
+            "temperature_c": 65.0,
+            "vibration_mm_s": 1.4,
+            "visual_inspection": {
+              "annotation_source": "synthetic_label",
+              "image_ref": "sim_images/frame_00000_start.png",
+              "sha256": "67d21bac2e6e53203f02fc23d478f5d2f9467c1514950b8191a29071c29899dc",
+              "source_annotation": "generator_metadata_not_vision",
+              "stage": "start",
+              "synthetic_label": "normal"
+            },
+            "window_features": {
+              "load_ratio": {
+                "count": 10,
+                "latest": 0.65,
+                "mean": 0.68133,
+                "peak": 0.98
+              },
+              "spindle_speed_rpm": {
+                "count": 10,
+                "latest": 4200.0,
+                "mean": 4160.39736,
+                "peak": 4229.4265
+              },
+              "temperature_c": {
+                "count": 10,
+                "latest": 65.0,
+                "mean": 68.35537,
+                "peak": 98.0
+              },
+              "vibration_mm_s": {
+                "count": 10,
+                "latest": 1.4,
+                "mean": 2.45462,
+                "peak": 12.0
+              }
+            },
+            "window_sample_count": 10,
+            "window_size": 10
+          },
+          "timestamp": "2026-10-28T02:31:20.000000Z"
+        }
+      ],
+      "relations": [
+        {
+          "relation_id": "REL_a290a7601f933f90a2de6a91cd29af744c6e7965d21bcd9c34566acab6cdc833",
+          "source": "CNC_01",
+          "relation": "executes",
+          "target": "OP20",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "normal",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP20"
+            ],
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_6099e964e88bfd128c347494019408fc611a0d1d4c38efc85d34fca9a9616ffb",
+          "source": "CNC_01",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_7c49a8009d92fe9b93580f87168a803d53db5931b68a245043544cc64c66f1f7",
+          "source": "FAC_01",
+          "relation": "managed_by",
+          "target": "ENT_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_fe6c8ff65aa72d4b6106fe4734e123d336190063489b06d98c46c23c4d84be9f",
+          "source": "LINE_01",
+          "relation": "part_of",
+          "target": "FAC_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_f0d2f6122d14a7365cb79cf7aa30056e82afdd13cf5cb28d9b7a2c4b2f7b0fe1",
+          "source": "MOVE_01",
+          "relation": "executes",
+          "target": "OP40",
+          "weight": 0.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": false,
+            "phase": "not_started",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP40"
+            ],
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_e9857be0d56ffa5bd7f041c69d6ba6e28a17a1ad1e62fefa6a5c069201ecf9f9",
+          "source": "MOVE_01",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_24b7caa1f54c868bae039d25bfa61fb1466a6c7561455b8e5efe7db22cd58da0",
+          "source": "OP20",
+          "relation": "belongs_to",
+          "target": "WO023",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "normal",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP20"
+            ],
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_12a9e23df774016acb71d37f6e7b5bfd01a4f97db234c58236d5c3b6fc948348",
+          "source": "OP20",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_585be03d04e7729e043afc0e7c15769016736946c28dffcf8360c79d26259d99",
+          "source": "OP20",
+          "relation": "uses_resource",
+          "target": "RES_MAT_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "normal",
+            "evidence_source": "configured_bom_rule",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "rule_id": "DEMO_OP20_BLANK_BOM",
+            "work_order": "WO023",
+            "configured_rule": {
+              "source": "OP20",
+              "work_order": "WO023",
+              "target": "RES_MAT_01",
+              "rule_id": "DEMO_OP20_BLANK_BOM",
+              "quantity_per_workpiece": 1
+            },
+            "actual_consumption_asserted": false,
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_02d88f927c16fa5a3bee5676c118ec27d137959f36c5b3f1b1809f8f5c03971c",
+          "source": "OP30",
+          "relation": "belongs_to",
+          "target": "WO023",
+          "weight": 0.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": false,
+            "phase": "not_started",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP30"
+            ],
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_7697986040ef3f9376c4331ab83f7a76549e2fc6bde4321bf9ff7c4b6cbdd7bb",
+          "source": "OP30",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_9a6a0eef022b707b3507f510aba5454e585c8cf707e79559524d5f0ab49b01dc",
+          "source": "OP40",
+          "relation": "belongs_to",
+          "target": "WO023",
+          "weight": 0.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": false,
+            "phase": "not_started",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP40"
+            ],
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_80e3e2a4460c4b1d41de8a3dc4ec77c7c380a55463c092bbf1c1e31c8745e2d9",
+          "source": "OP40",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_3a396f22855ffda41de9d36bef2b3810c4099c1c249ab3f6ce2e262a8676fc3f",
+          "source": "ORDER_A",
+          "relation": "located_in",
+          "target": "ENT_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "configured_organization_rule",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "rule_id": "ORDER_A_ENTERPRISE",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_e064c12c37820972f415bc1055a65535cc18fd094810abddd8a4d246072f9913",
+          "source": "QC_01",
+          "relation": "executes",
+          "target": "OP30",
+          "weight": 0.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": false,
+            "phase": "not_started",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "process_instance_key": [
+              "WO023",
+              "OP30"
+            ],
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_38154eee15c895417b79c0a156360fcf4a1ec4c7c0cbefbe179d6893d1a47db8",
+          "source": "QC_01",
+          "relation": "located_in",
+          "target": "LINE_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_8bb8fec45f8963368c8e7751d8f4d59b87edda5b4dd4b79999c03b65e1536610",
+          "source": "RES_MAT_01",
+          "relation": "located_in",
+          "target": "FAC_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "configured_organization_rule",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "rule_id": "MATERIAL_FACTORY",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_1c57ed669ea39967023973fb60546be4dfffd47ecf2049ffc5e88cc6fd8a37ea",
+          "source": "WO023",
+          "relation": "located_in",
+          "target": "FAC_01",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "structural",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "as_of_s": 80.0
+          }
+        },
+        {
+          "relation_id": "REL_23303280f437613adc957a8ceeac52f0327914099f7565827574445297649edf",
+          "source": "WO023",
+          "relation": "maps_to",
+          "target": "ORDER_A",
+          "weight": 1.0,
+          "timestamp": "2026-10-28T02:31:20.000000Z",
+          "context": {
+            "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+            "active": true,
+            "phase": "normal",
+            "evidence_source": "semantic_context",
+            "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+            "work_order": "WO023",
+            "as_of_s": 80.0
+          }
+        }
+      ],
+      "impact": {
+        "object_id": "CNC_01",
+        "direction": "upstream",
+        "assessment_kind": "diagnostic_risk_only",
+        "active_impacts": [],
+        "cycles_detected": [],
+        "semantic_states_modified": false,
+        "clock": "simulation",
+        "as_of": 80.0,
+        "timestamp": "2026-10-28T02:31:20.000000Z",
+        "historical_impacts": [
+          {
+            "active": false,
+            "assessment_kind": "diagnostic_risk_only",
+            "closure_reason": "fault_cleared",
+            "end_s": 80.0,
+            "fault_codes": [
+              "0x84"
+            ],
+            "fault_started_at": "2026-10-28T02:31:10.000000Z",
+            "impact_id": "RISK_ef3fd5f578ce26dad4accf73edbc902ae62b0561b1dc315040f8290596ee096e",
+            "mes_schedule_changed": false,
+            "path": [
+              "CNC_01",
+              "OP20",
+              "WO023",
+              "ORDER_A"
+            ],
+            "relations": [
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "work_order": "WO023"
+                },
+                "relation": "executes",
+                "relation_id": "REL_a290a7601f933f90a2de6a91cd29af744c6e7965d21bcd9c34566acab6cdc833",
+                "source": "CNC_01",
+                "target": "OP20",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              },
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "work_order": "WO023"
+                },
+                "relation": "belongs_to",
+                "relation_id": "REL_24b7caa1f54c868bae039d25bfa61fb1466a6c7561455b8e5efe7db22cd58da0",
+                "source": "OP20",
+                "target": "WO023",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              },
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "work_order": "WO023"
+                },
+                "relation": "maps_to",
+                "relation_id": "REL_23303280f437613adc957a8ceeac52f0327914099f7565827574445297649edf",
+                "source": "WO023",
+                "target": "ORDER_A",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              }
+            ],
+            "start_s": 70.0,
+            "status": "resolved",
+            "steps": [
+              {
+                "object_id": "CNC_01",
+                "object_type": "equipment",
+                "observed_status": "fault",
+                "risk_status": "fault"
+              },
+              {
+                "object_id": "OP20",
+                "object_type": "process",
+                "observed_status": "running",
+                "risk_status": "blocked_risk"
+              },
+              {
+                "object_id": "WO023",
+                "object_type": "work_order",
+                "observed_status": "running",
+                "risk_status": "delay_risk"
+              },
+              {
+                "object_id": "ORDER_A",
+                "object_type": "order",
+                "observed_status": "reference_only",
+                "risk_status": "delivery_risk"
+              }
+            ]
+          }
+        ],
+        "impact_events": [
+          {
+            "active": false,
+            "assessment_kind": "diagnostic_risk_only",
+            "closure_reason": "fault_cleared",
+            "end_s": 80.0,
+            "fault_codes": [
+              "0x84"
+            ],
+            "fault_started_at": "2026-10-28T02:31:10.000000Z",
+            "impact_id": "RISK_ef3fd5f578ce26dad4accf73edbc902ae62b0561b1dc315040f8290596ee096e",
+            "mes_schedule_changed": false,
+            "path": [
+              "CNC_01",
+              "OP20",
+              "WO023",
+              "ORDER_A"
+            ],
+            "relations": [
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "work_order": "WO023"
+                },
+                "relation": "executes",
+                "relation_id": "REL_a290a7601f933f90a2de6a91cd29af744c6e7965d21bcd9c34566acab6cdc833",
+                "source": "CNC_01",
+                "target": "OP20",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              },
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "process_instance_key": [
+                    "WO023",
+                    "OP20"
+                  ],
+                  "work_order": "WO023"
+                },
+                "relation": "belongs_to",
+                "relation_id": "REL_24b7caa1f54c868bae039d25bfa61fb1466a6c7561455b8e5efe7db22cd58da0",
+                "source": "OP20",
+                "target": "WO023",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              },
+              {
+                "context": {
+                  "active": true,
+                  "as_of_s": 70.0,
+                  "batch_id": "a677a041d189450ea02623e7c4c6465c3a1b7530f24d557114f97030e853452a",
+                  "clock_scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z",
+                  "evidence_source": "semantic_context",
+                  "phase": "normal",
+                  "work_order": "WO023"
+                },
+                "relation": "maps_to",
+                "relation_id": "REL_23303280f437613adc957a8ceeac52f0327914099f7565827574445297649edf",
+                "source": "WO023",
+                "target": "ORDER_A",
+                "timestamp": "2026-10-28T02:31:10.000000Z",
+                "weight": 1.0
+              }
+            ],
+            "start_s": 70.0,
+            "status": "resolved",
+            "steps": [
+              {
+                "object_id": "CNC_01",
+                "object_type": "equipment",
+                "observed_status": "fault",
+                "risk_status": "fault"
+              },
+              {
+                "object_id": "OP20",
+                "object_type": "process",
+                "observed_status": "running",
+                "risk_status": "blocked_risk"
+              },
+              {
+                "object_id": "WO023",
+                "object_type": "work_order",
+                "observed_status": "running",
+                "risk_status": "delay_risk"
+              },
+              {
+                "object_id": "ORDER_A",
+                "object_type": "order",
+                "observed_status": "reference_only",
+                "risk_status": "delivery_risk"
+              }
+            ]
+          }
+        ]
+      },
+      "source_records": [
+        {
+          "source_system": "SIMPY_PLC",
+          "protocol": "MQTT",
+          "object_hint": {
+            "domain_hint": "manufacturing",
+            "level_hint": "device",
+            "raw_id": "E-ASM",
+            "suggested_type": "equipment"
+          },
+          "context": {
+            "active_end_s": 180,
+            "active_start_s": 0,
+            "clock": "simulation",
+            "enterprise_id": "ENT_01",
+            "equipment_id": "CNC_01",
+            "factory_id": "FAC_01",
+            "legacy_ids": {
+              "equipment_id": "E-ASM",
+              "operation_id": "OP-7ac4dfa5c936456fb1a26cc85acea0b3",
+              "order_id": "ORD-4bb60eaaa30d4a618ed48730fee42ca9",
+              "work_order_id": "WO-54681c093c984f968e21ac711ecdbc4e"
+            },
+            "line_id": "LINE_01",
+            "order_id": "ORDER_A",
+            "phase": "normal",
+            "process_id": "OP20",
+            "rework_id": null,
+            "run_id": "WP1_DEMO",
+            "sequence": 243456182,
+            "sim_time_s": 80.0,
+            "simulation_epoch": "2026-10-28T02:30:00.000000Z",
+            "synthetic": true,
+            "work_order_id": "WO023",
+            "gateway_event_id": "e2e-fault_cleared"
+          },
+          "modality": "timeseries_signal",
+          "channel": "factory/CNC_01/telemetry",
+          "payload": {
+            "spindle_speed_rpm": 4200.0,
+            "temperature_c": 65.0,
+            "vibration_mm_s": 1.4,
+            "load_ratio": 0.65
+          },
+          "sequence": 243456182,
+          "event_key": "gateway/e2e-fault_cleared/0",
+          "timestamp": "2026-10-28T02:31:20.000000Z"
+        },
+        {
+          "source_system": "SIMPY_PLC",
+          "protocol": "MQTT",
+          "object_hint": {
+            "domain_hint": "manufacturing",
+            "level_hint": "device",
+            "raw_id": "E-ASM",
+            "suggested_type": "equipment"
+          },
+          "context": {
+            "active_end_s": 180,
+            "active_start_s": 0,
+            "clock": "simulation",
+            "enterprise_id": "ENT_01",
+            "equipment_id": "CNC_01",
+            "factory_id": "FAC_01",
+            "legacy_ids": {
+              "equipment_id": "E-ASM",
+              "operation_id": "OP-7ac4dfa5c936456fb1a26cc85acea0b3",
+              "order_id": "ORD-4bb60eaaa30d4a618ed48730fee42ca9",
+              "work_order_id": "WO-54681c093c984f968e21ac711ecdbc4e"
+            },
+            "line_id": "LINE_01",
+            "order_id": "ORDER_A",
+            "phase": "normal",
+            "process_id": "OP20",
+            "rework_id": null,
+            "run_id": "WP1_DEMO",
+            "sequence": 243456183,
+            "sim_time_s": 80.0,
+            "simulation_epoch": "2026-10-28T02:30:00.000000Z",
+            "synthetic": true,
+            "work_order_id": "WO023",
+            "gateway_event_id": "e2e-fault_cleared"
+          },
+          "modality": "log_text",
+          "channel": "factory/CNC_01/logs",
+          "payload": {
+            "log_message": "[2026-10-28T02:31:20.000000Z] [PLC-0x01] [INFO] Code 0x84: fault_cleared on CNC_01 while executing OP20 for WO023 order ORDER_A",
+            "synthetic": true,
+            "state_action": "fault_cleared"
+          },
+          "sequence": 243456183,
+          "event_key": "gateway/e2e-fault_cleared/1",
+          "timestamp": "2026-10-28T02:31:20.000000Z"
+        }
+      ],
+      "semantic_counts": {
+        "semantic_objects": 8,
+        "semantic_state_history": 382,
+        "processed_messages": 381,
+        "signal_cycles": 62
+      },
+      "graph_counts": {
+        "semantic_catalog": 12,
+        "model_events": 382,
+        "relation_edges": 19,
+        "graph_snapshots": 0,
+        "impact_events": 1
+      }
+    }
+  ],
+  "counts": {
+    "semantic_objects": 8,
+    "semantic_state_history": 382,
+    "processed_messages": 381,
+    "signal_cycles": 62
+  }
+}

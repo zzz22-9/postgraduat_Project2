@@ -1,0 +1,493 @@
+{
+  "status": "completed",
+  "run_id": "wp5_e2e_20261028",
+  "executed_at": "2026-10-29T10:43:50+08:00",
+  "stage": "stage_1_local_python",
+  "dockerized": false,
+  "source_records": 2202,
+  "signal_samples": 360,
+  "image_count": 9,
+  "log_count": 8,
+  "makespan_min": 6,
+  "protocol_counts": {
+    "REST_API": 1,
+    "SQLITE": 5,
+    "MQTT": 400,
+    "OPC_UA": 1440,
+    "PLC_FRAME": 360
+  },
+  "modality_counts": {
+    "structured_record": 29,
+    "log_text": 8,
+    "timeseries_signal": 2160,
+    "image": 9
+  },
+  "raw_messages": 2206,
+  "rejected_messages": 7,
+  "duplicate_messages": 2202,
+  "objects": 12,
+  "semantic_history": 2215,
+  "signal_cycles": 360,
+  "relations": 19,
+  "snapshots": 4,
+  "risk_episodes": [
+    {
+      "path": [
+        "CNC_01",
+        "OP20",
+        "WO023",
+        "ORDER_A"
+      ],
+      "start_s": 60.0,
+      "end_s": 90.0,
+      "status": "resolved",
+      "fault_codes": [
+        "0x84"
+      ],
+      "closure_reason": "fault_cleared"
+    }
+  ],
+  "api_checks": [
+    {
+      "method": "POST",
+      "path": "/api/v1/events/trigger",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "f991b349408cccdf6b7c80d5889e6feba6741921d1c6baac6871c01e75b8137b"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/events/trigger",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "5b23de6bb9c7dba5a4eab9a7c41df9681d94bc10fcb6fa1850f5fda2f08e91a2"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "357ac8e4f5dcc356c000a066b6815b8771b183d8e23dd8054076d90719f416dc"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "30cacfa3122eaa4992cf02142ef250fc71753503245ba941e2269151aaf72133"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "200be918513270b3317d9d21d8ed22df0591de88e7b1853034235b92cd2ca554"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/objects",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "464f41e01df87258e87d079fb7578a6df0be490def17e148700f51e2c85c4ac8"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/objects",
+      "params": {
+        "object_type": "equipment",
+        "domain": "manufacturing",
+        "level": "device"
+      },
+      "status_code": 200,
+      "response_sha256": "4e425446223cc8330affd8d831e6a781fc77adb61ccacfb547e9092b0f62a0f6"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/CNC_01",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "a235c1c97ff13007255617d5fdc56cb49c433a8b1a2da7e323671f2193f5a3b1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/CNC_01/history",
+      "params": {
+        "scope": "simulation/WP1_DEMO/2026-10-28T02:30:00.000000Z"
+      },
+      "status_code": 200,
+      "response_sha256": "6a7e5729db60ee2c409ebd12440b90cf1708eb529608a480f7be2dbbda550014"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/UNKNOWN",
+      "params": null,
+      "status_code": 404,
+      "response_sha256": "4099e5d25c9e7484013e03b141aed1982e5871ad4c82bdaf9ab97379c055da3e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/relations",
+      "params": {
+        "source": "CNC_01",
+        "relation": "executes",
+        "active": true,
+        "as_of": 75
+      },
+      "status_code": 200,
+      "response_sha256": "9d4cea00bb10008ff5a2c015220d596deda1c9228bc43c04bfca02e9cbb8fb4a"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/relations/infer",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "17b01e3a92f035a42f15cdad1ac9f5cb4818b59f09718a34b28c1cddd52532f3"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/graph",
+      "params": {
+        "as_of": 59
+      },
+      "status_code": 200,
+      "response_sha256": "dd0106eb5c6d04ce217f6432c21ad05be451d0001003a1fd0f4650a3e9d23db8"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/impact/CNC_01",
+      "params": {
+        "as_of": 59
+      },
+      "status_code": 200,
+      "response_sha256": "073ba5790b55e1a8b37ea06a5ce987e2110ac00c892fa281c4a58437249301a0"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/graph",
+      "params": {
+        "as_of": 75
+      },
+      "status_code": 200,
+      "response_sha256": "4d723cd8e619255e09fad4d04859889b4c6f239c748ad7f1b7bff92e974d4ff0"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/impact/CNC_01",
+      "params": {
+        "as_of": 75
+      },
+      "status_code": 200,
+      "response_sha256": "079fd06124e890cf28ad0603aef6b58afdd26a8bb866db207b1b9e893a10d40b"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/graph",
+      "params": {
+        "as_of": 95
+      },
+      "status_code": 200,
+      "response_sha256": "e3b82b840ac293bf28734bc6a69ef8a1ca5a0df08109d7f12c06527650763220"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/impact/CNC_01",
+      "params": {
+        "as_of": 95
+      },
+      "status_code": 200,
+      "response_sha256": "773baaafe34a1c8979b7d3cd1a3884ce64a37d98764fb9ca4101c3569db09dea"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/graph",
+      "params": {
+        "as_of": 360
+      },
+      "status_code": 200,
+      "response_sha256": "f2d58294031c8d75247ad9c1ac68bf178388b36b87d5e7381aeb61214de69001"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/impact/CNC_01",
+      "params": {
+        "as_of": 360
+      },
+      "status_code": 200,
+      "response_sha256": "af1653ea01ca51eea1b9406b3a83c9f53531a814b99c73f4106c16d31d7d6b1d"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/snapshots",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "f83f158f34bad5a89d663cca9b16cce1df91359de5308fc97b717c60d0cc0531"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model/impact/ORDER_A",
+      "params": {
+        "as_of": 75,
+        "direction": "downstream"
+      },
+      "status_code": 200,
+      "response_sha256": "caf65dd9f9f8a3fd5678f0529f9d0ac3b45a75a17d524786b03f699d0165a2b5"
+    },
+    {
+      "method": "GET",
+      "path": "/semantic/objects",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "464f41e01df87258e87d079fb7578a6df0be490def17e148700f51e2c85c4ac8"
+    },
+    {
+      "method": "GET",
+      "path": "/semantic/objects/CNC_01/history",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "6a7e5729db60ee2c409ebd12440b90cf1708eb529608a480f7be2dbbda550014"
+    },
+    {
+      "method": "POST",
+      "path": "/semantic/object",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "200be918513270b3317d9d21d8ed22df0591de88e7b1853034235b92cd2ca554"
+    },
+    {
+      "method": "GET",
+      "path": "/relations",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "5234f545f230e56e3a2e748ddf4e79668974bf7f21e717151d653a9192cd945e"
+    },
+    {
+      "method": "POST",
+      "path": "/relations/infer",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "ba7e49dff76b9475279a6e669e58f8cf0ff6deb56e08f57a27e08d05af580788"
+    },
+    {
+      "method": "GET",
+      "path": "/model/graph",
+      "params": {
+        "as_of": 75
+      },
+      "status_code": 200,
+      "response_sha256": "4d723cd8e619255e09fad4d04859889b4c6f239c748ad7f1b7bff92e974d4ff0"
+    },
+    {
+      "method": "GET",
+      "path": "/model/impact/CNC_01",
+      "params": {
+        "as_of": 75
+      },
+      "status_code": 200,
+      "response_sha256": "fb2dd1eb83f541bb1d8c5a27143f1516f75228a49a459d39c2f21bd46e81608e"
+    },
+    {
+      "method": "GET",
+      "path": "/model/snapshots",
+      "params": null,
+      "status_code": 200,
+      "response_sha256": "f83f158f34bad5a89d663cca9b16cce1df91359de5308fc97b717c60d0cc0531"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 422,
+      "response_sha256": "fba15a667b2f7cedcb1fd8c4d61daf8a15f79336a1eec0bf8c00aee64496c41a"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 422,
+      "response_sha256": "5226d0a482dff0f0342dcd4bc8c8e89bd2e734e25b6621936f8dbdd335ad4011"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 422,
+      "response_sha256": "91bab1140c95b5f1074ffa075878eb9b518cdfb653037124029c002ca1665544"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 422,
+      "response_sha256": "7ce63f7ceb974b130ea04e5617e11882969d8e78da651653fedcef4400382f81"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 422,
+      "response_sha256": "becb12a016579e46b5d6e3575885b764daa3863385e93e44ce4d34513f894173"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 422,
+      "response_sha256": "7ce63f7ceb974b130ea04e5617e11882969d8e78da651653fedcef4400382f81"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/ingest",
+      "params": null,
+      "status_code": 422,
+      "response_sha256": "28368b9a232bb314f649bc0310783986325215ea04e84d5c8c1879b883af10d9"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/events/trigger",
+      "params": null,
+      "status_code": 422,
+      "response_sha256": "59fbc73d2a55597e6e99e94c8c9c2998147a0a427fb1c16260070099779aff0b"
+    }
+  ],
+  "api_standard_routes": 10,
+  "routes": [
+    "/api/v1/events/trigger",
+    "/api/v1/model/graph",
+    "/api/v1/model/impact/{object_id}",
+    "/api/v1/model/snapshots",
+    "/api/v1/objects",
+    "/api/v1/objects/ingest",
+    "/api/v1/relations",
+    "/api/v1/relations/infer",
+    "/api/v1/states/{object_id}",
+    "/api/v1/states/{object_id}/history"
+  ],
+  "gateway_counts": {
+    "semantic": {
+      "semantic_objects": 12,
+      "semantic_state_history": 2215,
+      "processed_messages": 2206,
+      "signal_cycles": 360
+    },
+    "graph": {
+      "semantic_catalog": 12,
+      "model_events": 2215,
+      "relation_edges": 19,
+      "graph_snapshots": 4,
+      "impact_events": 1
+    },
+    "connector": {
+      "counts": {
+        "accepted": 2206,
+        "duplicates": 3,
+        "rejected": 7
+      },
+      "by_protocol": {
+        "REST_API": 1,
+        "SQLITE": 5,
+        "MQTT": 400,
+        "OPC_UA": 1440,
+        "PLC_FRAME": 360
+      },
+      "by_modality": {
+        "structured_record": 29,
+        "log_text": 8,
+        "timeseries_signal": 2160,
+        "image": 9
+      },
+      "by_connector": {
+        "RestApiConnector": 1,
+        "DatabaseConnector": 5,
+        "MqttConnector": 400,
+        "OpcUaAndPlcConnector": 1800
+      },
+      "pydantic_validated": 2206,
+      "json_schema_validated": 2206
+    }
+  },
+  "checkpoints": [
+    {
+      "as_of": 59,
+      "status": "running",
+      "active_impacts": 0,
+      "paths": [],
+      "impact_events": []
+    },
+    {
+      "as_of": 75,
+      "status": "fault",
+      "active_impacts": 1,
+      "paths": [
+        [
+          "CNC_01",
+          "OP20",
+          "WO023",
+          "ORDER_A"
+        ]
+      ],
+      "impact_events": [
+        {
+          "path": [
+            "CNC_01",
+            "OP20",
+            "WO023",
+            "ORDER_A"
+          ],
+          "start_s": 60.0,
+          "end_s": null,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "as_of": 95,
+      "status": "running",
+      "active_impacts": 0,
+      "paths": [],
+      "impact_events": [
+        {
+          "path": [
+            "CNC_01",
+            "OP20",
+            "WO023",
+            "ORDER_A"
+          ],
+          "start_s": 60.0,
+          "end_s": 90.0,
+          "status": "resolved"
+        }
+      ]
+    },
+    {
+      "as_of": 360,
+      "status": "idle",
+      "active_impacts": 0,
+      "paths": [],
+      "impact_events": [
+        {
+          "path": [
+            "CNC_01",
+            "OP20",
+            "WO023",
+            "ORDER_A"
+          ],
+          "start_s": 60.0,
+          "end_s": 90.0,
+          "status": "resolved"
+        }
+      ]
+    }
+  ],
+  "online_event_summary": [
+    {
+      "kind": "fault",
+      "status": "fault",
+      "active_impacts": 1
+    },
+    {
+      "kind": "fault_cleared",
+      "status": "running",
+      "active_impacts": 0
+    }
+  ]
+}
