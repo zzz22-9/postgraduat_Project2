@@ -6,10 +6,38 @@ import math
 from pathlib import Path
 
 from task2_1_prototype.contracts.models import parse_timestamp, require_json, utc_text
+from task2_1_prototype.simulators.device_bindings import DEVICE_BINDINGS
 
 
 def load_config(path=None):
-    data = json.loads(Path(path or Path(__file__).with_name("demo.json")).read_text(encoding="utf-8"))
+    # 不传路径才使用新绑定；显式指定的历史/自定义配置保持文件中的编号。
+    source = Path(__file__).with_name("demo.json") if path is None else Path(path)
+    data = json.loads(source.read_text(encoding="utf-8"))
+    if path is None:
+        # 将“目标设备 -> 原MES资源”反向整理，编号只来自已有绑定表。
+        targets = {binding["legacy_equipment_id"]: device_id
+                   for device_id, binding in DEVICE_BINDINGS.items()}
+        if len(targets) != len(DEVICE_BINDINGS):
+            raise ValueError("设备绑定表中的原MES资源编号重复")
+        renamed = {}
+        for equipment in data["equipment"]:
+            legacy_id = equipment["legacy_id"]
+            if legacy_id not in targets:
+                raise ValueError(f"默认配置中的MES设备未登记绑定：{legacy_id}")
+            old_id = equipment["object_id"]
+            device_id = targets[legacy_id]
+            renamed[old_id] = device_id
+            equipment["object_id"] = device_id
+            # 保留旧编号和协议别名，补上目标编号；dict.fromkeys按原顺序去重。
+            equipment["aliases"] = list(dict.fromkeys([*equipment["aliases"], old_id, device_id]))
+        # 只同步已有引用，不新增工序、设备模型或层级节点。
+        for node in data["hierarchy"]:
+            node["object_id"] = renamed.get(node["object_id"], node["object_id"])
+            context = node["context"]
+            if "parent" in context:
+                context["parent"] = renamed.get(context["parent"], context["parent"])
+        fault = data["fault"]
+        fault["equipment_id"] = renamed.get(fault["equipment_id"], fault["equipment_id"])
     validate_config(data)
     return data
 
