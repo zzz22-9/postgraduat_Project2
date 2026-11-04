@@ -318,6 +318,48 @@ class MESTests(unittest.TestCase):
         self.request("POST", "/mes/equipment", {"name": "新增组装台", "kind": "assembly"}, 201)
         self.request("POST", "/mes/equipment", {"name": "新增组装台", "kind": "assembly"}, 409)
 
+    def test_delete_equipment_preserves_audit_and_survives_restart(self):
+        eq = self.request("POST", "/mes/equipment", {"name": "Robot_02", "kind": "transport"}, 201)
+        eq_id = eq["equipment_id"]
+        self.request("PATCH", f"/mes/equipment/{eq_id}", {"status": "maintenance", "reason": "演示维护"})
+        result = self.request("DELETE", f"/mes/equipment/{eq_id}")
+        self.assertEqual(result, {"equipment_id": eq_id, "name": "Robot_02", "deleted": True})
+        with closing(sqlite3.connect(self.path)) as conn:
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM equipment").fetchone()[0], 3)
+            events = conn.execute("SELECT action,detail,equipment_id FROM events ORDER BY event_id").fetchall()
+            self.assertEqual([e[0] for e in events], ["equipment_created", "equipment_state", "equipment_deleted"])
+            self.assertTrue(all(eq_id in e[1] and "Robot_02" in e[1] and e[2] is None for e in events))
+            self.assertEqual(conn.execute("PRAGMA foreign_key_check").fetchall(), [])
+        self.request("DELETE", f"/mes/equipment/{eq_id}", expected=404)
+        service.initialize(self.path)
+        self.assertEqual(len(self.request("GET", "/mes/equipment")), 3)
+
+    def test_delete_default_or_assigned_equipment_is_rejected_without_changes(self):
+        for eq_id in ("E-ASM", "E-QC", "E-MOVE"):
+            self.request("DELETE", f"/mes/equipment/{eq_id}", expected=409)
+        eq = self.request("POST", "/mes/equipment", {"name": "额外组装台", "kind": "assembly"}, 201)
+        wo = self.dispatch()
+        self.request("PUT", f"/mes/operations/{wo['operations'][0]['operation_id']}/equipment",
+                     {"equipment_id": eq["equipment_id"]})
+        with closing(sqlite3.connect(self.path)) as conn:
+            before = list(conn.iterdump())
+        self.request("DELETE", f"/mes/equipment/{eq['equipment_id']}", expected=409)
+        with closing(sqlite3.connect(self.path)) as conn:
+            self.assertEqual(list(conn.iterdump()), before)
+
+    def test_delete_equipment_rolls_back_if_audit_write_fails(self):
+        eq = self.request("POST", "/mes/equipment", {"name": "Robot_02", "kind": "transport"}, 201)
+        with closing(sqlite3.connect(self.path)) as conn:
+            conn.execute("""CREATE TRIGGER reject_delete_event BEFORE INSERT ON events
+                            WHEN NEW.action='equipment_deleted'
+                            BEGIN SELECT RAISE(ABORT, 'audit unavailable'); END""")
+            conn.commit()
+            before = list(conn.iterdump())
+        with self.assertRaises(sqlite3.IntegrityError):
+            service.delete_equipment(self.path, eq["equipment_id"])
+        with closing(sqlite3.connect(self.path)) as conn:
+            self.assertEqual(list(conn.iterdump()), before)
+
     def test_competing_work_orders_cannot_occupy_same_machine(self):
         first, second = self.prepare(), self.prepare()
         note = Note(operator="并发测试", note="开工")

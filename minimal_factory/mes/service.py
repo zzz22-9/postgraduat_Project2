@@ -523,6 +523,23 @@ def create_equipment(path, data):
         return equipment(conn, eq_id)
 
 
+def delete_equipment(path, eq_id):
+    """删除未关联生产的新增设备，设备身份保留在事件说明中。"""
+    with transaction(path) as conn:
+        eq = equipment(conn, eq_id)
+        require(eq_id not in {"E-ASM", "E-QC", "E-MOVE"}, "三台默认设备用于基础生产流程，不能删除")
+        for table in ("operations", "reworks", "rework_actions"):
+            require(not row(conn, f"SELECT 1 FROM {table} WHERE equipment_id=?", (eq_id,)),
+                    "设备已关联工序或返修记录，不能删除；可使用设备维护功能")
+        # 登记、维护日志引用了设备。先保存身份文字，再解除外键，日志行保留。
+        identity = f"{eq['name']}（{eq_id}）"
+        conn.execute("""UPDATE events SET detail=detail || ?, equipment_id=NULL
+                        WHERE equipment_id=?""", (f"；已删除设备：{identity}", eq_id))
+        conn.execute("DELETE FROM equipment WHERE equipment_id=?", (eq_id,))
+        log(conn, "equipment_deleted", f"删除设备：{identity}")
+        return {"equipment_id": eq_id, "name": eq["name"], "deleted": True}
+
+
 def set_equipment_state(path, eq_id, data):
     with transaction(path) as conn:
         eq = equipment(conn, eq_id)

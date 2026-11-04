@@ -90,4 +90,8 @@ def create_router(database_path):
     def equipment_state(eq_id: str, data: EquipmentState):
         return call(service.set_equipment_state, eq_id, data)
 
+    @router.delete("/equipment/{eq_id}", summary="删除未关联生产的新增设备")
+    def delete_equipment(eq_id: str):
+        return call(service.delete_equipment, eq_id)
+
     return router
