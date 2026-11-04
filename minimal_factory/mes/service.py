@@ -116,10 +116,12 @@ def initialize(path):
         for table in ("production_reports", "inspections"):
             if "rework_operation_id" not in {r["name"] for r in conn.execute(f"PRAGMA table_info({table})")}:
                 conn.execute(f"ALTER TABLE {table} ADD COLUMN rework_operation_id TEXT REFERENCES operations(operation_id)")
+        # 内部编号供工序分配使用；name 存入数据库并由设备页面直接显示。
+        # INSERT OR IGNORE 只补缺失设备，已有库的改名由一次性 SQL 完成。
         for equipment_id, name, kind in [
-            ("E-ASM", "教学组装工位", "assembly"),
-            ("E-QC", "教学质检工位", "inspection"),
-            ("E-MOVE", "教学搬运资源", "transport"),
+            ("E-ASM", "CNC_01 (组装/加工工位 E-ASM)", "assembly"),
+            ("E-QC", "Vision_01 (视觉质检站 E-QC)", "inspection"),
+            ("E-MOVE", "Robot_01 (搬运机械臂 E-MOVE)", "transport"),
         ]:
             conn.execute(
                 "INSERT OR IGNORE INTO equipment VALUES (?, ?, ?, 'available', ?)",
