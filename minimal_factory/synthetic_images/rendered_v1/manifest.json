@@ -183,5 +183,87 @@
     "5": "empty_recess",
     "10-13": "bolt_position_0_to_3"
   },
-  "limitation": "Independent visual states; no physical tightening simulation, no synchronized business events."
+  "limitation": "Independent visual states; no physical tightening simulation, no synchronized business events.",
+  "field_library": {
+    "dataset_id": "FIELD-ASSETS-V1",
+    "source_git_commit": "d53fb7b9c5f4e2fcea520de2cd62a323e802fd07",
+    "preparation_script": "tools/prepare_field_assets.py",
+    "preparation_script_sha256": "1e2b8b116892716ca2455aa070c0564856dd3365eaa3ab8f54123a2339b1e681",
+    "time_semantics": "sample_time_s is local asset time; bind to new run at consumption",
+    "business_binding": "template_run_id is provenance; assign current work order at consumption"
+  },
+  "field_samples": [
+    {
+      "dataset_id": "FIELD-ASSETS-V1",
+      "sample_id": "vision_normal_front",
+      "equipment_id": "E-QC",
+      "equipment_name": "Vision_01",
+      "image_path": "normal_front.png",
+      "label": "normal",
+      "defect_type": null,
+      "view": "front",
+      "bolt_count": 4,
+      "missing_bolt_positions": [],
+      "source_image_path": "images/assembly_complete_front.png",
+      "source_sample_id": "assembly_complete_front",
+      "image_sha256": "56ece79acb46d06a11afc14f861e0939248f6e3082bb85ae7af5040190acde12",
+      "synthetic": true,
+      "annotation_source": "scene_configuration_not_image_recognition"
+    },
+    {
+      "dataset_id": "FIELD-ASSETS-V1",
+      "sample_id": "vision_normal_side",
+      "equipment_id": "E-QC",
+      "equipment_name": "Vision_01",
+      "image_path": "normal_side.png",
+      "label": "normal",
+      "defect_type": null,
+      "view": "side",
+      "bolt_count": 4,
+      "missing_bolt_positions": [],
+      "source_image_path": "images/assembly_complete_side.png",
+      "source_sample_id": "assembly_complete_side",
+      "image_sha256": "cecfb9c13aa818ae853092c7c05d25a1600a8c60a431660c192492f06825a263",
+      "synthetic": true,
+      "annotation_source": "scene_configuration_not_image_recognition"
+    },
+    {
+      "dataset_id": "FIELD-ASSETS-V1",
+      "sample_id": "vision_defect_front",
+      "equipment_id": "E-QC",
+      "equipment_name": "Vision_01",
+      "image_path": "defect_front.png",
+      "label": "defect",
+      "defect_type": "missing_bolt",
+      "view": "front",
+      "bolt_count": 3,
+      "missing_bolt_positions": [
+        3
+      ],
+      "source_image_path": "images/assembly_missing_bolt_front.png",
+      "source_sample_id": "assembly_missing_bolt_front",
+      "image_sha256": "7e52b4f81a4b251b2050722b6eab21ab157825e8d98159981a4bface506e5bf3",
+      "synthetic": true,
+      "annotation_source": "scene_configuration_not_image_recognition"
+    },
+    {
+      "dataset_id": "FIELD-ASSETS-V1",
+      "sample_id": "vision_defect_side",
+      "equipment_id": "E-QC",
+      "equipment_name": "Vision_01",
+      "image_path": "defect_side.png",
+      "label": "defect",
+      "defect_type": "missing_bolt",
+      "view": "side",
+      "bolt_count": 3,
+      "missing_bolt_positions": [
+        3
+      ],
+      "source_image_path": "images/assembly_missing_bolt_side.png",
+      "source_sample_id": "assembly_missing_bolt_side",
+      "image_sha256": "f67cc323a44b1ba39c5b61de2a64a0a4c4f51de5db986848709527d24a2c0e07",
+      "synthetic": true,
+      "annotation_source": "scene_configuration_not_image_recognition"
+    }
+  ]
 }

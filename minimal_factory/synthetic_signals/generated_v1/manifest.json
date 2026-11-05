@@ -30,5 +30,165 @@
   "time_semantics": "processing intervals [start,end); all same-time source events applied before sample",
   "context_semantics": "Source business IDs are replay references; run_id identifies new synthetic scenario",
   "image_binding": null,
-  "database_ingested": false
+  "database_ingested": false,
+  "field_library": {
+    "dataset_id": "FIELD-ASSETS-V1",
+    "source_git_commit": "d53fb7b9c5f4e2fcea520de2cd62a323e802fd07",
+    "preparation_script": "tools/prepare_field_assets.py",
+    "preparation_script_sha256": "1e2b8b116892716ca2455aa070c0564856dd3365eaa3ab8f54123a2339b1e681",
+    "time_semantics": "sample_time_s is local asset time; bind to new run at consumption",
+    "business_binding": "template_run_id is provenance; assign current work order at consumption",
+    "files": [
+      {
+        "equipment_id": "E-ASM",
+        "equipment_name": "CNC_01",
+        "scenario": "normal",
+        "path": "cnc_normal.jsonl",
+        "sample_count": 12,
+        "sha256": "97a08b59961355d2f6d0b25a0372eb49aec5612c00227d32029c31eafe66f8b2",
+        "thresholds": {
+          "current_a": 4.0,
+          "temperature_c": 70.0,
+          "load_percent": 80.0
+        },
+        "ranges": {
+          "current_a": [
+            2.864671,
+            3.154232
+          ],
+          "temperature_c": [
+            30.0,
+            34.01
+          ],
+          "load_percent": [
+            47.745,
+            52.571
+          ]
+        },
+        "feature_model": {
+          "current_scale": 1.0,
+          "base_current_a": 3.0,
+          "base_temperature_c": 30.0,
+          "temperature_gain_c_per_a": 26.0,
+          "rated_current_a": 6.0
+        }
+      },
+      {
+        "equipment_id": "E-ASM",
+        "equipment_name": "CNC_01",
+        "scenario": "overload",
+        "path": "cnc_overload.jsonl",
+        "sample_count": 12,
+        "sha256": "3c14e9f6e2019709c843ba15460360efcbace0d3eea4a00401ef3713b28433e0",
+        "thresholds": {
+          "current_a": 4.0,
+          "temperature_c": 70.0,
+          "load_percent": 80.0
+        },
+        "ranges": {
+          "current_a": [
+            5.339504,
+            5.659302
+          ],
+          "temperature_c": [
+            90.827,
+            99.142
+          ],
+          "load_percent": [
+            88.992,
+            94.322
+          ]
+        },
+        "feature_model": {
+          "current_scale": 1.0,
+          "base_current_a": 3.0,
+          "base_temperature_c": 30.0,
+          "temperature_gain_c_per_a": 26.0,
+          "rated_current_a": 6.0
+        }
+      },
+      {
+        "equipment_id": "E-MOVE",
+        "equipment_name": "Robot_01",
+        "scenario": "normal",
+        "path": "robot_normal.jsonl",
+        "sample_count": 12,
+        "sha256": "a37163a7c4ef91726a6f6c61a7b5a3bc58aed694e320d70503ec88061f868ab0",
+        "thresholds": {
+          "current_a": 3.5,
+          "temperature_c": 70.0,
+          "load_percent": 90.0
+        },
+        "ranges": {
+          "current_a": [
+            2.291737,
+            2.523386
+          ],
+          "temperature_c": [
+            28.0,
+            31.702
+          ],
+          "load_percent": [
+            57.293,
+            63.085
+          ]
+        },
+        "feature_model": {
+          "current_scale": 0.8,
+          "base_current_a": 2.4,
+          "base_temperature_c": 28.0,
+          "temperature_gain_c_per_a": 30.0,
+          "rated_current_a": 4.0
+        }
+      },
+      {
+        "equipment_id": "E-MOVE",
+        "equipment_name": "Robot_01",
+        "scenario": "overload",
+        "path": "robot_overload.jsonl",
+        "sample_count": 12,
+        "sha256": "757a49637fb78472c13dc2e1e32132c5e345efe2a694cd2d24a5cfc4aa629a1e",
+        "thresholds": {
+          "current_a": 3.5,
+          "temperature_c": 70.0,
+          "load_percent": 90.0
+        },
+        "ranges": {
+          "current_a": [
+            4.271603,
+            4.527442
+          ],
+          "temperature_c": [
+            84.148,
+            91.823
+          ],
+          "load_percent": [
+            106.79,
+            113.186
+          ]
+        },
+        "feature_model": {
+          "current_scale": 0.8,
+          "base_current_a": 2.4,
+          "base_temperature_c": 28.0,
+          "temperature_gain_c_per_a": 30.0,
+          "rated_current_a": 4.0
+        }
+      }
+    ],
+    "units": {
+      "current_a": "A",
+      "temperature_c": "degC",
+      "load_percent": "%"
+    },
+    "feature_formula": "current=template*scale; temperature=base+max(0,current-base_current)*gain; load=100*current/rated_current",
+    "alarm_rule": "any feature strictly exceeds its threshold",
+    "register_map": {
+      "40001": "current_a * 1000",
+      "40002": "temperature_c * 10",
+      "40003": "load_percent * 10",
+      "40004": "alarm_code"
+    },
+    "register_addressing": "40001..40004 are holding-register reference labels; wire offsets 0..3"
+  }
 }
