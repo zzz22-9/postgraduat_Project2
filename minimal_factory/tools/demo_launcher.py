@@ -144,7 +144,7 @@ def main():
             if not args.check:
                 ensure_server()
             if not preflight():
-                raise RuntimeError("自检未通过。请查看上面的失败项；演示时可先打开“离线演示.html”。")
+                raise RuntimeError("自检未通过。请查看上面的失败项和日志文件。")
         print("访问自检通过；这不替代完整业务演练。")
         if not args.check and not args.no_browser:
             webbrowser.open(URL)

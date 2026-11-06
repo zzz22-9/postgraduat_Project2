@@ -5,6 +5,8 @@
 本文件组织业务流程，具体的 SQL 语句在 database.py。
 """
 
+import asyncio
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -16,19 +18,22 @@ from fastapi.responses import FileResponse, Response
 
 from mes.api import create_router
 from mes import service as mes_service
+from mes.schemas import ERPDispatchRequest
 from simulation.api import create_router as create_simulation_router
 from simulation.assets import create_router as create_image_router
 from simulation.service import SimulationService
 
-from . import database
+from . import database, dispatch as erp_dispatch
 from .schemas import Order, OrderCreate
+from .feed import read_feed
 
 
-def create_app(database_path: Path | None = None) -> FastAPI:
+def create_app(database_path: Path | None = None, *, mes_base_url: str | None = None) -> FastAPI:
     """组装 ERP 应用。测试可传临时数据库路径，避免改动你的练习数据。"""
     # 以代码的位置为基准，所以从不同目录启动也不会误建另一份数据库。
     db_path = database_path or Path(__file__).resolve().parents[1] / "data" / "erp.db"
     simulation = SimulationService(db_path)
+    mes_url = mes_base_url or os.environ.get("MES_BASE_URL", "http://127.0.0.1:8000")
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -105,6 +110,12 @@ def create_app(database_path: Path | None = None) -> FastAPI:
     def get_orders():
         return database.list_orders(db_path)
 
+    # 固定路径先注册，避免 dispatch-outbox 被 /orders/{order_id} 当作订单编号。
+    @app.get("/orders/dispatch-outbox", tags=["Connector"], summary="只读 ERP 订单与协议发件箱")
+    @app.get("/erp/feed", tags=["Connector"], summary="IT 层数据接入源（只读）")
+    def erp_feed():
+        return read_feed(db_path)
+
     # 大括号表示路径参数，例如 /orders/ORD-xxx 中的编号会交给 order_id。
     @app.get(
         "/orders/{order_id}",
@@ -118,6 +129,17 @@ def create_app(database_path: Path | None = None) -> FastAPI:
             # 404 表示“找不到这笔订单”，不是返回一笔空订单或伪造成功。
             raise HTTPException(status_code=404, detail="订单不存在")
         return order
+
+    @app.post("/orders/{order_id}/dispatch", status_code=201, tags=["订单"],
+              summary="ERP 封装协议报文并通过 HTTP 下发 MES")
+    async def dispatch_order(order_id: str, data: ERPDispatchRequest):
+        if order_id != data.order_id:
+            raise HTTPException(status_code=422, detail="路径与表单中的订单编号不一致")
+        try:
+            # 等待 HTTP 的工作在线程中执行，应用仍能接收 MES 端的请求。
+            return await asyncio.to_thread(erp_dispatch.send_order, db_path, data, mes_url)
+        except mes_service.BusinessError as error:
+            raise HTTPException(status_code=error.code, detail=str(error)) from error
 
     # DELETE /orders/{order_id}：按完整编号删除一笔订单。
     @app.delete(

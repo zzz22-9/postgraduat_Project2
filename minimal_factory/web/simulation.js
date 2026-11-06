@@ -4,7 +4,7 @@ const simPhaseNames={normal:'正常加工',repair:'返修',reinspection:'复检'
 const simEventNames={resource_requested:'申请设备',resource_acquired:'获得设备',processing_started:'开始加工',processing_finished:'加工结束',resource_released:'释放设备',quality_result:'质检结果',rework_created:'创建返修任务',order_started:'订单进入系统',order_completed:'订单完工'};
 Object.assign(simEventNames,{mes_to_field_mqtt_dispatched:'MQTT 工序派发',field_opcua_signal_reported:'OPC UA 信号采集',field_vision_http_reported:'HTTP 视觉质检',field_modbus_reported:'Modbus 寄存器采集',device_anomaly_affected_work_order:'设备异常影响工单',device_recovered:'设备恢复'});
 const simModes={normal:'正常生产模式 (Normal - 12分钟基准)',anomaly:'多模态异常级联演示 (Anomaly - 三设备故障/返工级联)',sampled:'随机抽样模式 (Sampled)'};
-const simView={loaded:false,loading:false,snapshot:null,base:{source:'work_orders',work_order_ids:[]},source:'work_orders',mode:'normal',runs:[],result:null,timer:null,polling:false,error:'',eventOrder:'',eventEquipment:'',eventPage:0};
+const simView={loaded:false,loading:false,snapshot:null,base:{source:'work_orders',work_order_ids:[]},source:'work_orders',mode:'normal',runs:[],erpFeed:[],result:null,timer:null,polling:false,error:'',eventOrder:'',eventEquipment:'',eventPage:0};
 function simDefaultBase(){
   const released=state.workorders.filter(w=>w.status==='released');
   return {source:'work_orders',work_order_ids:released.length===1?[released[0].work_order_id]:[]};
@@ -17,6 +17,7 @@ async function loadSim(){
   try{
     simView.base=simDefaultBase();simView.source='work_orders';
     simView.runs=await api('/simulation/runs');
+    simView.erpFeed=(await api('/erp/feed')).dispatch_outbox||[];
     simView.snapshot=simView.base.work_order_ids.length?await api('/simulation/preview','POST',simView.base):null;
     simView.loaded=true;
   }catch(e){simView.error=e.message}
@@ -63,7 +64,7 @@ function renderSimulation(){
   content.innerHTML=heading('SIMPY / EXPERIMENTS','生产仿真','在独立副本中运行，按虚拟分钟观察生产。',`<button data-sim="new">新实验</button><button data-sim="history">刷新实验记录</button>`)+
     `<div class="sim-intro"><h2>输入工单 → 自动执行 → 可追溯结果</h2><p>每次实验复制工艺和设备配置，从空闲状态开始。仿真不会修改原订单，不继承现实占用和维护状态。设备队列先到先服务；整批完成后流入下一工序。</p></div>`+
     (simView.error?`<div class="error" role="alert">${esc(simView.error)}</div>`:'')+
-    (simView.result?simResult(simView.result):simConfig())+simHistory();
+    (simView.result?simResult(simView.result):simConfig()+simProtocolMessages({input:simView.snapshot||{orders:[]}}))+simHistory();
   if($('#sim-config-form')){
     $('#sim-config-form').oninput=captureSimEdits;
     $('#sim-config-form').onchange=captureSimEdits;
@@ -98,7 +99,10 @@ function simImageUrl(path){
   return /^(normal|defect)_(front|side)\.png$/.test(name)?`/static/rendered_v1/${name}`:'';
 }
 function simPhysicalValues(protocol,payload={}){
+  if(payload.detections){const d=payload.detections[0];return `螺栓 ${d.count}/${d.expected} · ${d.PASS?'装配合格':'缺失螺栓'}`}
   if(protocol==='HTTP-Vision-v1')return `螺栓 ${payload.detected_bolts??'—'}/${payload.expected_bolts??4} · ${payload.defect_detected?'缺失螺栓':'装配合格'}`;
+  if(payload.nodes){const n=Object.fromEntries(payload.nodes.map(n=>[n.node_id.split('.').pop(),n.value]));return `电流 ${simMinutes(n.SpindleCurrent)} A · 温度 ${simMinutes(n.MotorTemperature)} ℃ · 负载 ${simMinutes(n.SpindleLoad)} %`}
+  if(payload.raw_registers){const r=payload.raw_registers;return `电流 ${simMinutes(r[0]/1000)} A · 温度 ${simMinutes(r[1]/10)} ℃ · 负载 ${simMinutes(r[2]/10)} %`}
   const values=payload.values,regs=payload.registers;
   if(values)return `电流 ${simMinutes(values.current_a)} A · 温度 ${simMinutes(values.temperature_c)} ℃ · 负载 ${simMinutes(values.load_percent)} %`;
   if(regs)return `电流 ${simMinutes(regs['40001']/1000)} A · 温度 ${simMinutes(regs['40002']/10)} ℃ · 负载 ${simMinutes(regs['40003']/10)} %`;
@@ -110,8 +114,9 @@ function simDelaySummary(r){
   return `<section class="sim-delay-section" aria-label="工单计划与实际延误对比">${rows.map(w=>`<article class="sim-delay-banner ${w.anomaly_status==='DELAYED_BY_FAULT'?'fault':'normal'}"><div class="panel-head"><h2>工单计划 vs 实际</h2><span class="sim-signal ${w.anomaly_status==='DELAYED_BY_FAULT'?'fault':'normal'}">${esc(w.anomaly_status)}</span></div><div class="sim-delay-values"><div><small>计划总时长</small><strong>${simMinutes(w.planned_minutes)}<span> 虚拟分钟</span></strong></div><div><small>实际总时长</small><strong>${simMinutes(w.actual_minutes)}<span> 虚拟分钟</span></strong></div><div><small>${w.anomaly_status==='DELAYED_BY_FAULT'?'故障延误时长':'延误时长'}</small><strong>+${simMinutes(w.delay_minutes)}<span> 虚拟分钟</span></strong></div></div><p class="sim-run-id">${esc(w.work_order_id)}</p></article>`).join('')}</section>`;
 }
 function simVisionFigure(payload,caption){
-  const url=simImageUrl(payload?.image_path);
-  return url?`<figure><a href="${url}" target="_blank" rel="noopener" title="点击查看原图"><img src="${url}" alt="${esc(caption)} · 螺栓 ${esc(payload.detected_bolts)}/${esc(payload.expected_bolts)}" loading="lazy" width="800" height="600"></a><figcaption>${esc(caption)} · 螺栓 ${esc(payload.detected_bolts)}/${esc(payload.expected_bolts)} · 点击放大</figcaption></figure>`:'';
+  const url=simImageUrl(payload?.image_url||payload?.image_path),d=payload?.detections?.[0];
+  const count=d?.count??payload?.detected_bolts,expected=d?.expected??payload?.expected_bolts;
+  return url?`<figure><a href="${url}" target="_blank" rel="noopener" title="点击查看原图"><img src="${url}" alt="${esc(caption)} · 螺栓 ${esc(count)}/${esc(expected)}" loading="lazy" width="800" height="600"></a><figcaption>${esc(caption)} · 螺栓 ${esc(count)}/${esc(expected)} · 点击放大</figcaption></figure>`:'';
 }
 function simEquipmentAlerts(r){
   const alerts=r.equipment_alerts||r.summary?.equipment_alerts||[];
@@ -121,20 +126,26 @@ function simEquipmentAlerts(r){
     const payload=a.evidence||a.latest_evidence||{},faults=a.fault_records||[];
     const imagePayload={...payload,image_path:payload.image_path||a.source_file};
     const timeline=faults.map(f=>`第 ${simMinutes(f.virtual_minute)} 分钟故障 → ${f.recovered_virtual_minute!=null?`第 ${simMinutes(f.recovered_virtual_minute)} 分钟维修/返工恢复为 available`:'尚未恢复'}`).join('；');
-    return `<article class="sim-alert-card ${a.had_fault?'fault':'normal'}" data-equipment="${esc(a.equipment_id)}"><div class="panel-head"><h3>${esc(a.device_code||a.equipment_name)}</h3><span class="sim-signal ${a.had_fault?'fault':'normal'}">${a.had_fault?'曾触发 FAULT':'NORMAL'}</span></div><p class="sim-protocol-label">${esc(a.protocol)}</p><p class="sim-recovery">${esc(a.had_fault?timeline:'本批次未触发故障')}<br>当前状态：<strong>${esc(a.current_status||'available')}</strong></p><p class="sim-alarm-message">${esc(a.alarm_message||'设备运行正常，本批次无故障报警。')}</p><p class="sim-physical">${esc(simPhysicalValues(a.protocol,payload))}</p>${a.protocol==='HTTP-Vision-v1'?`<div class="sim-vision-images">${simVisionFigure(imagePayload,a.had_fault?'首次质检 · 缺陷法兰':'质检抓拍 · 合格法兰')}${a.had_fault&&a.latest_evidence?.image_path&&a.latest_evidence.image_path!==imagePayload.image_path?simVisionFigure(a.latest_evidence,'返工后复检 · 合格法兰'):''}</div>`:''}</article>`;
+    return `<article class="sim-alert-card ${a.had_fault?'fault':'normal'}" data-equipment="${esc(a.equipment_id)}"><div class="panel-head"><h3>${esc(a.device_code||a.equipment_name)}</h3><span class="sim-signal ${a.had_fault?'fault':'normal'}">${a.had_fault?'曾触发 FAULT':'NORMAL'}</span></div><p class="sim-protocol-label">${esc(a.protocol)}</p><p class="sim-recovery">${esc(a.had_fault?timeline:'本批次未触发故障')}<br>当前状态：<strong>${esc(a.current_status||'available')}</strong></p><p class="sim-alarm-message">${esc(a.alarm_message||'设备运行正常，本批次无故障报警。')}</p><p class="sim-physical">${esc(simPhysicalValues(a.protocol,payload))}</p>${['HTTP-Vision-Webhook','HTTP-Vision-v1'].includes(a.protocol)?`<div class="sim-vision-images">${simVisionFigure(imagePayload,a.had_fault?'首次质检 · 缺陷法兰':'质检抓拍 · 合格法兰')}${a.had_fault&&(a.latest_evidence?.image_url||a.latest_evidence?.image_path)&&(a.latest_evidence.image_url||a.latest_evidence.image_path)!==(imagePayload.image_url||imagePayload.image_path)?simVisionFigure(a.latest_evidence,'返工后复检 · 合格法兰'):''}</div>`:''}</article>`;
   }).join('')}</div></section>`;
 }
 function simProtocolSummary(message){
   const p=message.payload||{};
-  return message.protocol==='MQTT-Dispatch-v1'?`${p.command||'START'} · 派发 ${p.planned_qty??'—'} 件`:simPhysicalValues(message.protocol,p);
+  if(message.http)return `HTTP ${message.http.status_code??'未确认'} · ${message.delivery_state}`;
+  return ['MQTT','MQTT-Dispatch-v1'].includes(message.protocol)?`${p.payload_json?.cmd||p.command||'START'} · 派发 ${p.payload_json?.quantity??p.planned_qty??'—'} 件`:simPhysicalValues(message.protocol,p);
 }
 function simProtocolMessages(r){
-  const messages=[...(r.protocol_messages||r.summary?.protocol_messages||[])].sort((a,b)=>a.virtual_minute-b.virtual_minute);
-  return `<section class="panel" id="sim-protocol-messages"><h2>四类异构协议报文流 · ${messages.length} 条</h2><p class="muted">按虚拟分钟排序；展开查看本批次保存的完整原始 JSON。报文由本地素材回放生成。</p>${messages.length?`<div class="table-wrap"><table><thead><tr><th>虚拟分钟</th><th>协议类型</th><th>设备</th><th>是否异常</th><th>摘要 / 原始报文</th><th>源文件路径</th></tr></thead><tbody>${messages.map(m=>{
+  const ids=new Set((r.input?.orders||[]).map(w=>w.order_id));
+  const erp=simView.erpFeed.filter(m=>ids.has(m.order_id)).map(m=>({...m,device_code:'ERP → MES',transport_mode:'HTTP 发件箱'}));
+  const field=[...(r.protocol_messages||r.summary?.protocol_messages||[])].sort((a,b)=>a.virtual_minute-b.virtual_minute);
+  const messages=[...erp,...field];
+  return `<section class="panel" id="sim-protocol-messages"><h2>五类异构协议 · ${messages.length} 条</h2><p class="muted">ERP 显示所选来源订单的 HTTP 发件箱；现场四类按虚拟分钟排序，均为本地素材生成的原生帧。寻址已显式建模，现场四类尚未网络收发。</p>${messages.length?`<div class="table-wrap"><table><thead><tr><th>记录时间</th><th>协议类型</th><th>寻址地址 (Endpoint / Topic / Address)</th><th>设备 / 状态</th><th>原生异构载荷 (Raw Payload)</th></tr></thead><tbody>${messages.map(m=>{
     let raw=m.raw_json??m;
     if(typeof raw==='string'){try{raw=JSON.parse(raw)}catch{}}
     const text=typeof raw==='string'?raw:JSON.stringify(raw,null,2);
-    return `<tr><td>t=${simMinutes(m.virtual_minute)}</td><td><span class="sim-protocol-badge">${esc(m.protocol)}</span></td><td>${esc(m.device_code||m.equipment_id)}</td><td><span class="sim-signal ${m.is_anomaly?'fault':'normal'}">${m.is_anomaly?'异常':'正常'}</span></td><td>${esc(simProtocolSummary(m))}<details><summary>查看完整 raw_json</summary><pre class="sim-raw-json">${esc(text)}</pre></details></td><td><span class="sim-source-path">${esc(m.source_file)}</span></td></tr>`;
+    const p=m.payload||{},h=m.http||m.envelope?.http;
+    const address=[h?.method||p.method||'',m.endpoint||h?.url||'历史记录未保存寻址',p.topic?`topic: ${p.topic} · qos: ${p.qos}`:'',p.unit_id!=null?`unit_id: ${p.unit_id} · FC: ${p.function_code} · start: ${p.start_address} · count: ${p.register_count}`:''].filter(Boolean).join('\n');
+    return `<tr><td>${m.virtual_minute==null?esc(time(m.timestamp)):('t='+simMinutes(m.virtual_minute))}</td><td><span class="sim-protocol-badge">${esc(m.protocol)}</span><span class="sub">${esc(m.transport_mode||'历史本地帧')}</span></td><td><pre class="sim-address">${esc(address)}</pre>${h?`<strong>Status Code: ${esc(h.status_code??'未记录')}</strong><p>Request Headers</p><pre class="sim-raw-json">${esc(JSON.stringify(h.request_headers,null,2))}</pre>`:''}</td><td>${esc(m.device_code||m.equipment_id)}<span class="sub">${esc(simProtocolSummary(m))}</span><span class="sim-signal ${m.is_anomaly?'fault':'normal'}">${m.is_anomaly?'异常':'正常'}</span></td><td><pre class="sim-raw-json">${esc(JSON.stringify(p,null,2))}</pre><details><summary>查看完整 raw_json</summary><pre class="sim-raw-json">${esc(text)}</pre></details><span class="sim-source-path">${esc(m.source_file||'erp.db / erp_dispatch_outbox')}</span></td></tr>`;
   }).join('')}</tbody></table></div>`:empty('此批次尚无现场协议报文；早期历史批次可能未记录此字段。')}</section>`;
 }
 function simResult(r){
@@ -157,7 +168,8 @@ function simEvents(r){
 }
 async function openSimResult(id){
   stopSimPolling();
-  const [result,runs]=await Promise.all([api(`/simulation/runs/${id}`),api('/simulation/runs')]);
+  const [result,runs,feed]=await Promise.all([api(`/simulation/runs/${id}`),api('/simulation/runs'),api('/erp/feed')]);
+  simView.erpFeed=feed.dispatch_outbox||[];
   simView.result=result;simView.runs=runs;simView.error='';simView.eventOrder='';simView.eventEquipment='';simView.eventPage=0;
   if(page==='simulation'){render();content.scrollIntoView({block:'start'})}
 }
@@ -184,7 +196,7 @@ content.addEventListener('click',async ev=>{
       const base=simView.source==='demo'?{source:'demo'}:{source:'work_orders',work_order_ids:ids};
       const snapshot=await api('/simulation/preview','POST',base);simView.base=base;simView.snapshot=snapshot;
     }
-    if(action==='history'){captureSimEdits();simView.runs=await api('/simulation/runs')}
+    if(action==='history'){captureSimEdits();const [runs,feed]=await Promise.all([api('/simulation/runs'),api('/erp/feed')]);simView.runs=runs;simView.erpFeed=feed.dispatch_outbox||[]}
     if(action==='open'){await openSimResult(b.dataset.id);return}
     if(action==='copy'){
       const base={source:'replay',replay_run_id:b.dataset.id};

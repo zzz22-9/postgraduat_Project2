@@ -71,6 +71,17 @@ def initialize(database_path: Path) -> None:
                 created_at TEXT NOT NULL
             )
         """)
+        connection.execute("""
+            CREATE TABLE IF NOT EXISTS erp_dispatch_outbox (
+                message_id TEXT PRIMARY KEY,
+                order_id TEXT NOT NULL REFERENCES orders(order_id),
+                request_json TEXT NOT NULL,
+                envelope_json TEXT NOT NULL,
+                acknowledged_at TEXT
+            )
+        """)
+        if "http_json" not in {row[1] for row in connection.execute("PRAGMA table_info(erp_dispatch_outbox)")}:
+            connection.execute("ALTER TABLE erp_dispatch_outbox ADD COLUMN http_json TEXT")
 
 
 def save_order(database_path: Path, order: Order) -> None:

@@ -15,15 +15,10 @@
 .env.*
 !.env.example
 /项目资料/
-/md/项目索引.md
 /minimal_factory/logs/
-/task2_1_prototype/artifacts/
 
-# Preserve only the small, immutable demo fixture required by existing tests.
+
+# Keep runtime databases and simulation batches local; retain one dated acceptance artifact.
 /minimal_factory/data/*
-!/minimal_factory/data/erp.simulations/
-/minimal_factory/data/erp.simulations/*
-!/minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/
-/minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/*
-!/minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/input.json
-!/minimal_factory/data/erp.simulations/SIM-97bdfc0915964e5ba0b0a33c3466a301/events.jsonl
+!/minimal_factory/data/protocol_acceptance.json
+/output/

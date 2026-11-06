@@ -2,7 +2,7 @@
 
 信号sample_hash为选中JSONL行原始字节的SHA256（不含换行）。
 图像sample_hash为PNG文件SHA256，MQTT的sample_hash为素材清单SHA256。
-Vision的detected_bolts取场景标签，payload明确标注判定来源。
+Vision的detections取场景标签，payload明确标注判定来源。
 这些函数封装项目报文契约，协议网络收发由后续调用方负责。
 """
 
@@ -51,6 +51,11 @@ def _envelope(protocol, work_order_id, operation_id, equipment_id, virtual_minut
         "equipment_id": equipment_id, "device_code": DEVICES[equipment_id],
         "is_anomaly": is_anomaly, "source_file": str(source_file.resolve()),
         "sample_hash": sample_hash, "payload": payload, "run_id": run_id,
+        "endpoint": {"MQTT": "mqtt://127.0.0.1:1883",
+                     "OPC-UA": "opc.tcp://127.0.0.1:4840/freeopcua/server/",
+                     "HTTP-Vision-Webhook": "http://127.0.0.1:8000/mes/vision/webhook",
+                     "Modbus-TCP": "modbus://192.168.10.30:502"}[protocol],
+        "transport_mode": "local_frame", "synthetic": True,
     }
     canonical = json.dumps(message, sort_keys=True, ensure_ascii=False, allow_nan=False)  # 固定字段排序。
     message_id = "MSG-" + hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:32]  # 不调用随机数。
@@ -100,7 +105,7 @@ def _signal_sample(equipment_id, is_anomaly, sample_index, asset_root):
 def build_mqtt_dispatch_message(work_order_id, operation_id, equipment_id, virtual_minute,
                                 planned_qty, *, command="START", qos=1, run_id=None,
                                 asset_root=ASSET_ROOT):
-    """输入当前任务，读取设备素材清单，返回MQTT-Dispatch-v1命令字典。"""
+    """输入当前任务，读取设备素材清单，返回MQTT PUBLISH原生结构。"""
     if equipment_id not in DEVICES:
         raise ValueError("下发设备编号不支持")  # 在读取清单前校验设备。
     if type(planned_qty) is not int or planned_qty <= 0:
@@ -112,32 +117,40 @@ def build_mqtt_dispatch_message(work_order_id, operation_id, equipment_id, virtu
     folder = IMAGE_DIR if equipment_id == "E-QC" else SIGNAL_DIR  # 清单与目标设备相对应。
     path = Path(asset_root) / folder / "manifest.json"  # 记录命令引用的素材库位置。
     manifest, raw = _json_file(path)  # 真实读取清单，命令本身不预报设备故障。
-    payload = {"topic": f"factory/line1/{DEVICES[equipment_id]}/dispatch", "qos": qos,
-               "command": command, "planned_qty": planned_qty,
-               "asset_dataset_id": manifest["field_library"]["dataset_id"],
-               "evidence_kind": "asset_manifest"}  # 清单哈希与观测样本哈希分别标识来源。
-    return _envelope("MQTT-Dispatch-v1", work_order_id, operation_id, equipment_id,
+    command_json = {"cmd": command, "wo": work_order_id, "op": operation_id,
+                    "quantity": planned_qty, "dataset": manifest["field_library"]["dataset_id"]}
+    payload = {"packet_type": "PUBLISH", "topic": f"factory/line1/{DEVICES[equipment_id]}/command",
+               "qos": qos, "retain": False, "payload_json": command_json,
+               "payload_bytes_hex": json.dumps(command_json, ensure_ascii=False,
+                                                separators=(",", ":")).encode("utf-8").hex()}
+    if qos:
+        payload["packet_id"] = 1
+    return _envelope("MQTT", work_order_id, operation_id, equipment_id,
                      virtual_minute, False, path, hashlib.sha256(raw).hexdigest(), payload, run_id)
 
 
 def build_cnc_opcua_message(work_order_id, operation_id, virtual_minute, *, is_anomaly=False,
                             sample_index=0, run_id=None, asset_root=ASSET_ROOT):
-    """读取CNC指定行，返回OPC-UA-v1节点和值及异常原因。"""
+    """读取CNC指定行，返回OPC UA节点订阅结构。"""
     sample, path, sample_hash, reasons = _signal_sample("E-ASM", is_anomaly, sample_index, asset_root)
-    keys = ("current_a", "temperature_c", "load_percent", "alarm_code")  # 四个观测字段。
-    payload = {
-        "node_id": {key: f"ns=2;s=CNC_01.{key}" for key in keys},  # 项目OPC UA节点命名约定。
-        "values": {key: sample[key] for key in keys},  # 数值直接取自磁盘样本。
-        "sample_id": sample["sample_id"], "sample_index": sample_index,
-        "anomaly_reasons": reasons, "synthetic": sample["synthetic"],
-    }
-    return _envelope("OPC-UA-v1", work_order_id, operation_id, "E-ASM", virtual_minute,
+    nodes = []
+    for key, name, data_type in (("current_a", "SpindleCurrent", "Float"),
+                                 ("temperature_c", "MotorTemperature", "Float"),
+                                 ("load_percent", "SpindleLoad", "Float"),
+                                 ("alarm_code", "AlarmCode", "UInt16")):
+        bad = bool(reasons) and key != "alarm_code"
+        nodes.append({"node_id": f"ns=2;s=Channel1.CNC_01.{name}",
+                      "data_type": data_type, "value": sample[key],
+                      "status_code": "0x803C0000 (BadOutOfRange)" if bad else "0x00000000 (Good)",
+                      "diagnostic_info": "Overload" if bad else ""})
+    payload = {"subscription_id": 1, "publishing_interval_ms": 1000, "nodes": nodes}
+    return _envelope("OPC-UA", work_order_id, operation_id, "E-ASM", virtual_minute,
                      bool(reasons), path, sample_hash, payload, run_id)  # 同时携带上下文和原始行哈希。
 
 
 def build_vision_http_message(work_order_id, operation_id, virtual_minute, *, is_anomaly=False,
                               view="front", run_id=None, asset_root=ASSET_ROOT):
-    """读取图片清单和PNG，返回HTTP-Vision-v1的本地标签回放结果。"""
+    """读取图片清单和PNG，返回Vision Webhook的本地标签回放结构。"""
     if type(is_anomaly) is not bool or view not in ("front", "side"):
         raise ValueError("is_anomaly须为bool，view须为front或side")  # 限定已有素材选择。
     folder = Path(asset_root) / IMAGE_DIR  # 固定图片素材目录。
@@ -160,20 +173,18 @@ def build_vision_http_message(work_order_id, operation_id, virtual_minute, *, is
     detected = entry["bolt_count"]  # 这是已有场景标签中的螺栓数。
     if type(detected) is not int or detected != (3 if is_anomaly else 4):
         raise ValueError("图片标签与合格/缺陷选择不一致")  # 按本素材库约定校验标签。
-    payload = {
-        "request_path": "/vision/inspect", "method": "POST", "image_path": str(path),
-        "expected_bolts": 4, "detected_bolts": detected, "defect_detected": detected < 4,
-        "defect_type": entry["defect_type"], "sample_id": entry["sample_id"],
-        "manifest_path": str(manifest_path.resolve()),
-        "result_source": entry["annotation_source"], "synthetic": entry["synthetic"],
-    }
-    return _envelope("HTTP-Vision-v1", work_order_id, operation_id, "E-QC", virtual_minute,
-                     payload["defect_detected"], path, sample_hash, payload, run_id)
+    payload = {"method": "POST", "request_headers": {"Content-Type": "application/json"},
+               "camera_ip": "192.168.10.22",
+               "image_url": f"/static/rendered_v1/{path.name}",
+               "detections": [{"label": "bolt", "count": detected, "expected": 4, "PASS": detected == 4}],
+               "result_source": entry["annotation_source"]}
+    return _envelope("HTTP-Vision-Webhook", work_order_id, operation_id, "E-QC", virtual_minute,
+                     detected < 4, path, sample_hash, payload, run_id)
 
 
 def build_robot_modbus_message(work_order_id, operation_id, virtual_minute, *, is_anomaly=False,
                                sample_index=0, slave_id=1, run_id=None, asset_root=ASSET_ROOT):
-    """读取Robot指定行及寄存器值，返回Modbus-TCP-v1字典。"""
+    """读取Robot指定行及寄存器值，返回Modbus-TCP原始寄存器与字节帧。"""
     if type(slave_id) is not int or not 1 <= slave_id <= 247:
         raise ValueError("slave_id必须为1—247的整数")  # 当前教学模式的单元编号范围。
     sample, path, sample_hash, reasons = _signal_sample("E-MOVE", is_anomaly, sample_index, asset_root)
@@ -184,14 +195,15 @@ def build_robot_modbus_message(work_order_id, operation_id, virtual_minute, *, i
     if (registers != expected or any(type(value) is not int or not 0 <= value <= 65535
                                     for value in registers.values())):
         raise ValueError("寄存器与特征值不一致或超出uint16范围")  # 先检查缩放和边界。
-    payload = {
-        "slave_id": slave_id, "function_code": 3, "registers": dict(registers),
-        "start_address": 0, "register_count": 4,  # 03功能码读取保持寄存器偏移0—3。
-        "addressing": "40001..40004 reference labels map to wire offsets 0..3",
-        "alarm_code": sample["alarm_code"], "anomaly_reasons": reasons,
-        "sample_id": sample["sample_id"], "sample_index": sample_index, "synthetic": sample["synthetic"],
-    }
-    return _envelope("Modbus-TCP-v1", work_order_id, operation_id, "E-MOVE", virtual_minute,
+    raw_registers = [registers[str(address)] for address in range(40001, 40005)]
+    # MBAP Length 包含 unit_id；40001 是点表编号，线上 PDU 偏移必须是 0。
+    frame = bytes.fromhex("0001 0000 000B") + bytes([slave_id, 3, 8])
+    frame += b"".join(value.to_bytes(2, "big") for value in raw_registers)
+    request = bytes.fromhex("0001 0000 0006") + bytes([slave_id, 3, 0, 0, 0, 4])
+    payload = {"unit_id": slave_id, "function_code": 3, "start_address": 40001,
+               "wire_start_address": 0, "register_count": 4, "raw_registers": raw_registers,
+               "request_frame_hex": request.hex(" ").upper(), "response_frame_hex": frame.hex(" ").upper()}
+    return _envelope("Modbus-TCP", work_order_id, operation_id, "E-MOVE", virtual_minute,
                      bool(reasons), path, sample_hash, payload, run_id)
 
 

@@ -6,11 +6,13 @@
 工序整批顺序流转；这里记录人工操作，不模拟物理设备或虚拟时间。
 """
 
+import json
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from uuid import uuid4
 
 from erp.database import connect
+from .schemas import Dispatch
 
 
 class BusinessError(Exception):
@@ -57,6 +59,11 @@ def initialize(path):
             );
             CREATE UNIQUE INDEX IF NOT EXISTS one_active_work_order
                 ON work_orders(order_id) WHERE status != 'cancelled';
+            CREATE TABLE IF NOT EXISTS mes_dispatch_inbox (
+                message_id TEXT PRIMARY KEY,
+                work_order_id TEXT NOT NULL UNIQUE REFERENCES work_orders(work_order_id),
+                envelope_json TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS operations (
                 operation_id TEXT PRIMARY KEY,
                 work_order_id TEXT NOT NULL REFERENCES work_orders(work_order_id),
@@ -145,9 +152,15 @@ def rows(conn, sql, args=()):
 
 def work_order(conn, work_order_id):
     result = row(conn, """
-        SELECT w.*, o.product_id, o.product_name, o.quantity, o.due_date,
+        SELECT w.*,
+               COALESCE(COALESCE(json_extract(m.envelope_json,'$.payload.product_code'),json_extract(m.envelope_json,'$.payload.order.product_id')),o.product_id) AS product_id,
+               COALESCE(COALESCE(json_extract(m.envelope_json,'$.payload.product_name'),json_extract(m.envelope_json,'$.payload.order.product_name')),o.product_name) AS product_name,
+               COALESCE(COALESCE(json_extract(m.envelope_json,'$.payload.qty'),json_extract(m.envelope_json,'$.payload.order.quantity')),o.quantity) AS quantity,
+               CASE WHEN m.message_id IS NOT NULL THEN COALESCE(json_extract(m.envelope_json,'$.payload.due_date'),json_extract(m.envelope_json,'$.payload.order.due_date'))
+                    ELSE o.due_date END AS due_date,
                o.status AS order_status
         FROM work_orders w JOIN orders o ON o.order_id=w.order_id
+        LEFT JOIN mes_dispatch_inbox m ON m.work_order_id=w.work_order_id
         WHERE w.work_order_id=?
     """, (work_order_id,))
     require(result is not None, "工单不存在", 404)
@@ -218,9 +231,16 @@ def get_work_order(path, work_order_id):
 def list_work_orders(path):
     with connect(path) as conn:
         return rows(conn, """
-            SELECT w.*, o.product_id,o.product_name,o.quantity,o.due_date,
-                   ROUND(100.0*SUM(op.good_quantity)/(o.quantity*COUNT(op.operation_id))) AS progress
+            SELECT w.*,
+                   COALESCE(COALESCE(json_extract(m.envelope_json,'$.payload.product_code'),json_extract(m.envelope_json,'$.payload.order.product_id')),o.product_id) AS product_id,
+                   COALESCE(COALESCE(json_extract(m.envelope_json,'$.payload.product_name'),json_extract(m.envelope_json,'$.payload.order.product_name')),o.product_name) AS product_name,
+                   COALESCE(COALESCE(json_extract(m.envelope_json,'$.payload.qty'),json_extract(m.envelope_json,'$.payload.order.quantity')),o.quantity) AS quantity,
+                   CASE WHEN m.message_id IS NOT NULL THEN COALESCE(json_extract(m.envelope_json,'$.payload.due_date'),json_extract(m.envelope_json,'$.payload.order.due_date'))
+                        ELSE o.due_date END AS due_date,
+                   ROUND(100.0*SUM(op.good_quantity)/
+                         (COALESCE(COALESCE(json_extract(m.envelope_json,'$.payload.qty'),json_extract(m.envelope_json,'$.payload.order.quantity')),o.quantity)*COUNT(op.operation_id))) AS progress
             FROM work_orders w JOIN orders o ON o.order_id=w.order_id
+            LEFT JOIN mes_dispatch_inbox m ON m.work_order_id=w.work_order_id
             JOIN operations op ON op.work_order_id=w.work_order_id
             GROUP BY w.work_order_id
             ORDER BY w.priority, w.planned_date IS NULL, w.planned_date, w.created_at DESC
@@ -246,6 +266,58 @@ def list_equipment(path):
 
 
 def dispatch(path, data):
+    """协议接收路径使用 payload 建单，旧 Python/HTTP 调用交给兼容入口。"""
+    if isinstance(data, Dispatch):
+        return _dispatch_legacy(path, data)
+
+    envelope_json = data.model_dump_json()
+    payload = data.payload
+    order = payload.order
+    with transaction(path) as conn:
+        received = row(conn, "SELECT * FROM mes_dispatch_inbox WHERE message_id=?", (data.message_id,))
+        if received:
+            require(json.loads(received["envelope_json"]) == json.loads(envelope_json),
+                    "同一消息编号已接收过不同内容")
+            return detail(conn, received["work_order_id"])
+        require(not row(conn, "SELECT work_order_id FROM work_orders WHERE order_id=? AND status!='cancelled'",
+                        (order.order_id,)), "该订单已有有效工单")
+
+        for step in payload.route:
+            device = equipment(conn, step.equipment_id)
+            require(device["kind"] == step.kind, "协议中的工序与设备类型不匹配")
+            require(device["status"] == "available", "协议指定的设备正在维护")
+
+        # 从报文建立 MES 本地订单记录，支持接收端使用独立数据库。
+        # 合并部署时 orders 已由 ERP 创建，保留该行并推进共享状态。
+        conn.execute("""
+            INSERT INTO orders(order_id,product_id,product_name,quantity,due_date,status,created_at)
+            VALUES (?,?,?,?,?,'pending',?) ON CONFLICT(order_id) DO NOTHING
+        """, (order.order_id, order.product_id, order.product_name, order.quantity,
+              order.due_date.isoformat() if order.due_date else None, order.created_at.isoformat()))
+        changed = conn.execute("UPDATE orders SET status='dispatched' WHERE order_id=? AND status='pending'",
+                               (order.order_id,)).rowcount
+        require(changed == 1, "订单当前状态不允许下发")
+
+        wo_id = new_id("WO")
+        conn.execute("""
+            INSERT INTO work_orders(work_order_id,order_id,status,priority,planned_date,created_at)
+            VALUES (?,?,'draft',?,?,?)
+        """, (wo_id, order.order_id, payload.priority,
+              payload.planned_date.isoformat() if payload.planned_date else None, now()))
+        for sequence, step in enumerate(payload.route, start=1):
+            conn.execute("""
+                INSERT INTO operations(operation_id,work_order_id,sequence,name,kind,minutes,equipment_id,status)
+                VALUES (?,?,?,?,?,?,?,'pending')
+            """, (new_id("OP"), wo_id, sequence, step.name, step.kind, step.minutes, step.equipment_id))
+        conn.execute("INSERT INTO mes_dispatch_inbox(message_id,work_order_id,envelope_json) VALUES (?,?,?)",
+                     (data.message_id, wo_id, envelope_json))
+        log(conn, "erp_to_mes_protocol_dispatched", envelope_json,
+            {"order_id": order.order_id, "work_order_id": wo_id}, operator="ERP")
+        return detail(conn, wo_id)
+
+
+def _dispatch_legacy(path, data):
+    """保留原表单接口和既有脚本的下发行为。"""
     with transaction(path) as conn:
         order = row(conn, "SELECT * FROM orders WHERE order_id=?", (data.order_id,))
         require(order is not None, "来源订单不存在", 404)
@@ -563,8 +635,10 @@ def dashboard(path):
         counts = {item["status"]: item["n"] for item in rows(conn, "SELECT status,COUNT(*) AS n FROM work_orders GROUP BY status")}
         order_count = row(conn, "SELECT COUNT(*) AS n FROM orders WHERE status='pending'")["n"]
         completed = row(conn, """
-            SELECT COALESCE(SUM(o.quantity),0) AS n FROM work_orders w
-            JOIN orders o ON o.order_id=w.order_id WHERE w.status='completed'
+            SELECT COALESCE(SUM(COALESCE(COALESCE(json_extract(m.envelope_json,'$.payload.qty'),json_extract(m.envelope_json,'$.payload.order.quantity')),o.quantity)),0) AS n
+            FROM work_orders w JOIN orders o ON o.order_id=w.order_id
+            LEFT JOIN mes_dispatch_inbox m ON m.work_order_id=w.work_order_id
+            WHERE w.status='completed'
         """)["n"]
         busy = row(conn, """SELECT
             (SELECT COUNT(*) FROM operations WHERE status IN ('running','paused')) +

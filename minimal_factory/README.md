@@ -1,220 +1,97 @@
-# 最小工厂 · ERP 与 MES 生产工作台
+# 最小工厂：ERP + MES + SimPy + 异构协议数据源
 
-这是本机运行的教学系统，已实现订单下发、工序执行、质量放行、ERP 完工反馈和中文操作页面，并集成独立副本上的 SimPy 生产仿真。原有 ERP 创建、查询和删除接口保留。
+这是后续“多源接入与统一字段转换”的干净源头。ERP负责订单与HTTP下发；MES保留排产、设备、报工、返工/复检及状态管理；SimPy在独立沙盒执行三工序，生成各自原生的现场帧。转换模块尚未新建。
 
-## 打开与启动
+## 启动与测试
 
-**汇报推荐入口：双击 `启动演示.cmd`**。服务未运行时启动独立后台，已健康运行则复用；自检通过后打开页面。另有 `汇报前自检.cmd` 和无需后台的 `离线演示.html`，详见 [汇报操作卡](汇报操作卡.md)。新启动的独立后台不依赖启动窗口持续打开；下面的终端启动方式则需要保留终端。
-
-**日常操作页面：http://127.0.0.1:8000/**
-
-接口文档：http://127.0.0.1:8000/docs 。两者使用同一个后台与数据库。
-
-用 VS Code 打开 `minimal_factory` 文件夹，按 **Ctrl+Shift+B** 运行“启动 ERP + MES”；或在该目录终端运行：
+在 minimal_factory 目录双击 `启动演示.cmd`，或运行：
 
 ```powershell
 .\.venv\Scripts\python.exe -m uvicorn erp.app:app --host 127.0.0.1 --port 8000
 ```
 
-出现 Uvicorn running 后打开页面，保持终端运行，Ctrl+C 停止。如果端口占用，先查看页面，不要重复启动。更新 Python 代码后需重启服务并刷新页面。
+访问 http://127.0.0.1:8000/ ，接口文档 http://127.0.0.1:8000/docs 。代码更新后需重启旧服务。`汇报前自检.cmd`只检查访问状态。旧离线导出已删除。
 
-沿用现有 Python 3.12 的 `.venv`、FastAPI、Uvicorn 和 SQLite，无需另装环境、Node.js 或前端构建工具。中文页面不依赖互联网。
-
-首次安装或更新依赖（包含 `simpy==4.1.1`）：
+首次安装：Python 3.12，`python -m pip install -r requirements.txt -r requirements-dev.txt`。前端测试另需Node.js，页面运行无需构建工具。
 
 ```powershell
-uv pip install --python .\.venv\Scripts\python.exe -r requirements.txt -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-若环境有 pip，也可使用 `.\.venv\Scripts\python.exe -m pip install -r requirements.txt -r requirements-dev.txt`。当前项目环境已安装 SimPy，可直接启动。
+测试全部使用临时数据库。每次正式仿真仅更新自己的 `data/erp.simulations/SIM-*/mes.db`，不写回原工单。已有生产数据库与历史批次保留，不为展示刷新业务状态。
 
-## 自动运行生产仿真
-
-1. 打开左侧“生产仿真”，默认载入两张各 1 件、组装/过程质检/搬运分别 3/2/1 分钟的教学工单。点击“开始仿真”，页面自动显示结果，无需按现实分钟等待。
-2. 默认两张订单分别在第 6、9 分钟完成。第二张等待组装设备 3 分钟；设备时间图显示加工区间，事件表可按工单、设备筛选。
-3. 点击“复制参数重新运行”，将第一张的“指定一次质检失败”选为“过程质检”，不合格 1 件，返回“组装”。开始新实验后，第一张在第 12 分钟完成，第二张仍在第 9 分钟完成。返修组装占用第 6—9 分钟，复检占用第 9—11 分钟。
-4. 也可选择“现有 MES 工单”，勾选后点“载入输入配置”。已完工工单可以复制，已撤回工单不能复制；缺少设备分配时先到 MES 完成分配。设备沿用工单配置，仿真页不必再选择设备类型。
-5. 可修改本次副本的数量、每件时长、一次失败配置；历史记录支持查看和复制参数。每次运行生成新批次，旧实验保留。结果页提供完整 JSON、事件 CSV、汇总 CSV。
-
-默认三道工序只是教学案例；现有工单支持 1—12 道。每批最多 50 张工单，数量和每件时长必须为正整数，每件时长最大 10000 分钟。
-
-### 仿真规则与数据隔离
-
-- SimPy 推进虚拟分钟，每台设备对应一个容量为 1 的资源。全部工单在第 0 分钟进入，按优先级、计划日期、创建时间、编号稳定排序；进入设备队列后先到先服务。
-- 按整批流转：工序耗时 = 每件时长 × 工单数量，整批完成才能进入下一工序。获得设备时自动开工，时间到后调用现有 MES 报工、释放设备；全部工序合格后自动放行并更新副本 ERP。
-- 每张工单最多指定一道过程质检失败一次；返修只能返回前序非质检工序。返修按目标工序时长 × 不合格数量，复检按来源质检时长 × 不合格数量。两者都参与同一设备队列，复检固定通过，返修不重复增加成品数量。
-- 没有合适前序工序的质检不能设置返修；返修后直接复检，不自动重做中间全部工序。最终整批质量放行不增加时间或占用设备。
-- 只复制来源产品、数量、工艺、时长、设备和关联编号，不复制报工、检验、返修历史；副本从未开工开始，全部设备初始空闲可用，不继承原库的占用或维护状态。
-- 原练习数据库不受仿真影响。历史重跑使用保存的输入快照，即使后来修改原工单也不改变已保存实验。
-- 后台执行、页面查询进度；同一实验存储目录同时只允许一个任务运行，重复启动返回 409。服务正常退出会中断未完成任务；意外退出后，下次启动将遗留运行标为中断。失败/中断保留输入和已写事件，可复制参数重跑。
-
-| 实验 | 订单 1 完成分钟 | 订单 2 完成分钟 |
-|---|---:|---:|
-| 默认各 1 件，3/2/1 分钟 | 6 | 9 |
-| 两张组装均改为 5 分钟 | 8 | 13 |
-| 两张数量均改为 2 件 | 12 | 18 |
-| 默认参数，订单 1 质检失败 1 件返回组装 | 12 | 9 |
-
-### 仿真接口与保存字段
-
-| 接口 | 用途 |
-|---|---|
-| `POST /simulation/preview` | 校验并预览输入快照，不运行生产 |
-| `POST /simulation/runs` | 后台启动，返回 202 和运行编号 |
-| `GET /simulation/runs` | 查询历史状态 |
-| `GET /simulation/runs/{run_id}` | 输入、映射、事件及完成汇总 |
-| `GET /simulation/runs/{run_id}/export?format=json` | 完整数据，完成后包含副本 MES 详情 |
-| 同上，`format=events_csv` 或 `summary_csv` | 事件表或订单汇总，UTF-8 BOM 编码 |
-
-最简启动请求为 `{}`。现有工单请求为 `{"source":"work_orders","work_order_ids":["实际工单编号"]}`；重跑为 `{"source":"replay","replay_run_id":"实际运行编号"}`。`overrides` 以工单编号为键，可以提供 `quantity`、按工序编号映射的 `minutes`，以及 `failure`。失败配置包括 `inspection_operation_id`、`target_operation_id`、`quantity`；显式 `null` 清除失败配置，省略则沿用历史配置。完整格式见 `/docs`。
-
-正式实验保存在 `data/erp.simulations/SIM-<编号>/`；其他数据库旁使用 `<数据库名>.simulations`：
-
-| 文件 | 内容 |
-|---|---|
-| `input.json` | 实际运行的产品、数量、路线、设备、失败配置快照 |
-| `mapping.json` | 副本与来源订单/工单/工序/设备编号映射；教学案例来源编号为空 |
-| `run.json` | 状态、真实创建/结束时间、已完成工单数、当前虚拟分钟 |
-| `mes.db` | 本批独立 ERP/MES 数据库，保存自动报工、检验和返修记录 |
-| `events.jsonl` | 按产生顺序逐行保存的仿真事件 |
-| `summary.json` | 成功后生成的订单、设备和加工区间汇总 |
-
-事件通用字段：`run_id` 批次、`sequence` 事件序号、`sim_time_min` 虚拟分钟、`event_type` 类型、`order_id/work_order_id/operation_id/equipment_id` 关联编号、`quantity` 数量、`phase` 阶段（normal/repair/reinspection）、`recorded_at` 真实记录时间。返修相关事件含 `rework_id`；获得设备含 `wait_min`；质检事件含 `accepted_quantity/rejected_quantity`。
-
-汇总字段：`makespan_min` 最后一张完成时间；订单 `completed_min` 完成时刻、`waiting_min` 累计设备等待、`rework_quantity` 返修数量；设备 `busy_min` 累计占用、`utilization` 百分比（占用 ÷ 总生产时间 × 100）；`intervals` 保存每次加工起止和阶段。CSV 汇总按工单输出，设备及完整区间在 JSON 中。
-
-MES 的真实操作时间保留，仿真时间单独记录。同参数下虚拟时间和事件顺序一致；批次编号、返修编号和真实记录时间可以不同。没有随机不良率、故障、优化排程或实时动画。
-
-## 亲手跑一张工单
-
-使用“P001 / 简易装配件 / 数量 2”，也可以直接用已有的待下发订单。
-
-1. **ERP 订单**：点击“新建订单”，填写产品、数量、可选交期，创建后出现一笔新订单。
-2. **下发 MES**：点击订单行的“下发 MES”，核对优先级、计划日期与工艺路线，点击“生成工单”。默认路线“组装 → 过程质检 → 搬运”可在下发时修改。
-3. **分配设备**：为三道工序分别选择“教学组装工位”“教学质检工位”“教学搬运资源”，每道点击“保存设备”；然后点击“下达执行”。
-4. **依次开工和报工**：第一道工序点“开工”，填写操作人并确认。点“生产报工”，合格数填 2、待返工数填 0，提交。达到计划合格数后工序完成、设备释放，下一工序才能开始。对其余工序重复。
-5. **最终质量检验**：所有工序完成后点击该按钮，填写操作人、返工数 0 并提交。此时工单完成，ERP 订单同步为“已完成”。工序进度 100% 本身不代表已质量放行。
-6. **查结果**：回到 ERP 订单查看状态；工单详情下方查看报工、质检和追溯记录。点击“下载追溯 JSON”导出全部关联数据。
-
-页面顶部可“刷新数据”；从其他页面或接口操作后点击它更新。已提交数据不因关闭浏览器或重启服务而丢失。
-
-订单搜索只筛选当前列表，不修改数据。无匹配结果时，可点“清空搜索”恢复全部订单；窄屏下订单显示为带字段名的卡片。
-
-## 功能与业务规则
-
-| 功能 | 行为 |
-|---|---|
-| 订单接收 | 同一订单同时仅一张有效工单，拒绝重复下发 |
-| 手工排产 | 按优先级 P1→P3、计划日期排序，开工前可改计划；没有自动优化排程 |
-| 工艺路线 | 下发时设置 1—12 道顺序工序，保存为工单路线；类型为组装、质检、搬运 |
-| 设备管理 | 登记设备、维护/恢复、分配同类型设备；开工时检查是否空闲 |
-| 执行 | 依序开工、暂停、恢复；暂停保留占用，完成工序自动释放 |
-| 报工 | 支持分批；合格数累积达到计划才完成，拒绝超量及未开工/暂停时提交 |
-| 质量 | 过程/最终质检不合格时指定返修工序，生成独立任务；返修占用加工设备，复检占用质检设备 |
-| 完工反馈 | 最终质检全部通过，在同一事务中完成工单并更新 ERP |
-| 撤回 | 仅未开工可撤回，保留历史，来源订单恢复待下发并可重新生成工单 |
-| 追溯 | 保存实际操作时间、人工填写的操作人、数量、事件和关联编号，可导出 JSON |
-
-### 数量怎样计算
-
-加工工序计划 2 件，第一次报“合格 1、待返工 1”：当前合格数为 1，仍需 1 件。在本工位修复后再报“合格 1、待返工 0”，工序才完成，期间继续占用加工设备。
-
-待返工记录的是失败加工的**件次**，不等于报废数量；同一产品多次返工可有多条记录。本系统不处理报废、补料或拆批。
-
-过程质检若报“合格 1、待返工 1”，必须选择返回哪道已完成的前序加工/搬运工序，并填写原因。系统生成 1 件的返修任务，释放质检设备，暂时锁定该工单的正常流转。不要在原工序重复补报这 1 件；返修任务复检通过后，系统将其计入来源质检工序的合格数。原始报工记录保留，当前合格数需结合复检记录理解。
-
-最终质检不合格也必须明确指定返修工序，不再自动退回最后工序。原工序合格加工量保留为历史结果；存在返修任务时，工单保持生产中，禁止最终放行。任务复检通过后回到整批质量放行，全部通过才反馈 ERP。进度 100% 不代表没有质量待办。
-
-### 返修操作示例
-
-1. 过程质检提交合格 1、返工 1，原因“组装松动”，返回工序选择“组装”。
-2. 在“返修与复检”区域点击“返修开工”，选择空闲组装设备。设备忙或维护时不能开工，等待期间不占用设备。
-3. 点击“返修完成”，释放组装设备，进入等待复检。
-4. 点击“开始复检”，选择空闲质检设备；提交复检结果后释放设备。
-5. 全部合格则完成返修任务，恢复正常流转；仍有不合格则同一批返修件进入下一轮返修，保留每轮记录。
-
-当前边界：每张工单同时一项返修任务，按该任务的整批返修件处理，不拆分复检结果；修复指定工序后直接复检，不自动重做中间所有工序。MES 页面仍由人登记实际动作；SimPy 在独立副本中自动执行相同业务规则，两者均未连接真实设备。最终质量放行不模拟设备耗时。旧版本记录按原样保留，不追溯生成返修任务。
-
-### 可以验证的失败案例
-
-- 未分配全部设备就下达：提示先分配设备。
-- 前序未完、设备占用或维护时开工：拒绝执行。
-- 剩余 2 件却报“合格 2、返工 1”：拒绝超量，改正后可提交。
-- 未开工、暂停或完工后报工：拒绝。
-- 已下发订单再次生成工单：拒绝。
-- 不存在的订单/工单：404；字段不合法：422；业务状态不允许：409。
-
-报工、最终质检和返修操作携带 `request_id`。页面打开表单时生成编号，网络失败后重试沿用；后台不重复计算产量，相同编号却更改已保存的内容会被拒绝。创建新订单没有此机制：网络结果不明确时先刷新列表核对，再决定是否重新创建。
-
-## 删除填错的订单
-
-在 `/docs` 中使用原有 `DELETE /orders/{order_id}`，先查询并核对完整编号。成功返回 204（空内容），找不到返回 404。
-
-删除会永久移除订单，无法撤销。**有关联 MES 历史的订单禁止删除，返回 409**，包括关联已撤回工单的订单。未开工任务应使用“撤回工单”，保留追溯。
-
-## 文件和代码对应
-
-| 文件 | 作用 | 建议入口 |
-|---|---|---|
-| `web/index.html` | 中文页面、表单与接口请求；HTML/CSS/JS 集中放置 | dispatchOrder、reportOperation |
-| `erp/app.py` | 启动服务、初始化、提供页面和 ERP 接口、接入 MES | create_app、lifespan |
-| `erp/schemas.py` | ERP 字段与状态规则 | OrderCreate、Order |
-| `erp/database.py` | SQLite 连接、ERP 读写删除、旧表迁移 | connect、initialize |
-| `mes/api.py` | 接收 /mes/* 请求，调用业务函数、返回结果 | create_router 内的 dispatch、report |
-| `mes/schemas.py` | MES 输入格式与数量校验 | Dispatch、Report、Inspection、ReworkAction |
-| `mes/service.py` | 事务、SQL、顺序、占用、状态和追溯 | report / inspect → create_rework → execute_rework |
-| `simulation/schemas.py`、`inputs.py` | 输入校验、只读来源快照与参数覆盖 | RunRequest、source_snapshot、configure |
-| `simulation/api.py`、`service.py` | 仿真接口、后台任务、存储与导出 | start、_execute、get、export |
-| `simulation/engine.py` | SimPy 时间、设备排队、自动调用 MES | simulate 内的 production、processing |
-| `web/simulation.js`、`simulation.css` | 仿真配置、历史、图表和事件页面 | renderSimulation、simResult |
-| `data/erp.db` | 订单、工单、设备及执行记录 | 数据文件，不是源代码 |
-| `tests/test_erp.py`、`tests/test_mes.py`、`tests/test_simulation.py` | 临时数据库中的成功/失败测试 | 测试命令见下方 |
-| `当前进度.md` | 开发状态与教学断点 | 恢复工作先读最新记录 |
-
-一次生产报工的执行路径：
+## 保留的目录
 
 ```text
-页面点击提交报工
-→ POST /mes/operations/{op_id}/reports
-→ Report 校验输入
-→ mes/api.py 的 report
-→ mes/service.py 的 report 开启事务
-→ 检查状态、重复请求和剩余数量
-→ 保存报工、更新进度、记录事件
-→ 提交事务，页面重新读取结果
+minimal_factory/
+├─ erp/                  # 订单、dispatch.py、http_trace.py、feed.py
+├─ mes/                  # HTTP接收、工单/工序/设备/返工状态机
+├─ simulation/           # engine.py、field_protocols.py、field_runtime.py、assets.py等
+├─ synthetic_signals/
+│  └─ generated_v1/      # 完整保留的合成信号库
+├─ synthetic_images/
+│  └─ rendered_v1/       # 完整保留的图像、标签与清单；两套素材共36文件
+├─ web/                  # index.html、simulation.js、simulation.css
+├─ tools/
+│  ├─ prepare_field_assets.py
+│  └─ demo_launcher.py
+├─ tests/                # ERP/MES/HTTP、原生帧、SimPy/异常级联与前端回归
+├─ data/                 # 本机业务库/历史批次；protocol_acceptance.json为本轮验收
+├─ logs/                 # 运行时日志（不提交Git）
+├─ .venv/                # 本机运行环境（不提交Git）
+├─ .vscode/              # 启动任务配置
+├─ .gitignore
+├─ requirements.txt
+├─ requirements-dev.txt
+├─ README.md
+├─ 当前进度.md
+├─ 启动演示.cmd
+└─ 汇报前自检.cmd
 ```
 
-表之间通过 order_id、work_order_id、operation_id、equipment_id 关联。写操作先获得 SQLite 写锁再检查条件，中途出错会回滚，两张工单不能同时抢到同一设备。
+外围原型、旧统一库、学习/离线演示、临时目录已清理；源码历史在Git的 `backup-before-clean`。不在工作区保留第二套备份目录。
 
-### 按执行顺序读 SimPy 代码
+## ERP 的 Connector 源头（只读）
 
-1. **输入工单**：网页提交 `POST /simulation/runs` → `RunRequest` 校验 → `SimulationService.start` → `preview` → `inputs.configure`。这里得到本次快照，保存输入和映射，然后提交后台任务。
-2. **资源排队**：后台 `_execute` 调用 `engine.simulate`，先建独立 `mes.db`，再创建 `Environment` 和设备 `Resource`。每张工单启动一个 `production` 生成器；到工序时进入 `processing`，`yield request` 表示等到设备可用，期间其他工单继续推进。
-3. **自动报工**：获得资源后调用 MES 开工，`yield env.timeout(分钟 × 数量)` 等待的是虚拟时间。时间到后调用 MES `report`，释放资源；指定质检失败则调用 `execute_rework` 完成返修与复检，每次都重新申请相应资源。最后 `inspect` 放行副本工单及订单。
-4. **结果保存**：`emit` 写事件，`progress` 保存进度；`env.run()` 推进直到事件耗尽。引擎汇总等待/占用/完工，后台写 `summary.json` 并标记 completed。页面查询结果，绘图或调用 export 下载。
+- `GET /orders`：订单列表；`GET /orders/{order_id}`：详情，未找到返回404。
+- `GET /erp/feed` 与 `GET /orders/dispatch-outbox`：同一结果，含 `orders` 主数据数组与 `dispatch_outbox` 原消息数组。
+- 每条发件箱记录含 message_id、timestamp、order_id、原生payload、完整envelope、endpoint、已记录的http请求/响应、acknowledged_at与delivery_state。
+- feed以SQLite `mode=ro`、`query_only=ON`及单个读事务查询，不下发、不改变状态、不执行仿真。
+- 历史报文原样返回：没有保存过的HTTP寻址/响应不能伪装成已观测201，对应值返回null。`unconfirmed`不等于未发送；例如MES已接收但ERP丢失响应，需要按同一message_id重试。
 
-这四步是后续逐段讲解的路线；实现完成并不代表已完成代码教学。
+新服务首次启动仅为outbox幂等增加 `http_json` 列，保存以后的实际交互；不会清空订单或历史记录。
 
-`step1_orders.py` 仅保留为以前的基础练习，不参与服务启动。
+## 五类协议的原生结构
 
-## 数据迁移与备份
+共享追溯信息（工单/工序、源文件、哈希、虚拟分钟）放在帧外层，`payload`保留协议差异。
 
-首次运行新版本时，旧表只允许 pending 状态，程序先备份为 `data/erp.before-mes.db`，再在事务中扩展状态约束，保留原订单。后续启动不会重复迁移或覆盖备份。该文件只是升级前快照，不是持续备份。
+| 类型 | 寻址 | 原生结构 | 传输事实 |
+|---|---|---|---|
+| HTTP-REST | POST http://127.0.0.1:8000/mes/dispatch | IT JSON：order_id/product_code/qty/route_steps | ERP真实HTTP POST，成功201；HTTP头与状态在outbox和日志 |
+| MQTT | mqtt://127.0.0.1:1883；factory/line1/{device_code}/command | PUBLISH：topic/qos/retain/packet_id/payload_json/payload_bytes_hex | 本地帧，未连接broker |
+| OPC-UA | opc.tcp://127.0.0.1:4840/freeopcua/server/ | nodes订阅列表：node_id/data_type/value/status_code | 本地帧，未连接OPC server |
+| HTTP-Vision-Webhook | POST http://127.0.0.1:8000/mes/vision/webhook | camera_ip/image_url/detections(label/count/expected/PASS) | 本地帧，未发起webhook请求 |
+| Modbus-TCP | modbus://192.168.10.30:502；unit=1/FC03/40001/count=4 | raw_registers整数数组与request/response_frame_hex | 本地帧，未连接PLC |
 
-日常数据在 `data/erp.db`。手工备份先停止服务再复制；不要删除数据库来刷新页面。备份仿真实验时同时保留 `data/erp.simulations/`。UTC 时间在页面按浏览器时区显示；MES 计划分钟数不是实测时长，在仿真副本中作为耗时输入。
+MES_BASE_URL可覆盖ERP目标服务地址，实际目标随报文保存。旧HTTP-REST/ISA95-Lite-v1仍支持，历史幂等与订单快照保留。OPC UA使用有效BadOutOfRange状态码0x803C0000并注明Overload诊断；不把通用Bad码误称BadOverload。
 
-2026-10-20 的返修升级只新增返修表及可空的返回工序字段，原有订单、工单、报工和质检记录保留。本次升级前备份为 `data/erp.before-rework-20261020-114513.db`，已逐表核对原字段与记录不变。此备份同样只是升级前快照。
+Modbus载荷故意不带物理量英文名。后续Connector必须依据以下点表解释；当前报警与设备卡片的少量本地读取不代表已经完成通用转换模块。
 
-## 自动验证与范围
+| 点表编号 | 线上偏移 | 含义 | 解码 |
+|---|---|---|---|
+| 40001 | 0 | 电流 | uint16 / 1000 → A |
+| 40002 | 1 | 温度 | uint16 / 10 → ℃ |
+| 40003 | 2 | 负载 | uint16 / 10 → % |
+| 40004 | 3 | 故障码 | uint16；当前素材0正常/1过载 |
 
-```powershell
-.\.venv\Scripts\python.exe -B -m unittest discover -s tests -v
-```
+MBAP的Length含unit_id；请求PDU使用零偏移而非把40001写进线上地址。实际异常样本为 `[4421,886,1105,1]`，对应4.421A、88.6℃、110.5%、故障1；不为凑示例改造原素材的故障码。
 
-2026-10-20 的 31 项测试已通过：原 21 项覆盖 ERP/MES 业务及迁移，新增 10 项覆盖仿真四组数值、设备互斥、返修复检、结果一致、确定性、源数据库字节不变、完成工单复制、历史重跑、接口与导出、并发运行拒绝、失败和中断恢复。测试使用临时数据库。
+## 素材、级联与落盘
 
-2026-10-21 新增并单独运行 `tests/test_demo_launcher.py` 的 4 项测试通过，验证启动复用、端口冲突、启动失败和访问自检失败；本轮未重新执行原 31 项。另已实际验证启动器退出后服务仍在线、重复启动复用、自检 CMD 返回成功。离线 HTML 已核对数据与无外部依赖，受内置浏览器本地文件限制，视觉显示需汇报前在资源管理器中双击确认。
+`tools/prepare_field_assets.py`根据已保留的原始合成素材确定性整理现场样本；运行时真实读盘并校验清单/哈希。信号非实测，Robot部分特征为教学派生；Vision取场景标签，不做图像识别。四PNG通过 `/static/rendered_v1/{normal|defect}_{front|side}.png` 只读白名单提供。
 
-本版本用于本机学习、演示和生成追溯及确定性仿真数据。尚不包含登录权限、实际设备通信、库存/BOM、报废补料、拆批并行工艺、自动优化排程、随机不良/故障、多工厂和企业级运维。操作人是填写的名字，不是认证身份。服务仅监听 127.0.0.1。
+在仿真页选择现有MES工单后，Normal/Anomaly/Sampled均需点击才开始。法兰2件、每件3/2/1分钟：Normal为12分钟；三设备异常导致CNC维修+6、Vision返工3/复检2、Robot维修+5，共28分钟、延误16。设备事件当刻实际写fault，恢复后写available，红灯保留曾发生故障的轨迹。
 
-新电脑使用 Python 3.12 创建 .venv，安装 requirements.txt；测试另安装 requirements-dev.txt。
+每批保留input.json、mes.db、events.jsonl、protocol_messages.jsonl、summary.json及运行记录；协议完整JSON同时进入沙盒表、事件detail与JSONL。网页协议列表直接展示类型、地址和原始payload，ERP额外显示实际请求头与状态码。
+
+本轮完整实际证据在 [data/protocol_acceptance.json](data/protocol_acceptance.json)，包括临时8000服务HTTP 201、正常/异常结果、五帧、设备当刻状态、36素材哈希及原主库只读核对。该文件有明确时间，是验收快照，不是实时业务状态。完整Gemini反馈见 [项目推进日志](../md/项目推进日志.md)。

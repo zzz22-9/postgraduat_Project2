@@ -58,3 +58,5 @@
   .sim-delay-values{grid-template-columns:1fr;gap:14px}.sim-delay-banner{padding:18px}.sim-delay-banner .panel-head{flex-wrap:wrap;gap:10px}
   .sim-delay-values strong{font-size:29px}.sim-vision-images{grid-template-columns:1fr}.sim-source-path,.sim-raw-json{max-width:100%}
 }
+
+.sim-address{white-space:pre-wrap;overflow-wrap:anywhere;min-width:220px;max-width:340px;font:12px/1.7 Consolas,monospace;margin:0 0 10px;color:#254b68}

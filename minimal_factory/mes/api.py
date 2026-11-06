@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 
 from . import service
-from .schemas import Assignment, Dispatch, EquipmentCreate, EquipmentState, Inspection, Note, Plan, Report, ReworkAction
+from .schemas import Assignment, Dispatch, DispatchEnvelope, EquipmentCreate, EquipmentState, Inspection, Note, Plan, Report, ReworkAction
 
 
 def create_router(database_path):
@@ -26,6 +26,10 @@ def create_router(database_path):
 
     @router.post("/work-orders", status_code=201, summary="ERP 订单下发为 MES 工单")
     def dispatch(data: Dispatch):
+        return call(service.dispatch, data)
+
+    @router.post("/dispatch", status_code=201, summary="接收 ERP 的 ISA95-Lite 下发报文")
+    def receive_dispatch(data: DispatchEnvelope):
         return call(service.dispatch, data)
 
     @router.get("/work-orders/{wo_id}", summary="工单及全部执行记录")

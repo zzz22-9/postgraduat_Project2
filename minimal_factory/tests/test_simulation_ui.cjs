@@ -19,6 +19,7 @@ const ctx=vm.createContext({
   api:async(url,method='GET',body)=>{
     requests.push({url,method,body});
     if(url==='/simulation/runs')return [];
+    if(url==='/erp/feed')return {dispatch_outbox:[]};
     if(url==='/simulation/preview')return normal.input;
     throw new Error('Unexpected API request: '+url);
   }
@@ -51,10 +52,24 @@ function check(fn){fn();checks++}
   check(()=>assert.ok(anomalyHtml.includes('螺栓 3/4')&&anomalyHtml.includes('螺栓 4/4')));
   check(()=>assert.ok(normalHtml.includes('src="/static/rendered_v1/normal_front.png"')));
   check(()=>assert.ok(anomalyHtml.includes('src="/static/rendered_v1/defect_front.png"')));
-  for(const protocol of ['MQTT-Dispatch-v1','OPC-UA-v1','HTTP-Vision-v1','Modbus-TCP-v1']){
+  for(const protocol of ['MQTT','OPC-UA','HTTP-Vision-Webhook','Modbus-TCP']){
     check(()=>assert.ok(anomalyHtml.includes(protocol)));
   }
   check(()=>assert.equal((anomalyHtml.match(/查看完整 raw_json/g)||[]).length,10));
+  for(const address of ['mqtt://127.0.0.1:1883','factory/line1/CNC_01/command','opc.tcp://127.0.0.1:4840/freeopcua/server/','http://127.0.0.1:8000/mes/vision/webhook','modbus://192.168.10.30:502']){
+    check(()=>assert.ok(anomalyHtml.includes(address)));
+  }
+  for(const key of ['payload_json','nodes','detections','raw_registers','response_frame_hex'])check(()=>assert.ok(anomalyHtml.includes(key)));
+  ctx.erpMessage={message_id:'TEST-HTTP',protocol:'HTTP-REST',order_id:normal.input.orders[0].order_id,
+    timestamp:'2026-11-07T00:00:00Z',endpoint:'http://127.0.0.1:8000/mes/dispatch',
+    payload:{order_id:normal.input.orders[0].order_id,product_code:'P001',qty:2,route_steps:[]},
+    http:{url:'http://127.0.0.1:8000/mes/dispatch',method:'POST',request_headers:{'Content-Type':'application/json'},status_code:201},delivery_state:'acknowledged'};
+  run('simView.erpFeed=[erpMessage]');
+  const five=run('simProtocolMessages(anomaly)');
+  check(()=>assert.ok(five.includes('HTTP-REST')&&five.includes('Status Code: 201')&&five.includes('Request Headers')));
+  check(()=>assert.ok(five.includes('http://127.0.0.1:8000/mes/dispatch')&&five.includes('route_steps')));
+  check(()=>assert.equal((five.match(/查看完整 raw_json/g)||[]).length,11));
+  run('simView.erpFeed=[]');
   const shuffled=structuredClone(anomaly);shuffled.protocol_messages.reverse();ctx.shuffled=shuffled;
   const stream=run('simProtocolMessages(shuffled)');
   check(()=>assert.ok(stream.indexOf('t=0</td>')<stream.indexOf('t=6</td>')));

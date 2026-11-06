@@ -68,7 +68,7 @@ class SimulationFrontendTests(unittest.TestCase):
         if output := os.environ.get("SIM_UI_ARTIFACT_DIR"):
             target = Path(output).resolve()
             workspace = Path(__file__).resolve().parents[2]
-            self.assertTrue(target.is_relative_to(workspace / ".task_work"))
+            self.assertTrue(target.is_relative_to(workspace / "minimal_factory" / "data"))
             target.mkdir(parents=True, exist_ok=True)
             for name in ("normal.json", "anomaly.json", "ui_normal.html", "ui_anomaly.html"):
                 shutil.copyfile(fixtures / name, target / name)

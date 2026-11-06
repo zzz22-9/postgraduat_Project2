@@ -32,7 +32,7 @@ class FieldRecorder:
     def __init__(self, path, stream, equipment):
         self.path, self.stream = path, stream
         self.messages = []
-        protocols = {"E-ASM": "OPC-UA-v1", "E-QC": "HTTP-Vision-v1", "E-MOVE": "Modbus-TCP-v1"}
+        protocols = {"E-ASM": "OPC-UA", "E-QC": "HTTP-Vision-Webhook", "E-MOVE": "Modbus-TCP"}
         self.alerts = {eq["equipment_id"]: dict(
             equipment_id=eq["equipment_id"], equipment_name=eq["name"],
             device_code=DEVICES[eq["equipment_id"]], protocol=protocols[eq["equipment_id"]],
@@ -56,7 +56,7 @@ class FieldRecorder:
                          (alarm_summary, message["source_file"], message["sample_hash"], raw))
             mes.log(conn, action, raw, wo, op, operator="SimPy")
         self.messages.append(message)
-        if message["protocol"] != "MQTT-Dispatch-v1":
+        if message["protocol"] != "MQTT":
             alert = self.alerts[message["equipment_id"]]
             alert.update(latest_evidence=message["payload"], latest_message_id=message["message_id"])
             # 复检合格后仍保留最初缺陷图片；正常卡片也可直接展示采集数值/图像。
@@ -104,15 +104,16 @@ class FieldRecorder:
 def alarm_text(message, extra_minutes):
     code, payload = message["device_code"], message["payload"]
     if code == "Vision_01":
-        reason = f"检出法兰缺失螺栓({payload['detected_bolts']}/{payload['expected_bolts']})"
+        detection = payload["detections"][0]
+        reason = f"检出法兰缺失螺栓({detection['count']}/{detection['expected']})"
         treatment = "返工/复检"
     else:
         if code == "CNC_01":
-            values = payload["values"]
-            current, temperature, load = (values[k] for k in ("current_a", "temperature_c", "load_percent"))
+            values = {node["node_id"].rsplit(".", 1)[-1]: node["value"] for node in payload["nodes"]}
+            current, temperature, load = (values[k] for k in ("SpindleCurrent", "MotorTemperature", "SpindleLoad"))
         else:
-            regs = payload["registers"]
-            current, temperature, load = regs["40001"]/1000, regs["40002"]/10, regs["40003"]/10
+            regs = payload["raw_registers"]
+            current, temperature, load = regs[0]/1000, regs[1]/10, regs[2]/10
         reason = f"电流/温度/负载异常({current:g}A/{temperature:g}℃/{load:g}%)"
         treatment = "停机检修"
     return (f"【{'质检' if code == 'Vision_01' else '设备'}报警】{code} {reason}，"

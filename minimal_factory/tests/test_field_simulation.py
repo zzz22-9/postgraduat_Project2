@@ -82,7 +82,7 @@ class FieldSimulationTests(unittest.TestCase):
         messages = result["protocol_messages"]
         self.assertEqual(len(messages), 6)
         self.assertEqual({m["protocol"] for m in messages},
-                         {"MQTT-Dispatch-v1", "OPC-UA-v1", "HTTP-Vision-v1", "Modbus-TCP-v1"})
+                         {"MQTT", "OPC-UA", "HTTP-Vision-Webhook", "Modbus-TCP"})
         self.assertEqual([m["virtual_minute"] for m in messages], [0, 6, 6, 10, 10, 12])
 
     def test_all_anomalies_real_fault_repair_rework_and_delay(self):

@@ -20,7 +20,7 @@
   .toolbar .search{max-width:none}
 }
 </style>
-<link rel="stylesheet" href="/web/simulation.css?v=20261106-sprint2">
+<link rel="stylesheet" href="/web/simulation.css?v=heterogeneous-20261106-sprint2">
 </head>
 <body>
 <div class="layout">
@@ -74,7 +74,19 @@ async function refresh(){
 }
 function navigate(next){page=next;selected=null;detail=null;render()}
 function heading(kicker,title,subtitle,buttons=''){return `<div class="heading"><div><div class="eyebrow">${kicker}</div><h1>${title}</h1><p class="muted">${subtitle}</p></div><div class="actions">${buttons}</div></div>`}
-function eventList(events){return events.length?`<div class="timeline">${events.map(ev=>`<div class="event"><div><p><strong>${esc(actions[ev.action]||ev.action)}</strong> · ${esc(ev.detail)}</p><small>${esc(time(ev.created_at))} · ${esc(ev.operator)} ${ev.work_order_id?`· ${esc(short(ev.work_order_id))}`:''}</small></div></div>`).join('')}</div>`:empty('执行下发、开工或报工后，这里会记录发生的事情。')}
+function eventList(events){
+  if(!events.length)return empty('执行下发、开工或报工后，这里会记录发生的事情。');
+  return `<div class="timeline">${events.map(ev=>{
+    let body=esc(ev.detail);
+    const protocolEvent=ev.action==='erp_to_mes_protocol_dispatched';
+    if(protocolEvent){
+      try{body=esc(JSON.stringify(JSON.parse(ev.detail),null,2))}catch{}
+      body=`<details><summary>查看完整协议报文</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${body}</pre></details>`;
+    }
+    const title=protocolEvent?'ERP → MES 协议下发':(actions[ev.action]||ev.action);
+    return `<div class="event"><div><p><strong>${esc(title)}</strong></p>${body}<small>${esc(time(ev.created_at))} · ${esc(ev.operator)} ${ev.work_order_id?`· ${esc(short(ev.work_order_id))}`:''}</small></div></div>`;
+  }).join('')}</div>`;
+}
 function render(){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
   $('#breadcrumb').textContent={overview:'生产总览',orders:'ERP 订单',workorders:'MES 工单',equipment:'设备资源',simulation:'生产仿真'}[page];
@@ -155,7 +167,41 @@ function rememberOperator(f){const name=String(f.get('operator')).trim();session
 function noteFields(reason=''){return `<div class="form-grid">${operatorField()}<label class="full">说明 / 原因<textarea name="note" required maxlength="300">${esc(reason)}</textarea></label></div>`}
 function newOrder(){openModal('新建 ERP 订单',`<p class="muted">保存需求后，再选择“下发 MES”安排生产。</p><div class="form-grid"><label>产品编号<input name="product_id" required maxlength="50" placeholder="例如 P001"></label><label>产品名称<input name="product_name" required maxlength="100" placeholder="例如 简易装配件"></label><label>需求数量<input name="quantity" type="number" min="1" step="1" required value="2"></label><label>交期（选填）<input name="due_date" type="date"></label></div>`,async f=>{await api('/orders','POST',{product_id:f.get('product_id'),product_name:f.get('product_name'),quantity:Number(f.get('quantity')),due_date:f.get('due_date')||null});page='orders';selected=null},'创建订单')}
 function routeInput(name,kind,minutes){return `<div class="route-input"><label>工序名称<input class="step-name" value="${esc(name)}" maxlength="80" required></label><label>所需设备类型<select class="step-kind">${options(kinds,kind)}</select></label><label>分钟 / 件<input class="step-minutes" type="number" min="1" max="10000" step="1" value="${minutes}" required></label><button type="button" class="remove-step" aria-label="移除此工序">×</button></div>`}
-function dispatchOrder(id){const o=state.orders.find(x=>x.order_id===id);openModal('下发 MES · 制定工艺路线',`<p><strong>${esc(o.product_name)}</strong> · ${o.quantity} 件</p><p class="muted">下方按执行顺序排列，保存后作为本工单的路线。</p><div class="form-grid"><label>优先级<select name="priority">${options({'1':'P1 紧急','2':'P2 普通','3':'P3 低'},'2')}</select></label><label>计划日期（选填）<input name="planned_date" type="date"></label></div><div id="route-inputs">${routeInput('组装','assembly',3)+routeInput('过程质检','inspection',2)+routeInput('搬运','transport',1)}</div><button type="button" id="add-step" class="small">＋ 添加工序</button><p class="footnote">一次下发生成一张工单；计划分钟数不会自动运行设备。</p>`,async f=>{const steps=[...document.querySelectorAll('.route-input')].map(el=>({name:el.querySelector('.step-name').value,kind:el.querySelector('.step-kind').value,minutes:Number(el.querySelector('.step-minutes').value)}));const w=await api('/mes/work-orders','POST',{order_id:id,priority:Number(f.get('priority')),planned_date:f.get('planned_date')||null,steps});selected=w.work_order_id;page='workorders'},'生成工单');$('#add-step').onclick=()=>{if(document.querySelectorAll('.route-input').length<12)$('#route-inputs').insertAdjacentHTML('beforeend',routeInput('','assembly',1))};$('#route-inputs').onclick=ev=>{if(ev.target.closest('.remove-step')&&document.querySelectorAll('.route-input').length>1)ev.target.closest('.route-input').remove()}}
+function dispatchOrder(id){
+  const o=state.orders.find(x=>x.order_id===id);
+  // 当前弹窗的每次重试使用同一消息编号，ERP 保存并重发同一份完整报文。
+  const message_id=crypto.randomUUID();
+  openModal('下发 MES · 制定工艺路线',
+    `<p><strong>${esc(o.product_name)}</strong> · ${o.quantity} 件</p>
+    <p class="muted">下方按执行顺序排列，保存后作为本工单的路线。</p>
+    <div class="form-grid"><label>优先级<select name="priority">${options({'1':'P1 紧急','2':'P2 普通','3':'P3 低'},'2')}</select></label>
+    <label>计划日期（选填）<input name="planned_date" type="date"></label></div>
+    <div id="route-inputs">${routeInput('组装','assembly',3)+routeInput('过程质检','inspection',2)+routeInput('搬运','transport',1)}</div>
+    <button type="button" id="add-step" class="small">＋ 添加工序</button>
+    <p class="footnote">下发时按工序类型分配 CNC_01、Vision_01、Robot_01。计划分钟数按每件计算。</p>`,
+    async f=>{
+      const steps=[...document.querySelectorAll('.route-input')].map(el=>({
+        name:el.querySelector('.step-name').value,
+        kind:el.querySelector('.step-kind').value,
+        minutes:Number(el.querySelector('.step-minutes').value)
+      }));
+      // 网页先请求 ERP，ERP 再把完整协议报文通过 HTTP 发送给 MES。
+      const w=await api(`/orders/${encodeURIComponent(id)}/dispatch`,'POST',{
+        order_id:id,message_id,priority:Number(f.get('priority')),
+        planned_date:f.get('planned_date')||null,steps
+      });
+      selected=w.work_order_id;
+      page='workorders';
+    },'生成工单');
+  $('#add-step').onclick=()=>{
+    if(document.querySelectorAll('.route-input').length<12)
+      $('#route-inputs').insertAdjacentHTML('beforeend',routeInput('','assembly',1));
+  };
+  $('#route-inputs').onclick=ev=>{
+    if(ev.target.closest('.remove-step')&&document.querySelectorAll('.route-input').length>1)
+      ev.target.closest('.route-input').remove();
+  };
+}
 function reworkTargetFields(source=null){
  const targets=detail.operations.filter(op=>op.status==='completed'&&op.kind!=='inspection'&&(!source||op.sequence<source.sequence));
  return `<label class="full">不合格时返回哪道工序<select name="rework_operation_id"><option value="">请选择返修工序（全部合格时留空）</option>${targets.map(op=>`<option value="${op.operation_id}">${op.sequence}. ${esc(op.name)} · ${esc(kinds[op.kind])}</option>`).join('')}</select></label>`;
@@ -204,6 +250,6 @@ $('#close-modal').onclick=$('#cancel-modal').onclick=()=>{if(!$('#submit-modal')
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>navigate(b.dataset.page));$('#refresh').onclick=()=>refresh().catch(()=>{});
 refresh().catch(()=>{});
 </script>
-<script src="/web/simulation.js?v=20261106-sprint2"></script>
+<script src="/web/simulation.js?v=heterogeneous-20261106-sprint2"></script>
 </body>
 </html>

@@ -1,0 +1,984 @@
+{
+  "verified_at_beijing": "2026-11-07T00:41:29.285411+08:00",
+  "scope": "Temporary ERP/MES real HTTP on port 8000 and isolated SimPy; production database read-only",
+  "source_head": "651216b",
+  "backup_commit": "2fe4c21148b77a56eefcd2d923f9103007bf2c63",
+  "production_state": {
+    "orders": [
+      {
+        "order_id": "ORD-585f82ea3684401b95f2f14dd8afd87e",
+        "product_id": "P001",
+        "product_name": "法兰",
+        "quantity": 2,
+        "due_date": "2026-12-01",
+        "status": "dispatched",
+        "created_at": "2026-11-04T12:42:51.250454+00:00"
+      },
+      {
+        "order_id": "ORD-457920738d084a75925745708c5ca02c",
+        "product_id": "p002",
+        "product_name": "腔体",
+        "quantity": 2,
+        "due_date": null,
+        "status": "dispatched",
+        "created_at": "2026-11-06T01:28:47.074280+00:00"
+      }
+    ],
+    "work_orders": [
+      {
+        "work_order_id": "WO-e7d3f3a680e1409b9632046efbf7f52c",
+        "order_id": "ORD-585f82ea3684401b95f2f14dd8afd87e",
+        "status": "cancelled",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-05T13:13:45.736888+00:00",
+        "released_at": null,
+        "completed_at": null
+      },
+      {
+        "work_order_id": "WO-138c1622225549eebb0245b8e51b66cc",
+        "order_id": "ORD-585f82ea3684401b95f2f14dd8afd87e",
+        "status": "cancelled",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-05T13:18:53.330352+00:00",
+        "released_at": null,
+        "completed_at": null
+      },
+      {
+        "work_order_id": "WO-77ef449f08f947a9b53b3865af942d8a",
+        "order_id": "ORD-585f82ea3684401b95f2f14dd8afd87e",
+        "status": "cancelled",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-05T13:23:54.632569+00:00",
+        "released_at": null,
+        "completed_at": null
+      },
+      {
+        "work_order_id": "WO-d82090dbdc0b480183cd3bdaf31a184d",
+        "order_id": "ORD-585f82ea3684401b95f2f14dd8afd87e",
+        "status": "cancelled",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-05T13:52:22.843216+00:00",
+        "released_at": null,
+        "completed_at": null
+      },
+      {
+        "work_order_id": "WO-4f2f0b98221d49cfbc079f8f59ed28fd",
+        "order_id": "ORD-585f82ea3684401b95f2f14dd8afd87e",
+        "status": "cancelled",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-05T13:56:54.410207+00:00",
+        "released_at": null,
+        "completed_at": null
+      },
+      {
+        "work_order_id": "WO-46caa33d147c430797a174e86337a142",
+        "order_id": "ORD-585f82ea3684401b95f2f14dd8afd87e",
+        "status": "cancelled",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-05T13:57:47.089614+00:00",
+        "released_at": null,
+        "completed_at": null
+      },
+      {
+        "work_order_id": "WO-b129387ecee44a8bb268596b0613d4cc",
+        "order_id": "ORD-585f82ea3684401b95f2f14dd8afd87e",
+        "status": "released",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-05T14:59:38.287873+00:00",
+        "released_at": "2026-11-05T14:59:40.024356+00:00",
+        "completed_at": null
+      },
+      {
+        "work_order_id": "WO-497f4b3f3c8e4cae8295ff107bba6b1c",
+        "order_id": "ORD-457920738d084a75925745708c5ca02c",
+        "status": "cancelled",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-06T01:28:55.747620+00:00",
+        "released_at": null,
+        "completed_at": null
+      },
+      {
+        "work_order_id": "WO-38c3f4c193f64132b84248c13dc10b60",
+        "order_id": "ORD-457920738d084a75925745708c5ca02c",
+        "status": "draft",
+        "priority": 2,
+        "planned_date": null,
+        "created_at": "2026-11-06T01:30:09.963885+00:00",
+        "released_at": null,
+        "completed_at": null
+      }
+    ],
+    "equipment": [
+      {
+        "equipment_id": "E-ASM",
+        "name": "CNC_01 (组装/加工工位 E-ASM)",
+        "kind": "assembly",
+        "status": "available",
+        "created_at": "2026-11-04T05:46:38.331932+00:00"
+      },
+      {
+        "equipment_id": "E-QC",
+        "name": "Vision_01 (视觉质检站 E-QC)",
+        "kind": "inspection",
+        "status": "available",
+        "created_at": "2026-11-04T05:46:38.331932+00:00"
+      },
+      {
+        "equipment_id": "E-MOVE",
+        "name": "Robot_01 (搬运机械臂 E-MOVE)",
+        "kind": "transport",
+        "status": "available",
+        "created_at": "2026-11-04T05:46:38.331932+00:00"
+      }
+    ],
+    "simulation_runs": 1
+  },
+  "actual_http_trace": "[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] Endpoint: POST http://127.0.0.1:8000/mes/dispatch\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > POST /mes/dispatch HTTP/1.1\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > Content-Type: application/json\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > Host: 127.0.0.1:8000\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > Content-Length: 765\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > Accept-Encoding: identity\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > Connection: close\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > User-Agent: minimal-factory-erp/1.0\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > \n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] > {\"protocol\":\"HTTP-REST\",\"message_id\":\"76c044a6-e615-44d8-9ffb-8ed06e2e48cc\",\"timestamp\":\"2026-11-06T16:41:29.502233Z\",\"source\":\"ERP\",\"target\":\"MES\",\"action\":\"DISPATCH_ORDER\",\"payload\":{\"order_id\":\"ORD-718dd550f4a3421e9f3921c5e30c83b5\",\"product_code\":\"P001\",\"product_name\":\"验收法兰（临时库）\",\"qty\":2,\"due_date\":\"2026-12-01\",\"created_at\":\"2026-11-06T16:41:29.493524Z\",\"route_steps\":[{\"name\":\"组装\",\"kind\":\"assembly\",\"minutes\":3,\"equipment_id\":\"E-ASM\"},{\"name\":\"质检\",\"kind\":\"inspection\",\"minutes\":2,\"equipment_id\":\"E-QC\"},{\"name\":\"搬运\",\"kind\":\"transport\",\"minutes\":1,\"equipment_id\":\"E-MOVE\"}],\"priority\":2,\"planned_date\":null},\"http\":{\"url\":\"http://127.0.0.1:8000/mes/dispatch\",\"method\":\"POST\",\"request_headers\":{\"Content-Type\":\"application/json\"}}}\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] < HTTP/1.1 201 Created\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] < date: Fri, 06 Nov 2026 16:41:29 GMT\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] < server: uvicorn\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] < content-length: 2649\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] < content-type: application/json\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] < Connection: close\n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] < \n[ERP->MES 76c044a6-e615-44d8-9ffb-8ed06e2e48cc] < {\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"order_id\":\"ORD-718dd550f4a3421e9f3921c5e30c83b5\",\"status\":\"draft\",\"priority\":2,\"planned_date\":null,\"created_at\":\"2026-11-06T16:41:29.550815+00:00\",\"released_at\":null,\"completed_at\":null,\"product_id\":\"P001\",\"product_name\":\"验收法兰（临时库）\",\"quantity\":2,\"due_date\":\"2026-12-01\",\"order_status\":\"dispatched\",\"operations\":[{\"operation_id\":\"OP-94f90ba4f2b143ca9365c065f5d0e378\",\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"sequence\":1,\"name\":\"组装\",\"kind\":\"assembly\",\"minutes\":3,\"equipment_id\":\"E-ASM\",\"status\":\"pending\",\"good_quantity\":0,\"rework_attempts\":0,\"started_at\":null,\"completed_at\":null,\"equipment_name\":\"CNC_01 (组装/加工工位 E-ASM)\"},{\"operation_id\":\"OP-7563abc2630f40a48fc6ec15ca188426\",\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"sequence\":2,\"name\":\"质检\",\"kind\":\"inspection\",\"minutes\":2,\"equipment_id\":\"E-QC\",\"status\":\"pending\",\"good_quantity\":0,\"rework_attempts\":0,\"started_at\":null,\"completed_at\":null,\"equipment_name\":\"Vision_01 (视觉质检站 E-QC)\"},{\"operation_id\":\"OP-cc4e2a9aaa5c42bdb21d0fdf79cc1b3a\",\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"sequence\":3,\"name\":\"搬运\",\"kind\":\"transport\",\"minutes\":1,\"equipment_id\":\"E-MOVE\",\"status\":\"pending\",\"good_quantity\":0,\"rework_attempts\":0,\"started_at\":null,\"completed_at\":null,\"equipment_name\":\"Robot_01 (搬运机械臂 E-MOVE)\"}],\"reports\":[],\"inspections\":[],\"events\":[{\"event_id\":1,\"created_at\":\"2026-11-06T16:41:29.550815+00:00\",\"order_id\":\"ORD-718dd550f4a3421e9f3921c5e30c83b5\",\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"operation_id\":null,\"equipment_id\":null,\"action\":\"erp_to_mes_protocol_dispatched\",\"operator\":\"ERP\",\"detail\":\"{\\\"protocol\\\":\\\"HTTP-REST\\\",\\\"message_id\\\":\\\"76c044a6-e615-44d8-9ffb-8ed06e2e48cc\\\",\\\"timestamp\\\":\\\"2026-11-06T16:41:29.502233Z\\\",\\\"source\\\":\\\"ERP\\\",\\\"target\\\":\\\"MES\\\",\\\"action\\\":\\\"DISPATCH_ORDER\\\",\\\"payload\\\":{\\\"order_id\\\":\\\"ORD-718dd550f4a3421e9f3921c5e30c83b5\\\",\\\"product_code\\\":\\\"P001\\\",\\\"product_name\\\":\\\"验收法兰（临时库）\\\",\\\"qty\\\":2,\\\"due_date\\\":\\\"2026-12-01\\\",\\\"created_at\\\":\\\"2026-11-06T16:41:29.493524Z\\\",\\\"route_steps\\\":[{\\\"name\\\":\\\"组装\\\",\\\"kind\\\":\\\"assembly\\\",\\\"minutes\\\":3,\\\"equipment_id\\\":\\\"E-ASM\\\"},{\\\"name\\\":\\\"质检\\\",\\\"kind\\\":\\\"inspection\\\",\\\"minutes\\\":2,\\\"equipment_id\\\":\\\"E-QC\\\"},{\\\"name\\\":\\\"搬运\\\",\\\"kind\\\":\\\"transport\\\",\\\"minutes\\\":1,\\\"equipment_id\\\":\\\"E-MOVE\\\"}],\\\"priority\\\":2,\\\"planned_date\\\":null},\\\"http\\\":{\\\"url\\\":\\\"http://127.0.0.1:8000/mes/dispatch\\\",\\\"method\\\":\\\"POST\\\",\\\"request_headers\\\":{\\\"Content-Type\\\":\\\"application/json\\\"}}}\"}],\"reworks\":[],\"rework_actions\":[],\"progress\":0}\n",
+  "connector_checks": {
+    "GET /orders": 200,
+    "GET /orders/{order_id}": 200,
+    "GET /erp/feed": 200,
+    "GET /orders/dispatch-outbox": 200,
+    "database_unchanged_by_reads": true
+  },
+  "messages": {
+    "HTTP-REST": {
+      "message_id": "76c044a6-e615-44d8-9ffb-8ed06e2e48cc",
+      "order_id": "ORD-718dd550f4a3421e9f3921c5e30c83b5",
+      "timestamp": "2026-11-06T16:41:29.502233Z",
+      "protocol": "HTTP-REST",
+      "endpoint": "http://127.0.0.1:8000/mes/dispatch",
+      "http": {
+        "url": "http://127.0.0.1:8000/mes/dispatch",
+        "method": "POST",
+        "request_headers": {
+          "Content-type": "application/json",
+          "Host": "127.0.0.1:8000",
+          "Content-length": "765",
+          "Accept-encoding": "identity",
+          "Connection": "close",
+          "User-agent": "minimal-factory-erp/1.0"
+        },
+        "sent_at": "2026-11-06T16:41:29.504234+00:00",
+        "status_code": 201,
+        "response_headers": {
+          "date": "Fri, 06 Nov 2026 16:41:29 GMT",
+          "server": "uvicorn",
+          "content-length": "2649",
+          "content-type": "application/json",
+          "Connection": "close"
+        },
+        "response_body": "{\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"order_id\":\"ORD-718dd550f4a3421e9f3921c5e30c83b5\",\"status\":\"draft\",\"priority\":2,\"planned_date\":null,\"created_at\":\"2026-11-06T16:41:29.550815+00:00\",\"released_at\":null,\"completed_at\":null,\"product_id\":\"P001\",\"product_name\":\"验收法兰（临时库）\",\"quantity\":2,\"due_date\":\"2026-12-01\",\"order_status\":\"dispatched\",\"operations\":[{\"operation_id\":\"OP-94f90ba4f2b143ca9365c065f5d0e378\",\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"sequence\":1,\"name\":\"组装\",\"kind\":\"assembly\",\"minutes\":3,\"equipment_id\":\"E-ASM\",\"status\":\"pending\",\"good_quantity\":0,\"rework_attempts\":0,\"started_at\":null,\"completed_at\":null,\"equipment_name\":\"CNC_01 (组装/加工工位 E-ASM)\"},{\"operation_id\":\"OP-7563abc2630f40a48fc6ec15ca188426\",\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"sequence\":2,\"name\":\"质检\",\"kind\":\"inspection\",\"minutes\":2,\"equipment_id\":\"E-QC\",\"status\":\"pending\",\"good_quantity\":0,\"rework_attempts\":0,\"started_at\":null,\"completed_at\":null,\"equipment_name\":\"Vision_01 (视觉质检站 E-QC)\"},{\"operation_id\":\"OP-cc4e2a9aaa5c42bdb21d0fdf79cc1b3a\",\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"sequence\":3,\"name\":\"搬运\",\"kind\":\"transport\",\"minutes\":1,\"equipment_id\":\"E-MOVE\",\"status\":\"pending\",\"good_quantity\":0,\"rework_attempts\":0,\"started_at\":null,\"completed_at\":null,\"equipment_name\":\"Robot_01 (搬运机械臂 E-MOVE)\"}],\"reports\":[],\"inspections\":[],\"events\":[{\"event_id\":1,\"created_at\":\"2026-11-06T16:41:29.550815+00:00\",\"order_id\":\"ORD-718dd550f4a3421e9f3921c5e30c83b5\",\"work_order_id\":\"WO-f681e242dd7543258d5ab5892aea4239\",\"operation_id\":null,\"equipment_id\":null,\"action\":\"erp_to_mes_protocol_dispatched\",\"operator\":\"ERP\",\"detail\":\"{\\\"protocol\\\":\\\"HTTP-REST\\\",\\\"message_id\\\":\\\"76c044a6-e615-44d8-9ffb-8ed06e2e48cc\\\",\\\"timestamp\\\":\\\"2026-11-06T16:41:29.502233Z\\\",\\\"source\\\":\\\"ERP\\\",\\\"target\\\":\\\"MES\\\",\\\"action\\\":\\\"DISPATCH_ORDER\\\",\\\"payload\\\":{\\\"order_id\\\":\\\"ORD-718dd550f4a3421e9f3921c5e30c83b5\\\",\\\"product_code\\\":\\\"P001\\\",\\\"product_name\\\":\\\"验收法兰（临时库）\\\",\\\"qty\\\":2,\\\"due_date\\\":\\\"2026-12-01\\\",\\\"created_at\\\":\\\"2026-11-06T16:41:29.493524Z\\\",\\\"route_steps\\\":[{\\\"name\\\":\\\"组装\\\",\\\"kind\\\":\\\"assembly\\\",\\\"minutes\\\":3,\\\"equipment_id\\\":\\\"E-ASM\\\"},{\\\"name\\\":\\\"质检\\\",\\\"kind\\\":\\\"inspection\\\",\\\"minutes\\\":2,\\\"equipment_id\\\":\\\"E-QC\\\"},{\\\"name\\\":\\\"搬运\\\",\\\"kind\\\":\\\"transport\\\",\\\"minutes\\\":1,\\\"equipment_id\\\":\\\"E-MOVE\\\"}],\\\"priority\\\":2,\\\"planned_date\\\":null},\\\"http\\\":{\\\"url\\\":\\\"http://127.0.0.1:8000/mes/dispatch\\\",\\\"method\\\":\\\"POST\\\",\\\"request_headers\\\":{\\\"Content-Type\\\":\\\"application/json\\\"}}}\"}],\"reworks\":[],\"rework_actions\":[],\"progress\":0}"
+      },
+      "payload": {
+        "order_id": "ORD-718dd550f4a3421e9f3921c5e30c83b5",
+        "product_code": "P001",
+        "product_name": "验收法兰（临时库）",
+        "qty": 2,
+        "due_date": "2026-12-01",
+        "created_at": "2026-11-06T16:41:29.493524Z",
+        "route_steps": [
+          {
+            "name": "组装",
+            "kind": "assembly",
+            "minutes": 3,
+            "equipment_id": "E-ASM"
+          },
+          {
+            "name": "质检",
+            "kind": "inspection",
+            "minutes": 2,
+            "equipment_id": "E-QC"
+          },
+          {
+            "name": "搬运",
+            "kind": "transport",
+            "minutes": 1,
+            "equipment_id": "E-MOVE"
+          }
+        ],
+        "priority": 2,
+        "planned_date": null
+      },
+      "envelope": {
+        "protocol": "HTTP-REST",
+        "message_id": "76c044a6-e615-44d8-9ffb-8ed06e2e48cc",
+        "timestamp": "2026-11-06T16:41:29.502233Z",
+        "source": "ERP",
+        "target": "MES",
+        "action": "DISPATCH_ORDER",
+        "payload": {
+          "order_id": "ORD-718dd550f4a3421e9f3921c5e30c83b5",
+          "product_code": "P001",
+          "product_name": "验收法兰（临时库）",
+          "qty": 2,
+          "due_date": "2026-12-01",
+          "created_at": "2026-11-06T16:41:29.493524Z",
+          "route_steps": [
+            {
+              "name": "组装",
+              "kind": "assembly",
+              "minutes": 3,
+              "equipment_id": "E-ASM"
+            },
+            {
+              "name": "质检",
+              "kind": "inspection",
+              "minutes": 2,
+              "equipment_id": "E-QC"
+            },
+            {
+              "name": "搬运",
+              "kind": "transport",
+              "minutes": 1,
+              "equipment_id": "E-MOVE"
+            }
+          ],
+          "priority": 2,
+          "planned_date": null
+        },
+        "http": {
+          "url": "http://127.0.0.1:8000/mes/dispatch",
+          "method": "POST",
+          "request_headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "acknowledged_at": "2026-11-06T16:41:29.559400+00:00",
+      "delivery_state": "acknowledged",
+      "order": {
+        "order_id": "ORD-718dd550f4a3421e9f3921c5e30c83b5",
+        "product_id": "P001",
+        "product_name": "验收法兰（临时库）",
+        "quantity": 2,
+        "due_date": "2026-12-01",
+        "status": "dispatched",
+        "created_at": "2026-11-06T16:41:29.493524+00:00"
+      }
+    },
+    "MQTT": {
+      "message_id": "MSG-a66aa4c83468626912e3d6647470059d",
+      "protocol": "MQTT",
+      "virtual_minute": 0,
+      "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+      "operation_id": "OP-94f90ba4f2b143ca9365c065f5d0e378",
+      "equipment_id": "E-ASM",
+      "device_code": "CNC_01",
+      "is_anomaly": false,
+      "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\manifest.json",
+      "sample_hash": "88798f29059a3789d9de7945b67a23642c79ded287b23dcc47018ff3a3a1781e",
+      "payload": {
+        "packet_type": "PUBLISH",
+        "topic": "factory/line1/CNC_01/command",
+        "qos": 1,
+        "retain": false,
+        "payload_json": {
+          "cmd": "START",
+          "wo": "WO-f681e242dd7543258d5ab5892aea4239",
+          "op": "OP-94f90ba4f2b143ca9365c065f5d0e378",
+          "quantity": 2,
+          "dataset": "FIELD-ASSETS-V1"
+        },
+        "payload_bytes_hex": "7b22636d64223a225354415254222c22776f223a22574f2d6636383165323432646437353433323538643561623538393261656134323339222c226f70223a224f502d3934663930626134663262313433636139333635633036356635643065333738222c227175616e74697479223a322c2264617461736574223a224649454c442d4153534554532d5631227d",
+        "packet_id": 1
+      },
+      "run_id": "SIM-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "endpoint": "mqtt://127.0.0.1:1883",
+      "transport_mode": "local_frame",
+      "synthetic": true
+    },
+    "OPC-UA": {
+      "message_id": "MSG-d5b5d0c8753927e3db335f3fc0d1b333",
+      "protocol": "OPC-UA",
+      "virtual_minute": 6,
+      "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+      "operation_id": "OP-94f90ba4f2b143ca9365c065f5d0e378",
+      "equipment_id": "E-ASM",
+      "device_code": "CNC_01",
+      "is_anomaly": true,
+      "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\cnc_overload.jsonl",
+      "sample_hash": "97f3cab8908f597221caea2468bdf5b4fb209ee333650979d71a9b4bd4f00636",
+      "payload": {
+        "subscription_id": 1,
+        "publishing_interval_ms": 1000,
+        "nodes": [
+          {
+            "node_id": "ns=2;s=Channel1.CNC_01.SpindleCurrent",
+            "data_type": "Float",
+            "value": 5.525851,
+            "status_code": "0x803C0000 (BadOutOfRange)",
+            "diagnostic_info": "Overload"
+          },
+          {
+            "node_id": "ns=2;s=Channel1.CNC_01.MotorTemperature",
+            "data_type": "Float",
+            "value": 95.672,
+            "status_code": "0x803C0000 (BadOutOfRange)",
+            "diagnostic_info": "Overload"
+          },
+          {
+            "node_id": "ns=2;s=Channel1.CNC_01.SpindleLoad",
+            "data_type": "Float",
+            "value": 92.098,
+            "status_code": "0x803C0000 (BadOutOfRange)",
+            "diagnostic_info": "Overload"
+          },
+          {
+            "node_id": "ns=2;s=Channel1.CNC_01.AlarmCode",
+            "data_type": "UInt16",
+            "value": 1,
+            "status_code": "0x00000000 (Good)",
+            "diagnostic_info": ""
+          }
+        ]
+      },
+      "run_id": "SIM-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "endpoint": "opc.tcp://127.0.0.1:4840/freeopcua/server/",
+      "transport_mode": "local_frame",
+      "synthetic": true
+    },
+    "HTTP-Vision-Webhook": {
+      "message_id": "MSG-d71dec4a998f6500b6dd5af4f471742e",
+      "protocol": "HTTP-Vision-Webhook",
+      "virtual_minute": 16,
+      "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+      "operation_id": "OP-7563abc2630f40a48fc6ec15ca188426",
+      "equipment_id": "E-QC",
+      "device_code": "Vision_01",
+      "is_anomaly": true,
+      "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_images\\rendered_v1\\defect_front.png",
+      "sample_hash": "7e52b4f81a4b251b2050722b6eab21ab157825e8d98159981a4bface506e5bf3",
+      "payload": {
+        "method": "POST",
+        "request_headers": {
+          "Content-Type": "application/json"
+        },
+        "camera_ip": "192.168.10.22",
+        "image_url": "/static/rendered_v1/defect_front.png",
+        "detections": [
+          {
+            "label": "bolt",
+            "count": 3,
+            "expected": 4,
+            "PASS": false
+          }
+        ],
+        "result_source": "scene_configuration_not_image_recognition"
+      },
+      "run_id": "SIM-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "endpoint": "http://127.0.0.1:8000/mes/vision/webhook",
+      "transport_mode": "local_frame",
+      "synthetic": true
+    },
+    "Modbus-TCP": {
+      "message_id": "MSG-8291ece5ab68dd5f3a34f0437ea35384",
+      "protocol": "Modbus-TCP",
+      "virtual_minute": 23,
+      "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+      "operation_id": "OP-cc4e2a9aaa5c42bdb21d0fdf79cc1b3a",
+      "equipment_id": "E-MOVE",
+      "device_code": "Robot_01",
+      "is_anomaly": true,
+      "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\robot_overload.jsonl",
+      "sample_hash": "536bdf6f1ae90d6dcb00452319848072812b5d71f1bbaa33add07069320ff6f5",
+      "payload": {
+        "unit_id": 1,
+        "function_code": 3,
+        "start_address": 40001,
+        "wire_start_address": 0,
+        "register_count": 4,
+        "raw_registers": [
+          4421,
+          886,
+          1105,
+          1
+        ],
+        "request_frame_hex": "00 01 00 00 00 06 01 03 00 00 00 04",
+        "response_frame_hex": "00 01 00 00 00 0B 01 03 08 11 45 03 76 04 51 00 01"
+      },
+      "run_id": "SIM-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "endpoint": "modbus://192.168.10.30:502",
+      "transport_mode": "local_frame",
+      "synthetic": true
+    }
+  },
+  "normal": {
+    "makespan_min": 12,
+    "delay_summary": [
+      {
+        "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+        "planned_minutes": 12,
+        "actual_minutes": 12,
+        "delay_minutes": 0,
+        "anomaly_status": "NORMAL"
+      }
+    ],
+    "equipment_alerts": [
+      {
+        "equipment_id": "E-ASM",
+        "equipment_name": "CNC_01 (组装/加工工位 E-ASM)",
+        "device_code": "CNC_01",
+        "protocol": "OPC-UA",
+        "status": "normal",
+        "current_status": "available",
+        "had_fault": false,
+        "alarm_message": "",
+        "fault_records": [],
+        "latest_evidence": {
+          "subscription_id": 1,
+          "publishing_interval_ms": 1000,
+          "nodes": [
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.SpindleCurrent",
+              "data_type": "Float",
+              "value": 3.021746,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.MotorTemperature",
+              "data_type": "Float",
+              "value": 30.565,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.SpindleLoad",
+              "data_type": "Float",
+              "value": 50.362,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.AlarmCode",
+              "data_type": "UInt16",
+              "value": 0,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            }
+          ]
+        },
+        "latest_message_id": "MSG-77ad40d2352ca111fc0fae84c99edbcd",
+        "evidence": {
+          "subscription_id": 1,
+          "publishing_interval_ms": 1000,
+          "nodes": [
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.SpindleCurrent",
+              "data_type": "Float",
+              "value": 3.021746,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.MotorTemperature",
+              "data_type": "Float",
+              "value": 30.565,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.SpindleLoad",
+              "data_type": "Float",
+              "value": 50.362,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.AlarmCode",
+              "data_type": "UInt16",
+              "value": 0,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            }
+          ]
+        },
+        "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\cnc_normal.jsonl"
+      },
+      {
+        "equipment_id": "E-MOVE",
+        "equipment_name": "Robot_01 (搬运机械臂 E-MOVE)",
+        "device_code": "Robot_01",
+        "protocol": "Modbus-TCP",
+        "status": "normal",
+        "current_status": "available",
+        "had_fault": false,
+        "alarm_message": "",
+        "fault_records": [],
+        "latest_evidence": {
+          "unit_id": 1,
+          "function_code": 3,
+          "start_address": 40001,
+          "wire_start_address": 0,
+          "register_count": 4,
+          "raw_registers": [
+            2417,
+            285,
+            604,
+            0
+          ],
+          "request_frame_hex": "00 01 00 00 00 06 01 03 00 00 00 04",
+          "response_frame_hex": "00 01 00 00 00 0B 01 03 08 09 71 01 1D 02 5C 00 00"
+        },
+        "latest_message_id": "MSG-e03acdb67f649a538a56fba8ca4180fd",
+        "evidence": {
+          "unit_id": 1,
+          "function_code": 3,
+          "start_address": 40001,
+          "wire_start_address": 0,
+          "register_count": 4,
+          "raw_registers": [
+            2417,
+            285,
+            604,
+            0
+          ],
+          "request_frame_hex": "00 01 00 00 00 06 01 03 00 00 00 04",
+          "response_frame_hex": "00 01 00 00 00 0B 01 03 08 09 71 01 1D 02 5C 00 00"
+        },
+        "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\robot_normal.jsonl"
+      },
+      {
+        "equipment_id": "E-QC",
+        "equipment_name": "Vision_01 (视觉质检站 E-QC)",
+        "device_code": "Vision_01",
+        "protocol": "HTTP-Vision-Webhook",
+        "status": "normal",
+        "current_status": "available",
+        "had_fault": false,
+        "alarm_message": "",
+        "fault_records": [],
+        "latest_evidence": {
+          "method": "POST",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "camera_ip": "192.168.10.22",
+          "image_url": "/static/rendered_v1/normal_front.png",
+          "detections": [
+            {
+              "label": "bolt",
+              "count": 4,
+              "expected": 4,
+              "PASS": true
+            }
+          ],
+          "result_source": "scene_configuration_not_image_recognition"
+        },
+        "latest_message_id": "MSG-e04942361fb2edd252775c5fa42ea30f",
+        "evidence": {
+          "method": "POST",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "camera_ip": "192.168.10.22",
+          "image_url": "/static/rendered_v1/normal_front.png",
+          "detections": [
+            {
+              "label": "bolt",
+              "count": 4,
+              "expected": 4,
+              "PASS": true
+            }
+          ],
+          "result_source": "scene_configuration_not_image_recognition"
+        },
+        "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_images\\rendered_v1\\normal_front.png"
+      }
+    ],
+    "message_count": 6,
+    "fault_states_at_event": [],
+    "sqlite_jsonl_summary_equal": true
+  },
+  "anomaly": {
+    "makespan_min": 28,
+    "delay_summary": [
+      {
+        "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+        "planned_minutes": 12,
+        "actual_minutes": 28,
+        "delay_minutes": 16,
+        "anomaly_status": "DELAYED_BY_FAULT"
+      }
+    ],
+    "equipment_alerts": [
+      {
+        "equipment_id": "E-ASM",
+        "equipment_name": "CNC_01 (组装/加工工位 E-ASM)",
+        "device_code": "CNC_01",
+        "protocol": "OPC-UA",
+        "status": "fault",
+        "current_status": "available",
+        "had_fault": true,
+        "alarm_message": "【设备报警】CNC_01 电流/温度/负载异常(5.52585A/95.672℃/92.098%)，设备进入 FAULT 状态，触发停机检修 +6 虚拟分钟，导致工单 WO-f681e242dd7543258d5ab5892aea4239 延误",
+        "fault_records": [
+          {
+            "virtual_minute": 6,
+            "status": "fault",
+            "alarm_message": "【设备报警】CNC_01 电流/温度/负载异常(5.52585A/95.672℃/92.098%)，设备进入 FAULT 状态，触发停机检修 +6 虚拟分钟，导致工单 WO-f681e242dd7543258d5ab5892aea4239 延误",
+            "extra_minutes": 6,
+            "protocol": "OPC-UA",
+            "message_id": "MSG-d5b5d0c8753927e3db335f3fc0d1b333",
+            "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\cnc_overload.jsonl",
+            "sample_hash": "97f3cab8908f597221caea2468bdf5b4fb209ee333650979d71a9b4bd4f00636",
+            "evidence": {
+              "subscription_id": 1,
+              "publishing_interval_ms": 1000,
+              "nodes": [
+                {
+                  "node_id": "ns=2;s=Channel1.CNC_01.SpindleCurrent",
+                  "data_type": "Float",
+                  "value": 5.525851,
+                  "status_code": "0x803C0000 (BadOutOfRange)",
+                  "diagnostic_info": "Overload"
+                },
+                {
+                  "node_id": "ns=2;s=Channel1.CNC_01.MotorTemperature",
+                  "data_type": "Float",
+                  "value": 95.672,
+                  "status_code": "0x803C0000 (BadOutOfRange)",
+                  "diagnostic_info": "Overload"
+                },
+                {
+                  "node_id": "ns=2;s=Channel1.CNC_01.SpindleLoad",
+                  "data_type": "Float",
+                  "value": 92.098,
+                  "status_code": "0x803C0000 (BadOutOfRange)",
+                  "diagnostic_info": "Overload"
+                },
+                {
+                  "node_id": "ns=2;s=Channel1.CNC_01.AlarmCode",
+                  "data_type": "UInt16",
+                  "value": 1,
+                  "status_code": "0x00000000 (Good)",
+                  "diagnostic_info": ""
+                }
+              ]
+            },
+            "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+            "operation_id": "OP-94f90ba4f2b143ca9365c065f5d0e378",
+            "recovered_virtual_minute": 12
+          }
+        ],
+        "latest_evidence": {
+          "subscription_id": 1,
+          "publishing_interval_ms": 1000,
+          "nodes": [
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.SpindleCurrent",
+              "data_type": "Float",
+              "value": 3.021746,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.MotorTemperature",
+              "data_type": "Float",
+              "value": 30.565,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.SpindleLoad",
+              "data_type": "Float",
+              "value": 50.362,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.AlarmCode",
+              "data_type": "UInt16",
+              "value": 0,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            }
+          ]
+        },
+        "latest_message_id": "MSG-f262d47b27f17e7db1b27f2323a9926d",
+        "evidence": {
+          "subscription_id": 1,
+          "publishing_interval_ms": 1000,
+          "nodes": [
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.SpindleCurrent",
+              "data_type": "Float",
+              "value": 5.525851,
+              "status_code": "0x803C0000 (BadOutOfRange)",
+              "diagnostic_info": "Overload"
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.MotorTemperature",
+              "data_type": "Float",
+              "value": 95.672,
+              "status_code": "0x803C0000 (BadOutOfRange)",
+              "diagnostic_info": "Overload"
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.SpindleLoad",
+              "data_type": "Float",
+              "value": 92.098,
+              "status_code": "0x803C0000 (BadOutOfRange)",
+              "diagnostic_info": "Overload"
+            },
+            {
+              "node_id": "ns=2;s=Channel1.CNC_01.AlarmCode",
+              "data_type": "UInt16",
+              "value": 1,
+              "status_code": "0x00000000 (Good)",
+              "diagnostic_info": ""
+            }
+          ]
+        },
+        "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\cnc_overload.jsonl"
+      },
+      {
+        "equipment_id": "E-MOVE",
+        "equipment_name": "Robot_01 (搬运机械臂 E-MOVE)",
+        "device_code": "Robot_01",
+        "protocol": "Modbus-TCP",
+        "status": "fault",
+        "current_status": "available",
+        "had_fault": true,
+        "alarm_message": "【设备报警】Robot_01 电流/温度/负载异常(4.421A/88.6℃/110.5%)，设备进入 FAULT 状态，触发停机检修 +5 虚拟分钟，导致工单 WO-f681e242dd7543258d5ab5892aea4239 延误",
+        "fault_records": [
+          {
+            "virtual_minute": 23,
+            "status": "fault",
+            "alarm_message": "【设备报警】Robot_01 电流/温度/负载异常(4.421A/88.6℃/110.5%)，设备进入 FAULT 状态，触发停机检修 +5 虚拟分钟，导致工单 WO-f681e242dd7543258d5ab5892aea4239 延误",
+            "extra_minutes": 5,
+            "protocol": "Modbus-TCP",
+            "message_id": "MSG-8291ece5ab68dd5f3a34f0437ea35384",
+            "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\robot_overload.jsonl",
+            "sample_hash": "536bdf6f1ae90d6dcb00452319848072812b5d71f1bbaa33add07069320ff6f5",
+            "evidence": {
+              "unit_id": 1,
+              "function_code": 3,
+              "start_address": 40001,
+              "wire_start_address": 0,
+              "register_count": 4,
+              "raw_registers": [
+                4421,
+                886,
+                1105,
+                1
+              ],
+              "request_frame_hex": "00 01 00 00 00 06 01 03 00 00 00 04",
+              "response_frame_hex": "00 01 00 00 00 0B 01 03 08 11 45 03 76 04 51 00 01"
+            },
+            "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+            "operation_id": "OP-cc4e2a9aaa5c42bdb21d0fdf79cc1b3a",
+            "recovered_virtual_minute": 28
+          }
+        ],
+        "latest_evidence": {
+          "unit_id": 1,
+          "function_code": 3,
+          "start_address": 40001,
+          "wire_start_address": 0,
+          "register_count": 4,
+          "raw_registers": [
+            4421,
+            886,
+            1105,
+            1
+          ],
+          "request_frame_hex": "00 01 00 00 00 06 01 03 00 00 00 04",
+          "response_frame_hex": "00 01 00 00 00 0B 01 03 08 11 45 03 76 04 51 00 01"
+        },
+        "latest_message_id": "MSG-8291ece5ab68dd5f3a34f0437ea35384",
+        "evidence": {
+          "unit_id": 1,
+          "function_code": 3,
+          "start_address": 40001,
+          "wire_start_address": 0,
+          "register_count": 4,
+          "raw_registers": [
+            4421,
+            886,
+            1105,
+            1
+          ],
+          "request_frame_hex": "00 01 00 00 00 06 01 03 00 00 00 04",
+          "response_frame_hex": "00 01 00 00 00 0B 01 03 08 11 45 03 76 04 51 00 01"
+        },
+        "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_signals\\generated_v1\\robot_overload.jsonl"
+      },
+      {
+        "equipment_id": "E-QC",
+        "equipment_name": "Vision_01 (视觉质检站 E-QC)",
+        "device_code": "Vision_01",
+        "protocol": "HTTP-Vision-Webhook",
+        "status": "fault",
+        "current_status": "available",
+        "had_fault": true,
+        "alarm_message": "【质检报警】Vision_01 检出法兰缺失螺栓(3/4)，设备进入 FAULT 状态，触发返工/复检 +5 虚拟分钟，导致工单 WO-f681e242dd7543258d5ab5892aea4239 延误",
+        "fault_records": [
+          {
+            "virtual_minute": 16,
+            "status": "fault",
+            "alarm_message": "【质检报警】Vision_01 检出法兰缺失螺栓(3/4)，设备进入 FAULT 状态，触发返工/复检 +5 虚拟分钟，导致工单 WO-f681e242dd7543258d5ab5892aea4239 延误",
+            "extra_minutes": 5,
+            "protocol": "HTTP-Vision-Webhook",
+            "message_id": "MSG-d71dec4a998f6500b6dd5af4f471742e",
+            "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_images\\rendered_v1\\defect_front.png",
+            "sample_hash": "7e52b4f81a4b251b2050722b6eab21ab157825e8d98159981a4bface506e5bf3",
+            "evidence": {
+              "method": "POST",
+              "request_headers": {
+                "Content-Type": "application/json"
+              },
+              "camera_ip": "192.168.10.22",
+              "image_url": "/static/rendered_v1/defect_front.png",
+              "detections": [
+                {
+                  "label": "bolt",
+                  "count": 3,
+                  "expected": 4,
+                  "PASS": false
+                }
+              ],
+              "result_source": "scene_configuration_not_image_recognition"
+            },
+            "work_order_id": "WO-f681e242dd7543258d5ab5892aea4239",
+            "operation_id": "OP-7563abc2630f40a48fc6ec15ca188426",
+            "recovered_virtual_minute": 19
+          }
+        ],
+        "latest_evidence": {
+          "method": "POST",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "camera_ip": "192.168.10.22",
+          "image_url": "/static/rendered_v1/normal_front.png",
+          "detections": [
+            {
+              "label": "bolt",
+              "count": 4,
+              "expected": 4,
+              "PASS": true
+            }
+          ],
+          "result_source": "scene_configuration_not_image_recognition"
+        },
+        "latest_message_id": "MSG-90d649e7828dfe22c62e3642a432beba",
+        "evidence": {
+          "method": "POST",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "camera_ip": "192.168.10.22",
+          "image_url": "/static/rendered_v1/defect_front.png",
+          "detections": [
+            {
+              "label": "bolt",
+              "count": 3,
+              "expected": 4,
+              "PASS": false
+            }
+          ],
+          "result_source": "scene_configuration_not_image_recognition"
+        },
+        "source_file": "D:\\AAA-Myproject\\postgraduate\\Project 2\\minimal_factory\\synthetic_images\\rendered_v1\\defect_front.png"
+      }
+    ],
+    "message_count": 10,
+    "fault_states_at_event": [
+      {
+        "minute": 6,
+        "equipment_id": "E-ASM",
+        "status": "fault"
+      },
+      {
+        "minute": 12,
+        "equipment_id": "E-ASM",
+        "status": "available"
+      },
+      {
+        "minute": 16,
+        "equipment_id": "E-QC",
+        "status": "fault"
+      },
+      {
+        "minute": 19,
+        "equipment_id": "E-QC",
+        "status": "available"
+      },
+      {
+        "minute": 23,
+        "equipment_id": "E-MOVE",
+        "status": "fault"
+      },
+      {
+        "minute": 28,
+        "equipment_id": "E-MOVE",
+        "status": "available"
+      }
+    ],
+    "sqlite_jsonl_summary_equal": true
+  },
+  "assets": {
+    "file_count": 36,
+    "unchanged": true,
+    "sha256": {
+      "minimal_factory/synthetic_signals/generated_v1/cnc_normal.jsonl": "97a08b59961355d2f6d0b25a0372eb49aec5612c00227d32029c31eafe66f8b2",
+      "minimal_factory/synthetic_signals/generated_v1/cnc_overload.jsonl": "3c14e9f6e2019709c843ba15460360efcbace0d3eea4a00401ef3713b28433e0",
+      "minimal_factory/synthetic_signals/generated_v1/injected_surge.jsonl": "903bfa0b5b79e0abbcc7c0266d9cd949466d8da8fe24a5a5385fac067322968a",
+      "minimal_factory/synthetic_signals/generated_v1/manifest.json": "88798f29059a3789d9de7945b67a23642c79ded287b23dcc47018ff3a3a1781e",
+      "minimal_factory/synthetic_signals/generated_v1/normal.jsonl": "bf8a916b8f6232869a68383ae0c52089f85283e0979b433703f3804705904d7c",
+      "minimal_factory/synthetic_signals/generated_v1/preview.png": "34da7b31ae1259c8328ffe96f695950b1dbfa747d74ff034dda34321d61a472b",
+      "minimal_factory/synthetic_signals/generated_v1/robot_normal.jsonl": "a37163a7c4ef91726a6f6c61a7b5a3bc58aed694e320d70503ec88061f868ab0",
+      "minimal_factory/synthetic_signals/generated_v1/robot_overload.jsonl": "757a49637fb78472c13dc2e1e32132c5e345efe2a694cd2d24a5cfc4aa629a1e",
+      "minimal_factory/synthetic_signals/generated_v1/summary.json": "8cdda04e86caf896158bae544204f4d06f69e0b4fca070dd8776aac015896270",
+      "minimal_factory/synthetic_signals/generated_v1/timeline.json": "df8f3e6bed781aa75c2534ee8ecbdb19b2f85942f63e9aa305a58a8cad3f89aa",
+      "minimal_factory/synthetic_signals/generated_v1/validation.json": "e048a2b4280f972a716437d55b1fc6a5916f332ea549dbd05a84ed85cb0b15f5",
+      "minimal_factory/synthetic_images/rendered_v1/defect_front.png": "7e52b4f81a4b251b2050722b6eab21ab157825e8d98159981a4bface506e5bf3",
+      "minimal_factory/synthetic_images/rendered_v1/defect_side.png": "f67cc323a44b1ba39c5b61de2a64a0a4c4f51de5db986848709527d24a2c0e07",
+      "minimal_factory/synthetic_images/rendered_v1/manifest.json": "b3048d3393d3562a88075d8e7428fd00f0bdc7e2f40f90f1e8ffb690e213b23e",
+      "minimal_factory/synthetic_images/rendered_v1/normal_front.png": "56ece79acb46d06a11afc14f861e0939248f6e3082bb85ae7af5040190acde12",
+      "minimal_factory/synthetic_images/rendered_v1/normal_side.png": "cecfb9c13aa818ae853092c7c05d25a1600a8c60a431660c192492f06825a263",
+      "minimal_factory/synthetic_images/rendered_v1/preview.jpg": "56f974f50d8d43e262a6948507d737bc31ad2d61b0d9e7adbbc37f0313fb3336",
+      "minimal_factory/synthetic_images/rendered_v1/validation.json": "a00e298b1b1da715558ce7d623b02e695b6ae6671867dbe5dd659fe30c17784d",
+      "minimal_factory/synthetic_images/rendered_v1/images/assembly_complete_front.png": "56ece79acb46d06a11afc14f861e0939248f6e3082bb85ae7af5040190acde12",
+      "minimal_factory/synthetic_images/rendered_v1/images/assembly_complete_side.png": "cecfb9c13aa818ae853092c7c05d25a1600a8c60a431660c192492f06825a263",
+      "minimal_factory/synthetic_images/rendered_v1/images/assembly_missing_bolt_front.png": "7e52b4f81a4b251b2050722b6eab21ab157825e8d98159981a4bface506e5bf3",
+      "minimal_factory/synthetic_images/rendered_v1/images/assembly_missing_bolt_side.png": "f67cc323a44b1ba39c5b61de2a64a0a4c4f51de5db986848709527d24a2c0e07",
+      "minimal_factory/synthetic_images/rendered_v1/images/assembly_unfastened_front.png": "a0242e170a7c66df8b9a178dc4f1ae3df714358f53c218fd0b7d41d6bcb23ff0",
+      "minimal_factory/synthetic_images/rendered_v1/images/assembly_unfastened_side.png": "97f2f5272a4f3896bd72e908ab5dd90e6d1f14b5750aacaed90be9eddfae124f",
+      "minimal_factory/synthetic_images/rendered_v1/masks/assembly_complete_front.png": "3fa9aa0e45bd799c56798bc060ac077e81d51c45692f7ee851acdc80cf0accec",
+      "minimal_factory/synthetic_images/rendered_v1/masks/assembly_complete_side.png": "402c93099e94652d3a9681068a8fd823bbc2fc38eebf0e4d6bc84d46e51400f0",
+      "minimal_factory/synthetic_images/rendered_v1/masks/assembly_missing_bolt_front.png": "67606020c6c70364ab9b8e80922003b6d3305e83358db8dfc2957dd5ad6d9194",
+      "minimal_factory/synthetic_images/rendered_v1/masks/assembly_missing_bolt_side.png": "446aea14d4a7afe75548c495813e71b3246fbcce9155493f3217ddfb4de552d6",
+      "minimal_factory/synthetic_images/rendered_v1/masks/assembly_unfastened_front.png": "77ef80967a3fa9e60a5f697fd86986d21df162057b01ac98827ab5361696cd78",
+      "minimal_factory/synthetic_images/rendered_v1/masks/assembly_unfastened_side.png": "91aabd15cdbc290441a8deb12eb9d60f142d9da4a759bbde0a3717935cf4e3f1",
+      "minimal_factory/synthetic_images/rendered_v1/scenes/assembly_complete_front.json": "455e8f6c979e16b636bfdce10c252426a8819c4e5bc95afdd95ca542e91c0050",
+      "minimal_factory/synthetic_images/rendered_v1/scenes/assembly_complete_side.json": "39b6551d79b0c480c48dd9f4226a5f54f59542721875bb6f5ac3286f20dcb5e7",
+      "minimal_factory/synthetic_images/rendered_v1/scenes/assembly_missing_bolt_front.json": "0172568b843c16d1cbca34d04a59e2f77bc7797b9523ed43fb1373f3f4cf7a32",
+      "minimal_factory/synthetic_images/rendered_v1/scenes/assembly_missing_bolt_side.json": "303d485183551bb8393367c3f4d71d01d68ff24f0257fe3093090f2a6fe5578b",
+      "minimal_factory/synthetic_images/rendered_v1/scenes/assembly_unfastened_front.json": "ab753c27a3df324354974fc83a5dbe13965b6389eac0bdcb6ba9739a043f9b01",
+      "minimal_factory/synthetic_images/rendered_v1/scenes/assembly_unfastened_side.json": "8631de815e76ea6e99b64d7b7048cb1049df47ba59c1f70304c97966e47a1c0a"
+    }
+  },
+  "production_db": {
+    "sha256_before": "620108ee3140b864b1e7d6d5218fe12237a53d8624724636ab1ce308ae7749b4",
+    "sha256_after": "620108ee3140b864b1e7d6d5218fe12237a53d8624724636ab1ce308ae7749b4",
+    "unchanged": true
+  },
+  "regression_tests": {
+    "python_tests": 66,
+    "failures": 0,
+    "errors": 0,
+    "frontend_assertions": 46,
+    "verified_at_beijing": "2026-11-07T00:46:55.196973+08:00",
+    "command": "python -m unittest discover -s tests -v"
+  }
+}
