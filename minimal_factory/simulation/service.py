@@ -184,6 +184,14 @@ class SimulationService:
         record["mapping"] = read_json(folder / "mapping.json")
         record["summary"] = read_json(folder / "summary.json") if record["status"] == "completed" else None
         record["events"] = []
+        summary = record["summary"] or {}
+        record["equipment_alerts"] = summary.get("equipment_alerts", [])
+        record["delay_summary"] = summary.get("delay_summary", [])
+        record["protocol_messages"] = summary.get("protocol_messages", [])
+        protocol_path = folder / "protocol_messages.jsonl"
+        if not record["summary"] and protocol_path.exists():
+            record["protocol_messages"] = [json.loads(line) for line in
+                protocol_path.read_text(encoding="utf-8").splitlines(keepends=True) if line.endswith("\n")]
         path = folder / "events.jsonl"
         if path.exists():
             # 运行中最后一行可能还没写完；已完成的行仍可查询。

@@ -3,6 +3,7 @@ from copy import deepcopy
 
 from erp.database import connect
 from mes import service as mes
+from .schemas import FieldScenario
 
 
 def demo_snapshot():
@@ -67,7 +68,17 @@ def configure(snapshot, overrides):
         # 显式 null 清除复制实验的失败配置；未提供则沿用原配置。
         if "failure" in override.model_fields_set:
             wo["failure"] = override.failure.model_dump() if override.failure else None
+        if "field_protocols" in override.model_fields_set:
+            wo["field_protocols"] = (override.field_protocols or FieldScenario()).model_dump()
     for wo in orders.values():
+        scenario = FieldScenario.model_validate(wo.get("field_protocols") or {})
+        wo["field_protocols"] = scenario.model_dump()
+        # 视觉异常需要能够进入已有MES返工状态机；在创建批次前验证路线。
+        if scenario.mode != "normal" and "E-QC" in scenario.anomaly_equipment_ids:
+            for vision in (op for op in wo["operations"] if op["equipment_id"] == "E-QC"):
+                mes.require(vision["kind"] == "inspection" and any(
+                    op["kind"] != "inspection" and op["sequence"] < vision["sequence"]
+                    for op in wo["operations"]), "视觉异常需要前置加工工序用于返工", 422)
         mes.require(1 <= len(wo["operations"]) <= 12, "工单需要 1—12 道工序", 422)
         failure = wo["failure"]
         if failure:

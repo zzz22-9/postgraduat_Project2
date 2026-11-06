@@ -17,10 +17,23 @@ class Failure(Input):
     quantity: PositiveInt
 
 
+class FieldScenario(Input):
+    """本地素材回放配置；正常模式不引入额外耗时。"""
+    mode: Literal["normal", "anomaly", "sampled"] = "normal"
+    anomaly_equipment_ids: list[Literal["E-ASM", "E-QC", "E-MOVE"]] = Field(
+        default_factory=lambda: ["E-ASM", "E-QC", "E-MOVE"], max_length=3)
+    sample_index: Annotated[int, Field(strict=True, ge=0, le=11)] = 0
+    seed: Annotated[int, Field(strict=True, ge=0)] = 0
+    anomaly_probability: float = Field(default=.5, ge=0, le=1, allow_inf_nan=False)
+    cnc_repair_minutes: Minutes = 6
+    robot_repair_minutes: Minutes = 5
+
+
 class Override(Input):
     quantity: PositiveInt | None = None
     minutes: dict[str, Minutes] = Field(default_factory=dict, max_length=12)
     failure: Failure | None = None
+    field_protocols: FieldScenario | None = None
 
 
 class RunRequest(Input):
