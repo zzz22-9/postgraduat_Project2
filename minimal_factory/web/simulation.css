@@ -23,6 +23,31 @@
 .sim-pending{padding:26px;background:var(--soft);border:1px solid #bddbce;border-radius:12px;margin:18px 0}
 .sim-history{margin-top:22px}.sim-history summary{margin-bottom:15px}
 .sim-disabled-message{color:var(--amber)}
+.sim-mode-selector{padding:18px;border-radius:10px;background:#edf5f2;border:1px solid #c5ded3;margin:18px 0}
+.sim-mode-selector label{display:block;font-weight:700;margin-bottom:8px}.sim-mode-selector select{width:100%;max-width:680px}
+.sim-mode-selector p{margin:10px 0 0;font-size:13px;color:#365b4d}
+.sim-delay-section{margin:20px 0}.sim-delay-banner{padding:22px 26px;border-radius:12px;border:2px solid #359676;background:#f0faf5;margin-bottom:14px}
+.sim-delay-banner.fault{border-color:#c93542;background:#fff2f2}.sim-delay-banner h2{margin:0}
+.sim-delay-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:20px 0 14px}
+.sim-delay-values small{display:block;color:#5d6864;margin-bottom:7px}.sim-delay-values strong{font-size:34px;line-height:1.2}
+.sim-delay-values strong span{font-size:13px;font-weight:500}.sim-delay-banner.fault .sim-delay-values>div:last-child{color:#ae182b}
+.sim-signal{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.sim-signal:before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0}
+.sim-signal.normal{color:#176346;background:#e2f4e9}.sim-signal.fault{color:#b0182b;background:#ffe0e4}
+.sim-alert-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}
+.sim-alert-card{min-width:0;border:1px solid #b8d7c9;border-top:4px solid #30876b;border-radius:10px;padding:18px;background:#fbfefc}
+.sim-alert-card.fault{border:2px solid #d34955;border-top-width:4px;background:#fffafa}
+.sim-alert-card h3{font-size:19px;margin:0}.sim-alert-card.fault h3{color:#b0182b}
+.sim-alert-card .panel-head{gap:8px;flex-wrap:wrap}.sim-protocol-label{font:12px Consolas,monospace;color:#63776d;margin:8px 0 14px}
+.sim-recovery{font-size:12px;line-height:1.7;color:#586660;min-height:52px}.sim-alarm-message{font-size:13px;line-height:1.8;overflow-wrap:anywhere}
+.sim-physical{font-size:13px;font-weight:600;line-height:1.8;background:#edf2f0;padding:10px;border-radius:6px}
+.sim-vision-images figure{margin:14px 0 0}.sim-vision-images img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;border:1px solid #d3ddd7;border-radius:7px;background:#fff}
+.sim-vision-images a{display:block}.sim-vision-images figcaption{font-size:12px;color:#5e6f66;margin-top:7px}
+.sim-protocol-badge{display:inline-block;font:11px Consolas,monospace;padding:5px 7px;border:1px solid #b9cddd;border-radius:5px;color:#254b68;background:#eff6fc;white-space:nowrap}
+.sim-source-path{display:block;max-width:240px;overflow-wrap:anywhere;font:11px/1.6 Consolas,monospace;color:#607068}
+.sim-raw-json{max-height:380px;max-width:520px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.65 Consolas,monospace;padding:12px;background:#13252e;color:#dfefed;border-radius:7px}
+#sim-protocol-messages td{vertical-align:top}#sim-protocol-messages details{margin:9px 0 0}
+@media(max-width:1150px){.sim-alert-grid{grid-template-columns:1fr}.sim-vision-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.sim-vision-images figure{max-width:480px}}
 @media(max-width:650px){
   nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{padding:8px 2px;font-size:11px}
   .sim-intro{padding:18px}.sim-source{display:grid}.sim-source select{min-width:0;width:100%}
@@ -30,4 +55,6 @@
   .sim-order-editor input[type=number]{max-width:none}
   .sim-selection label{align-items:flex-start}.sim-chart-scroll{max-width:100%}
   .sim-event-filters{display:grid}.sim-history td:last-child .actions{display:grid}
+  .sim-delay-values{grid-template-columns:1fr;gap:14px}.sim-delay-banner{padding:18px}.sim-delay-banner .panel-head{flex-wrap:wrap;gap:10px}
+  .sim-delay-values strong{font-size:29px}.sim-vision-images{grid-template-columns:1fr}.sim-source-path,.sim-raw-json{max-width:100%}
 }

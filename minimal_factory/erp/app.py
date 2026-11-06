@@ -17,6 +17,7 @@ from fastapi.responses import FileResponse, Response
 from mes.api import create_router
 from mes import service as mes_service
 from simulation.api import create_router as create_simulation_router
+from simulation.assets import create_router as create_image_router
 from simulation.service import SimulationService
 
 from . import database
@@ -142,6 +143,7 @@ def create_app(database_path: Path | None = None) -> FastAPI:
     # 两个模块共用一个服务与数据库，启动命令仍然是 erp.app:app。
     app.include_router(create_router(db_path))
     app.include_router(create_simulation_router(simulation))
+    app.include_router(create_image_router())
     app.state.simulation = simulation
     return app
 
