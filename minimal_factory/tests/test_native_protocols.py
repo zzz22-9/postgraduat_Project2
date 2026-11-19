@@ -9,6 +9,20 @@ from simulation import field_protocols as field
 
 
 class NativeProtocolTests(unittest.TestCase):
+    def test_source_opt_in_keeps_existing_message_return(self):
+        for builder, args in (
+            (field.build_mqtt_dispatch_message, ("WO-1", "OP-1", "E-ASM", 0, 2)),
+            (field.build_cnc_opcua_message, ("WO-1", "OP-1", 6)),
+            (field.build_vision_http_message, ("WO-1", "OP-2", 10)),
+            (field.build_robot_modbus_message, ("WO-1", "OP-3", 12)),
+        ):
+            with self.subTest(builder=builder.__name__):
+                original = builder(*args)
+                message, source = builder(*args, return_source=True)
+                self.assertIsInstance(original, dict)
+                self.assertEqual(message, original)
+                self.assertEqual(source["message_id"], original["message_id"])
+
     def test_mqtt_publish_payload_bytes_match_json_and_target_topic(self):
         m = field.build_mqtt_dispatch_message("WO-1", "OP-1", "E-ASM", 0, 2)
         p = m["payload"]

@@ -1,12 +1,28 @@
 """只读输入工单；快照是可重复实验的边界，不带入生产历史和实时设备状态。"""
+import sqlite3
+from contextlib import closing, contextmanager
 from copy import deepcopy
+from pathlib import Path
 
-from erp.database import connect
 from mes import service as mes
 from .schemas import FieldScenario
 
 
+@contextmanager
+def readonly_source(path):
+    """只读连接不能创建源库；query_only同时防止读取代码意外执行写操作。"""
+    uri = Path(path).resolve().as_uri() + "?mode=ro"
+    with closing(sqlite3.connect(uri, uri=True, timeout=10)) as conn:
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys=ON")
+        conn.execute("PRAGMA query_only=ON")
+        conn.execute("BEGIN")  # 工单、原订单与设备来自同一个读取快照。
+        yield conn
+
+
 def demo_snapshot():
+    # 教学案例明确给定两个业务时间；相同是案例设定，不是从工单推测订单。
+    created_at = "2026-10-20T00:00:00+00:00"
     equipment = [
         {"equipment_id": "E-ASM", "name": "仿真组装工位", "kind": "assembly"},
         {"equipment_id": "E-QC", "name": "仿真质检工位", "kind": "inspection"},
@@ -24,14 +40,14 @@ def demo_snapshot():
         orders.append(dict(work_order_id=f"DEMO-WO-{number}", order_id=f"DEMO-ORD-{number}",
                            product_id="P001", product_name=f"教学装配件 · 订单 {number}",
                            quantity=1, priority=2, planned_date=None, due_date=None,
-                           created_at="2026-10-20T00:00:00+00:00", operations=operations,
+                           created_at=created_at, order_created_at=created_at,
+                           work_order_created_at=created_at, operations=operations,
                            failure=None))
     return {"source": "demo", "orders": orders, "equipment": equipment}
 
 
 def source_snapshot(path, ids):
-    with connect(path) as conn:
-        conn.execute("BEGIN")  # 所有工单和设备来自同一个读取快照。
+    with readonly_source(path) as conn:
         orders, devices = [], {}
         for wo_id in ids:
             wo = mes.detail(conn, wo_id)
@@ -39,6 +55,11 @@ def source_snapshot(path, ids):
             item = {key: wo[key] for key in (
                 "work_order_id", "order_id", "product_id", "product_name", "quantity",
                 "priority", "planned_date", "due_date", "created_at")}
+            order = conn.execute("SELECT created_at FROM orders WHERE order_id=?",
+                                 (wo["order_id"],)).fetchone()
+            mes.require(order is not None, "工单引用的原订单不存在")
+            item["order_created_at"] = order["created_at"]
+            item["work_order_created_at"] = wo["created_at"]
             item["operations"] = []
             item["failure"] = None
             for op in wo["operations"]:
@@ -71,6 +92,10 @@ def configure(snapshot, overrides):
         if "field_protocols" in override.model_fields_set:
             wo["field_protocols"] = (override.field_protocols or FieldScenario()).model_dump()
     for wo in orders.values():
+        # 旧快照的created_at一直是工单时间；缺失的订单时间不能据此补造。
+        wo.setdefault("order_created_at", None)
+        wo.setdefault("work_order_created_at", wo["created_at"])
+        wo["created_at"] = wo["work_order_created_at"]  # 保留旧字段作为工单时间别名。
         scenario = FieldScenario.model_validate(wo.get("field_protocols") or {})
         wo["field_protocols"] = scenario.model_dump()
         # 视觉异常需要能够进入已有MES返工状态机；在创建批次前验证路线。
@@ -90,6 +115,6 @@ def configure(snapshot, overrides):
                         target["sequence"] < source["sequence"], "返修目标必须是质检前的加工或搬运工序", 422)
             mes.require(failure["quantity"] <= wo["quantity"], "不合格数量不能超过本批数量", 422)
     snapshot["orders"].sort(key=lambda w: (
-        w["priority"], w["planned_date"] is None, w["planned_date"] or "", w["created_at"], w["work_order_id"]))
+        w["priority"], w["planned_date"] is None, w["planned_date"] or "", w["work_order_created_at"], w["work_order_id"]))
     snapshot["equipment"].sort(key=lambda e: e["equipment_id"])
     return snapshot

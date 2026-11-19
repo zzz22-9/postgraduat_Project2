@@ -102,9 +102,18 @@ def _signal_sample(equipment_id, is_anomaly, sample_index, asset_root):
     return sample, path, hashlib.sha256(lines[sample_index]).hexdigest(), reasons  # 返回记录和来源证据。
 
 
+def _source_context(message, source_kind, sample=None, sample_index=None):
+    """Keep the selected asset's facts separate from the protocol message."""
+    sample = {} if sample is None else sample
+    return dict(message_id=message["message_id"], source_file=message["source_file"],
+                sample_hash=message["sample_hash"], source_kind=source_kind,
+                sample_id=sample.get("sample_id"), sample_index=sample_index,
+                sample_time_s=sample.get("sample_time_s"), source_time_s=sample.get("source_time_s"))
+
+
 def build_mqtt_dispatch_message(work_order_id, operation_id, equipment_id, virtual_minute,
                                 planned_qty, *, command="START", qos=1, run_id=None,
-                                asset_root=ASSET_ROOT):
+                                asset_root=ASSET_ROOT, return_source=False):
     """输入当前任务，读取设备素材清单，返回MQTT PUBLISH原生结构。"""
     if equipment_id not in DEVICES:
         raise ValueError("下发设备编号不支持")  # 在读取清单前校验设备。
@@ -125,12 +134,13 @@ def build_mqtt_dispatch_message(work_order_id, operation_id, equipment_id, virtu
                                                 separators=(",", ":")).encode("utf-8").hex()}
     if qos:
         payload["packet_id"] = 1
-    return _envelope("MQTT", work_order_id, operation_id, equipment_id,
-                     virtual_minute, False, path, hashlib.sha256(raw).hexdigest(), payload, run_id)
+    message = _envelope("MQTT", work_order_id, operation_id, equipment_id,
+                        virtual_minute, False, path, hashlib.sha256(raw).hexdigest(), payload, run_id)
+    return (message, _source_context(message, "configuration_generated")) if return_source else message
 
 
 def build_cnc_opcua_message(work_order_id, operation_id, virtual_minute, *, is_anomaly=False,
-                            sample_index=0, run_id=None, asset_root=ASSET_ROOT):
+                            sample_index=0, run_id=None, asset_root=ASSET_ROOT, return_source=False):
     """读取CNC指定行，返回OPC UA节点订阅结构。"""
     sample, path, sample_hash, reasons = _signal_sample("E-ASM", is_anomaly, sample_index, asset_root)
     nodes = []
@@ -144,12 +154,13 @@ def build_cnc_opcua_message(work_order_id, operation_id, virtual_minute, *, is_a
                       "status_code": "0x803C0000 (BadOutOfRange)" if bad else "0x00000000 (Good)",
                       "diagnostic_info": "Overload" if bad else ""})
     payload = {"subscription_id": 1, "publishing_interval_ms": 1000, "nodes": nodes}
-    return _envelope("OPC-UA", work_order_id, operation_id, "E-ASM", virtual_minute,
-                     bool(reasons), path, sample_hash, payload, run_id)  # 同时携带上下文和原始行哈希。
+    message = _envelope("OPC-UA", work_order_id, operation_id, "E-ASM", virtual_minute,
+                        bool(reasons), path, sample_hash, payload, run_id)
+    return (message, _source_context(message, "synthetic", sample, sample_index)) if return_source else message
 
 
 def build_vision_http_message(work_order_id, operation_id, virtual_minute, *, is_anomaly=False,
-                              view="front", run_id=None, asset_root=ASSET_ROOT):
+                              view="front", run_id=None, asset_root=ASSET_ROOT, return_source=False):
     """读取图片清单和PNG，返回Vision Webhook的本地标签回放结构。"""
     if type(is_anomaly) is not bool or view not in ("front", "side"):
         raise ValueError("is_anomaly须为bool，view须为front或side")  # 限定已有素材选择。
@@ -178,12 +189,14 @@ def build_vision_http_message(work_order_id, operation_id, virtual_minute, *, is
                "image_url": f"/static/rendered_v1/{path.name}",
                "detections": [{"label": "bolt", "count": detected, "expected": 4, "PASS": detected == 4}],
                "result_source": entry["annotation_source"]}
-    return _envelope("HTTP-Vision-Webhook", work_order_id, operation_id, "E-QC", virtual_minute,
-                     detected < 4, path, sample_hash, payload, run_id)
+    message = _envelope("HTTP-Vision-Webhook", work_order_id, operation_id, "E-QC", virtual_minute,
+                        detected < 4, path, sample_hash, payload, run_id)
+    return (message, _source_context(message, "synthetic", entry)) if return_source else message
 
 
 def build_robot_modbus_message(work_order_id, operation_id, virtual_minute, *, is_anomaly=False,
-                               sample_index=0, slave_id=1, run_id=None, asset_root=ASSET_ROOT):
+                               sample_index=0, slave_id=1, run_id=None, asset_root=ASSET_ROOT,
+                               return_source=False):
     """读取Robot指定行及寄存器值，返回Modbus-TCP原始寄存器与字节帧。"""
     if type(slave_id) is not int or not 1 <= slave_id <= 247:
         raise ValueError("slave_id必须为1—247的整数")  # 当前教学模式的单元编号范围。
@@ -203,8 +216,9 @@ def build_robot_modbus_message(work_order_id, operation_id, virtual_minute, *, i
     payload = {"unit_id": slave_id, "function_code": 3, "start_address": 40001,
                "wire_start_address": 0, "register_count": 4, "raw_registers": raw_registers,
                "request_frame_hex": request.hex(" ").upper(), "response_frame_hex": frame.hex(" ").upper()}
-    return _envelope("Modbus-TCP", work_order_id, operation_id, "E-MOVE", virtual_minute,
-                     bool(reasons), path, sample_hash, payload, run_id)
+    message = _envelope("Modbus-TCP", work_order_id, operation_id, "E-MOVE", virtual_minute,
+                        bool(reasons), path, sample_hash, payload, run_id)
+    return (message, _source_context(message, "synthetic", sample, sample_index)) if return_source else message
 
 
 def main():

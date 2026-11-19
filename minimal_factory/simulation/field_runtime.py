@@ -7,6 +7,16 @@ from .field_protocols import DEVICES
 
 def initialize_sandbox(conn):
     """在尚未种入业务数据的新库中扩展设备状态；不迁移生产库。"""
+    if conn.execute("SELECT 1 FROM orders LIMIT 1").fetchone():
+        raise ValueError("只允许初始化空的仿真沙盒，禁止重建已有订单表")
+    # 仅新沙盒允许原订单时间未知（旧input.json没有该信息）；正式库约束不变。
+    conn.execute("DROP TABLE orders")
+    conn.execute("""CREATE TABLE orders (
+        order_id TEXT PRIMARY KEY, product_id TEXT NOT NULL,
+        product_name TEXT NOT NULL, quantity INTEGER NOT NULL CHECK(quantity > 0),
+        due_date TEXT, status TEXT NOT NULL
+        CHECK(status IN ('pending','dispatched','in_progress','completed')),
+        created_at TEXT)""")
     conn.execute("DELETE FROM equipment")
     conn.execute("DROP TABLE equipment")
     conn.execute("""CREATE TABLE equipment (
@@ -29,8 +39,8 @@ def initialize_sandbox(conn):
 
 
 class FieldRecorder:
-    def __init__(self, path, stream, equipment):
-        self.path, self.stream = path, stream
+    def __init__(self, path, stream, equipment, *, source_stream):
+        self.path, self.stream, self.source_stream = path, stream, source_stream
         self.messages = []
         protocols = {"E-ASM": "OPC-UA", "E-QC": "HTTP-Vision-Webhook", "E-MOVE": "Modbus-TCP"}
         self.alerts = {eq["equipment_id"]: dict(
@@ -44,8 +54,10 @@ class FieldRecorder:
         with mes.transaction(self.path) as conn:
             mes.log(conn, action, json.dumps(detail, ensure_ascii=False), wo, op, operator="SimPy")
 
-    def message(self, message, action, wo, op, emit, alarm_summary=""):
+    def message(self, message, action, wo, op, emit, alarm_summary="", *,
+                quantity, phase, rework_id, source):
         raw = json.dumps(message, ensure_ascii=False, allow_nan=False)
+        source_raw = json.dumps(source, ensure_ascii=False, allow_nan=False)
         fields = ("message_id", "virtual_minute", "protocol", "work_order_id", "operation_id",
                   "equipment_id", "device_code", "is_anomaly")
         with mes.transaction(self.path) as conn:
@@ -64,7 +76,10 @@ class FieldRecorder:
                 alert.update(evidence=message["payload"], source_file=message["source_file"])
         self.stream.write(raw + "\n")
         self.stream.flush()
-        emit(action, wo, op, action=action, detail=message)
+        self.source_stream.write(source_raw + "\n")
+        self.source_stream.flush()
+        emit(action, wo, op, quantity=quantity, phase=phase, rework_id=rework_id,
+             action=action, detail=message)
 
     def fault(self, message, wo, op, now, alarm, extra_minutes, emit):
         detail = dict(virtual_minute=now, status="fault", alarm_message=alarm,

@@ -30,10 +30,12 @@ def seed_database(path, snapshot):
                          (eq["equipment_id"], eq["name"], eq["kind"], mes.now()))
         for wo in snapshot["orders"]:
             conn.execute("INSERT INTO orders VALUES (?,?,?,?,?,'dispatched',?)", (
-                wo["order_id"], wo["product_id"], wo["product_name"], wo["quantity"], wo["due_date"], wo["created_at"]))
+                wo["order_id"], wo["product_id"], wo["product_name"], wo["quantity"], wo["due_date"],
+                wo.get("order_created_at")))  # 老快照缺少原订单时间时保存NULL，不套用工单时间。
             conn.execute("""INSERT INTO work_orders(work_order_id,order_id,status,priority,planned_date,created_at)
                             VALUES (?,?,'draft',?,?,?)""",
-                         (wo["work_order_id"], wo["order_id"], wo["priority"], wo["planned_date"], wo["created_at"]))
+                         (wo["work_order_id"], wo["order_id"], wo["priority"], wo["planned_date"],
+                          wo.get("work_order_created_at", wo["created_at"])))
             for op in wo["operations"]:
                 conn.execute("""INSERT INTO operations(operation_id,work_order_id,sequence,name,kind,minutes,
                                 equipment_id,status) VALUES (?,?,?,?,?,?,?,'pending')""",
@@ -73,8 +75,9 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
         return f"{run_id}-{request_number}"
 
     with (folder / "events.jsonl").open("w", encoding="utf-8") as event_file, \
-            (folder / "protocol_messages.jsonl").open("w", encoding="utf-8") as protocol_file:
-        recorder = FieldRecorder(path, protocol_file, snapshot["equipment"])
+            (folder / "protocol_messages.jsonl").open("w", encoding="utf-8") as protocol_file, \
+            (folder / "source_context.jsonl").open("w", encoding="utf-8") as source_file:
+        recorder = FieldRecorder(path, protocol_file, snapshot["equipment"], source_stream=source_file)
         def emit(event_type, wo, op=None, quantity=None, phase="normal", rework_id=None, **extra):
             nonlocal sequence
             if stop.is_set():
@@ -110,9 +113,10 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
                 emit("processing_started", wo, op, quantity, phase, rework_id)
                 supported = op["equipment_id"] in field.DEVICES
                 if supported:
-                    message = field.build_mqtt_dispatch_message(wo["work_order_id"], op["operation_id"],
-                        op["equipment_id"], env.now, quantity, run_id=run_id)
-                    recorder.message(message, "mes_to_field_mqtt_dispatched", wo, op, emit)
+                    message, source = field.build_mqtt_dispatch_message(wo["work_order_id"], op["operation_id"],
+                        op["equipment_id"], env.now, quantity, run_id=run_id, return_source=True)
+                    recorder.message(message, "mes_to_field_mqtt_dispatched", wo, op, emit,
+                                     quantity=quantity, phase=phase, rework_id=rework_id, source=source)
                 completed = env.timeout(op["minutes"] * quantity)
                 if observer is not None:
                     observation_context = dict(run_id=run_id, order_id=wo["order_id"],
@@ -132,13 +136,14 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
                         "E-MOVE": (field.build_robot_modbus_message, "field_modbus_reported"),
                     }[op["equipment_id"]]
                     options = {} if op["equipment_id"] == "E-QC" else {"sample_index": config.sample_index}
-                    message = builder(wo["work_order_id"], op["operation_id"], env.now,
-                                      is_anomaly=anomaly, run_id=run_id, **options)
+                    message, source = builder(wo["work_order_id"], op["operation_id"], env.now,
+                                              is_anomaly=anomaly, run_id=run_id, return_source=True, **options)
                     extra = on_response(message) if on_response else 0
                     if message["is_anomaly"] and op["equipment_id"] != "E-QC":
                         extra = config.cnc_repair_minutes if op["equipment_id"] == "E-ASM" else config.robot_repair_minutes
                     alarm = alarm_text(message, extra) if message["is_anomaly"] else ""
-                    recorder.message(message, action, wo, op, emit, alarm)
+                    recorder.message(message, action, wo, op, emit, alarm,
+                                     quantity=quantity, phase=phase, rework_id=rework_id, source=source)
                     if message["is_anomaly"]:
                         fault = recorder.fault(message, wo, op, env.now, alarm, extra, emit)
                         active_faults[(wo["work_order_id"], op["operation_id"])] = fault

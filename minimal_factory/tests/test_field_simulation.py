@@ -1,4 +1,5 @@
 """四协议沙盒与数据驱动故障级联验收；所有数据库均在临时目录。"""
+import hashlib
 import json
 import tempfile
 import threading
@@ -72,6 +73,54 @@ class FieldSimulationTests(unittest.TestCase):
         self.assertEqual(len({m["message_id"] for m in db_messages}), len(db_messages))
         return folder, result, observer
 
+    def test_source_context_matches_consumed_signal_rows(self):
+        for mode, index, expected_time, expected_upstream in (
+            ("normal", 2, 2, 2), ("anomaly", 0, 0, 240),
+        ):
+            with self.subTest(mode=mode):
+                snapshot = fixture(mode)
+                snapshot["orders"][0]["field_protocols"]["sample_index"] = index
+                folder, summary, _ = self.simulate(snapshot, mode)
+                sources = [json.loads(line) for line in (folder / "source_context.jsonl").read_text(
+                    encoding="utf-8").splitlines()]
+                messages = summary["protocol_messages"]
+                self.assertEqual([source["message_id"] for source in sources],
+                                 [message["message_id"] for message in messages])
+                for message, source in zip(messages, sources):
+                    if message["protocol"] not in ("OPC-UA", "Modbus-TCP"):
+                        continue
+                    raw = Path(message["source_file"]).read_bytes().splitlines()[index]
+                    sample = json.loads(raw)
+                    self.assertEqual(source, dict(
+                        message_id=message["message_id"], source_file=message["source_file"],
+                        sample_hash=hashlib.sha256(raw).hexdigest(), source_kind="synthetic",
+                        sample_id=sample["sample_id"], sample_index=index,
+                        sample_time_s=sample["sample_time_s"], source_time_s=sample["source_time_s"]))
+                    self.assertNotIn("sample_time_s", message)
+                    if message["protocol"] == "OPC-UA" and message["is_anomaly"] == (mode == "anomaly"):
+                        self.assertEqual((source["sample_time_s"], source["source_time_s"]),
+                                         (expected_time, expected_upstream))
+                        self.assertEqual(message["virtual_minute"], 6)
+
+    def test_mqtt_and_vision_source_context_have_no_sample_times(self):
+        folder, summary, _ = self.simulate(fixture())
+        sources = {source["message_id"]: source for source in map(json.loads,
+                   (folder / "source_context.jsonl").read_text(encoding="utf-8").splitlines())}
+        for message in summary["protocol_messages"]:
+            if message["protocol"] in ("MQTT", "HTTP-Vision-Webhook"):
+                source = sources[message["message_id"]]
+                self.assertEqual(source["source_file"], message["source_file"])
+                self.assertEqual(source["sample_hash"], message["sample_hash"])
+                for key in ("sample_index", "sample_time_s", "source_time_s"):
+                    self.assertIsNone(source[key])
+                if message["protocol"] == "MQTT":
+                    self.assertEqual(Path(source["source_file"]).name, "manifest.json")
+                    self.assertEqual(source["source_kind"], "configuration_generated")
+                    self.assertIsNone(source["sample_id"])
+                else:
+                    self.assertEqual(source["source_kind"], "synthetic")
+                    self.assertEqual(source["sample_id"], "vision_normal_front")
+
     def test_normal_12_minutes_no_fault_and_four_protocols(self):
         folder, result, observer = self.simulate(fixture())
         self.assertEqual(result["makespan_min"], 12)
@@ -84,6 +133,51 @@ class FieldSimulationTests(unittest.TestCase):
         self.assertEqual({m["protocol"] for m in messages},
                          {"MQTT", "OPC-UA", "HTTP-Vision-Webhook", "Modbus-TCP"})
         self.assertEqual([m["virtual_minute"] for m in messages], [0, 6, 6, 10, 10, 12])
+
+    def protocol_events(self, folder):
+        actions = {"mes_to_field_mqtt_dispatched", "field_opcua_signal_reported",
+                   "field_vision_http_reported", "field_modbus_reported"}
+        path = folder / "events.jsonl"
+        events = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        return [event for event in events if event["event_type"] in actions]
+
+    def test_normal_protocol_events_keep_actual_execution_context(self):
+        folder, result, _ = self.simulate(fixture())
+        events = self.protocol_events(folder)
+        messages = {m["message_id"]: m for m in result["protocol_messages"]}
+        self.assertEqual(len(events), 6)
+        self.assertEqual({e["detail"]["message_id"] for e in events}, set(messages))
+        for event in events:
+            self.assertEqual((event["quantity"], event["phase"], event["rework_id"]), (2, "normal", None))
+            self.assertEqual(event["detail"], messages[event["detail"]["message_id"]])
+
+    def test_partial_rework_protocol_events_keep_quantity_phase_and_rework_id(self):
+        folder, result, _ = self.simulate(fixture("anomaly", ["E-QC"]))
+        self.assertEqual(result["makespan_min"], 17)
+        self.assertEqual(result["completed_quantity"], 2)
+        self.assertEqual(result["rework_quantity"], 1)
+        self.assertEqual(result["delay_summary"][0]["delay_minutes"], 5)
+        wo = mes.get_work_order(folder / "mes.db", "DEMO-WO-1")
+        rework_id = wo["reworks"][0]["rework_id"]
+        self.assertEqual(wo["reworks"][0]["status"], "completed")
+        events = self.protocol_events(folder)
+        messages = {m["message_id"]: m for m in result["protocol_messages"]}
+        self.assertEqual(len(events), 10)
+        self.assertEqual({e["detail"]["message_id"] for e in events}, set(messages))
+        for phase, quantity, expected_rework, count, protocols in (
+            ("normal", 2, None, 6, {"MQTT", "OPC-UA", "HTTP-Vision-Webhook", "Modbus-TCP"}),
+            ("repair", 1, rework_id, 2, {"MQTT", "OPC-UA"}),
+            ("reinspection", 1, rework_id, 2, {"MQTT", "HTTP-Vision-Webhook"}),
+        ):
+            group = [event for event in events if event["phase"] == phase]
+            self.assertEqual(len(group), count)
+            self.assertEqual({event["detail"]["protocol"] for event in group}, protocols)
+            for event in group:
+                self.assertEqual((event["quantity"], event["rework_id"]), (quantity, expected_rework))
+                message = messages[event["detail"]["message_id"]]
+                self.assertEqual(event["detail"], message)
+                for field in ("work_order_id", "operation_id", "equipment_id"):
+                    self.assertEqual(event[field], message[field])
 
     def test_all_anomalies_real_fault_repair_rework_and_delay(self):
         folder, result, observer = self.simulate(fixture("anomaly"))
