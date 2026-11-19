@@ -1610,5 +1610,32 @@
       "frontend_46": true,
       "log_sha256": "f2721e126920e24bb70d24f91cbd72c3de9f36cf6b61ae100a8238eda33030ed"
     }
+  },
+  "git_delivery": {
+    "checked_at_beijing": "2026-11-19T17:18:46+08:00",
+    "verification_method": "GitHub connector fetch_commit by branch ref; native Git push created remote branch, subsequent ls-remote had connection resets",
+    "branch": "feat/p04-data-output-contract",
+    "content_commit": "3b823972e36099dedabc987043d552c626bd561c",
+    "remote_master": "c5c79227493a978657d379a682d5bdf35518b518",
+    "remote_p03": "13faf557858fc430c4d9fa0964dd8aa6e36bbc38",
+    "push_verified": true,
+    "refs": {
+      "feat/p04-data-output-contract": {
+        "sha": "3b823972e36099dedabc987043d552c626bd561c",
+        "url": "https://github.com/zzz22-9/postgraduat_Project2/commit/3b823972e36099dedabc987043d552c626bd561c",
+        "message": "docs(factory): define and verify P0.4 data output contract"
+      },
+      "master": {
+        "sha": "c5c79227493a978657d379a682d5bdf35518b518",
+        "url": "https://github.com/zzz22-9/postgraduat_Project2/commit/c5c79227493a978657d379a682d5bdf35518b518",
+        "message": "docs(wp5): record acceptance evidence and local operation guide"
+      },
+      "feat/p03-relation-validation": {
+        "sha": "13faf557858fc430c4d9fa0964dd8aa6e36bbc38",
+        "url": "https://github.com/zzz22-9/postgraduat_Project2/commit/13faf557858fc430c4d9fa0964dd8aa6e36bbc38",
+        "message": "docs: record P0.3 acceptance and delivery"
+      }
+    },
+    "receipt_commit": "subsequent documentation receipt commit; query actual branch HEAD"
   }
 }
