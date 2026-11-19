@@ -1,0 +1,1614 @@
+{
+  "contract_version": "1.0",
+  "created_at_beijing": "2026-11-19",
+  "scope": "P0.4 only; current interfaces and future targets separated; no Data Connector implementation",
+  "source_git": {
+    "base_branch": "feat/p03-relation-validation",
+    "base_head": "13faf557858fc430c4d9fa0964dd8aa6e36bbc38",
+    "p03_function_commit": "51216fe826306d874d99c68134e3e1c44f59b4be",
+    "delivery_branch": "feat/p04-data-output-contract"
+  },
+  "observation": {
+    "checked_at_beijing": "2026-11-19T16:56:52.363069+08:00",
+    "command": "netstat -ano -p tcp",
+    "exit_code": 0,
+    "relevant_lines": [],
+    "scope": "Local TCP port inventory only; does not probe 192.168.10.30 or identify third-party protocol services. CIM query unavailable."
+  },
+  "schemas": {
+    "order": {
+      "product_id": "string",
+      "product_name": "string",
+      "quantity": "positive integer, pieces",
+      "due_date": "YYYY-MM-DD or null",
+      "order_id": "string",
+      "status": "pending | dispatched | in_progress | completed",
+      "created_at": "UTC ISO8601 wall clock"
+    },
+    "erp_feed": {
+      "source": "ERP",
+      "orders": "order[] (DB strings for dates)",
+      "dispatch_outbox": "{message_id,order_id,timestamp,protocol,endpoint,http,payload,envelope,acknowledged_at,delivery_state,order}[]",
+      "http": "null or {url,method,request_headers,sent_at,status_code,response_headers?,response_body?,error?}",
+      "delivery_state": "acknowledged | unconfirmed; not current work-order status"
+    },
+    "work_order": {
+      "scalar_fields": [
+        "work_order_id",
+        "order_id",
+        "status",
+        "priority",
+        "planned_date",
+        "created_at",
+        "released_at",
+        "completed_at",
+        "product_id",
+        "product_name",
+        "quantity",
+        "due_date",
+        "order_status",
+        "progress"
+      ],
+      "detail_arrays": [
+        "operations",
+        "reports",
+        "inspections",
+        "events",
+        "reworks",
+        "rework_actions"
+      ],
+      "sandbox_only": [
+        "planned_minutes",
+        "actual_minutes",
+        "delay_minutes",
+        "anomaly_status"
+      ],
+      "snapshot_policy": "received dispatch payload preferred for product/qty/due date; GET /orders reads current ERP order"
+    },
+    "operation": {
+      "fields": [
+        "operation_id",
+        "work_order_id",
+        "sequence",
+        "name",
+        "kind",
+        "minutes",
+        "equipment_id",
+        "status",
+        "good_quantity",
+        "rework_attempts",
+        "started_at",
+        "completed_at",
+        "equipment_name"
+      ],
+      "kind": "assembly | inspection | transport",
+      "status": "pending | running | paused | completed",
+      "minutes": "integer minutes per piece"
+    },
+    "equipment": {
+      "fields": [
+        "equipment_id",
+        "name",
+        "kind",
+        "status",
+        "created_at",
+        "occupied_by",
+        "work_order_id",
+        "operation_name",
+        "operation_status"
+      ],
+      "formal_status": "available | maintenance",
+      "sandbox_additional": "fault; alarm_message, fault_virtual_minute, recovered_virtual_minute",
+      "note": "runtime busy resource occupancy is separate from equipment.status"
+    },
+    "mes_event": {
+      "fields": [
+        "event_id",
+        "created_at",
+        "order_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "action",
+        "operator",
+        "detail"
+      ],
+      "detail": "string: plain business text OR JSON-encoded envelope/detail; parse only for known action",
+      "created_at": "UTC ISO8601 wall time; event_id ascending within one DB"
+    },
+    "execution_records": {
+      "reports": [
+        "report_id",
+        "request_id",
+        "operation_id",
+        "operator",
+        "good_quantity",
+        "rework_quantity",
+        "note",
+        "created_at",
+        "rework_operation_id",
+        "sequence",
+        "operation_name"
+      ],
+      "inspections": [
+        "inspection_id",
+        "request_id",
+        "work_order_id",
+        "operator",
+        "accepted_quantity",
+        "rework_quantity",
+        "note",
+        "created_at",
+        "rework_operation_id"
+      ],
+      "reworks": [
+        "rework_id",
+        "work_order_id",
+        "source_operation_id",
+        "target_operation_id",
+        "quantity",
+        "reason",
+        "status",
+        "equipment_id",
+        "cycle",
+        "created_at",
+        "completed_at",
+        "target_name",
+        "target_kind",
+        "source_name",
+        "equipment_name"
+      ],
+      "rework_actions": [
+        "request_id",
+        "rework_id",
+        "action",
+        "operator",
+        "note",
+        "equipment_id",
+        "passed",
+        "created_at"
+      ]
+    },
+    "protocol_envelope": {
+      "protocol": "string: MQTT | OPC-UA | Modbus-TCP | HTTP-Vision-Webhook",
+      "message_id": "string MSG- + first 32 hex of canonical message SHA256; do not regenerate when reading",
+      "run_id": "string current SIM batch; optional/null for standalone builder only",
+      "virtual_minute": "number, SimPy minutes, not wall time",
+      "work_order_id": "string",
+      "operation_id": "string",
+      "equipment_id": "string",
+      "device_code": "string",
+      "is_anomaly": "boolean",
+      "source_file": "absolute producer-host file path",
+      "sample_hash": "SHA256 string; signal selected raw line without newline, Vision whole PNG, MQTT whole manifest",
+      "payload": "protocol-specific object",
+      "endpoint": "string descriptor only; NOT a reachable service in local_frame",
+      "transport_mode": "local_frame",
+      "synthetic": "true"
+    },
+    "simulation_event": {
+      "fields": [
+        "run_id",
+        "sequence",
+        "sim_time_min",
+        "event_type",
+        "order_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "quantity",
+        "phase",
+        "rework_id",
+        "recorded_at"
+      ],
+      "optional_fields": [
+        "action",
+        "detail",
+        "wait_min",
+        "accepted_quantity",
+        "rejected_quantity",
+        "source_operation_id"
+      ],
+      "phase": "normal | repair | reinspection",
+      "detail": "JSON object for protocol events; message_id is detail.message_id",
+      "recorded_at": "UTC ISO8601 wall clock"
+    },
+    "source_context": {
+      "fields": [
+        "message_id",
+        "source_file",
+        "sample_hash",
+        "source_kind",
+        "sample_id",
+        "sample_index",
+        "sample_time_s",
+        "source_time_s"
+      ],
+      "source_kind": "synthetic for signals/PNG; configuration_generated for MQTT",
+      "sample_index": "zero-based integer for CNC/Robot, null for Vision/MQTT",
+      "sample_time_s": "number seconds in asset sample, null if undefined",
+      "source_time_s": "number seconds in upstream asset, null if undefined",
+      "sample_id": "asset sample id, null for MQTT",
+      "run_id": "not stored: folder run_id + exact message_id join"
+    },
+    "run": {
+      "fields": [
+        "run_id",
+        "status",
+        "created_at",
+        "finished_at",
+        "source",
+        "replay_run_id",
+        "completed_orders",
+        "total_orders",
+        "sim_time_min",
+        "error"
+      ],
+      "status": "running | completed | failed | interrupted",
+      "time": "created_at/finished_at actual UTC; sim_time_min SimPy minutes"
+    },
+    "simulation_result": {
+      "additional_to_run": [
+        "input",
+        "mapping",
+        "summary",
+        "events",
+        "equipment_alerts",
+        "delay_summary",
+        "protocol_messages"
+      ],
+      "summary": "object only for completed, otherwise null",
+      "source_context": "not exposed by HTTP",
+      "json_export_additional": "mes_work_orders[] only populated when completed"
+    },
+    "summary": {
+      "fields": [
+        "makespan_min",
+        "orders",
+        "equipment",
+        "intervals",
+        "equipment_alerts",
+        "protocol_messages",
+        "delay_summary",
+        "completed_quantity",
+        "rework_quantity",
+        "total_waiting_min",
+        "event_count"
+      ],
+      "run_id": "not a top-level summary field: obtain from run.json / result.run_id",
+      "interval_fields": [
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "name",
+        "quantity",
+        "phase",
+        "rework_id",
+        "start_min",
+        "end_min"
+      ]
+    },
+    "cnc_payload": {
+      "subscription_id": 1,
+      "publishing_interval_ms": 1000,
+      "nodes": "{node_id,data_type,value,status_code,diagnostic_info}[]",
+      "note": "publishing_interval_ms does not establish actual publish/sample rate"
+    },
+    "robot_payload": {
+      "unit_id": "integer 1..247; current engine default 1",
+      "function_code": 3,
+      "start_address": 40001,
+      "wire_start_address": 0,
+      "register_count": 4,
+      "raw_registers": "four UInt16 integers",
+      "request_frame_hex": "MBAP+FC03 request, hex string",
+      "response_frame_hex": "MBAP+FC03 response, network big-endian"
+    },
+    "mqtt_payload": {
+      "packet_type": "PUBLISH",
+      "topic": "factory/line1/{CNC_01|Vision_01|Robot_01}/command",
+      "qos": "default 1; accepts 0..2",
+      "retain": false,
+      "packet_id": "1 when qos > 0; not a globally unique id",
+      "payload_json": "{cmd: START, wo, op, quantity: positive integer pieces, dataset: FIELD-ASSETS-V1}",
+      "payload_bytes_hex": "compact UTF8 JSON bytes hex; not an entire MQTT wire packet"
+    },
+    "vision_payload": {
+      "method": "POST (descriptor, not actual request)",
+      "request_headers": {
+        "Content-Type": "application/json"
+      },
+      "camera_ip": "192.168.10.22 (descriptor only)",
+      "image_url": "/static/rendered_v1/{normal|defect}_{front|side}.png",
+      "detections": "[{label:bolt,count:integer,expected:4,PASS:boolean}]",
+      "result_source": "scene_configuration_not_image_recognition"
+    }
+  },
+  "current_interfaces": [
+    {
+      "id": "health",
+      "source": "ERP+MES",
+      "data_object": "health",
+      "producer": {
+        "file": "minimal_factory/erp/app.py",
+        "function": "health",
+        "line": 77
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/health",
+        "database_or_files": null
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/health",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "{status,module,version}",
+      "types_units_ref": "{status,module,version}",
+      "time_semantics": "none",
+      "correlation_fields": [],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "No business query parameters",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "erp.orders",
+      "source": "ERP",
+      "data_object": "erp.orders",
+      "producer": {
+        "file": "minimal_factory/erp/app.py",
+        "function": "get_orders",
+        "line": 110
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/orders",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)::orders"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/orders",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "order[]",
+      "types_units_ref": "order[]",
+      "time_semantics": "created_at actual UTC",
+      "correlation_fields": [
+        "order_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "empty DB -> []; newest creation first",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "erp.order",
+      "source": "ERP",
+      "data_object": "erp.order",
+      "producer": {
+        "file": "minimal_factory/erp/app.py",
+        "function": "get_order",
+        "line": 126
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/orders/{order_id}",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)::orders"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/orders/{order_id}",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "order",
+      "types_units_ref": "order",
+      "time_semantics": "created_at actual UTC",
+      "correlation_fields": [
+        "order_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "404 for unknown identifier; validation 422 where applicable",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "erp.feed",
+      "source": "ERP",
+      "data_object": "erp.feed",
+      "producer": {
+        "file": "minimal_factory/erp/app.py",
+        "function": "erp_feed",
+        "line": 116
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/erp/feed",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)::orders,erp_dispatch_outbox"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/erp/feed",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "erp_feed",
+      "types_units_ref": "erp_feed",
+      "time_semantics": "dispatch timestamp / sent_at / acknowledged_at are actual wall times; historical addressing may be null",
+      "correlation_fields": [
+        "order_id",
+        "message_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "no pagination/filter; lists may be empty; read_feed mode=ro/query_only",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "erp.feed_alias",
+      "source": "ERP",
+      "data_object": "erp.feed_alias",
+      "producer": {
+        "file": "minimal_factory/erp/app.py",
+        "function": "erp_feed",
+        "line": 116
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/orders/dispatch-outbox",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)::orders,erp_dispatch_outbox"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/orders/dispatch-outbox",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "erp_feed",
+      "types_units_ref": "erp_feed",
+      "time_semantics": "dispatch timestamp / sent_at / acknowledged_at are actual wall times; historical addressing may be null",
+      "correlation_fields": [
+        "order_id",
+        "message_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "no pagination/filter; lists may be empty; read_feed mode=ro/query_only",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "mes.dashboard",
+      "source": "MES",
+      "data_object": "mes.dashboard",
+      "producer": {
+        "file": "minimal_factory/mes/api.py",
+        "function": "dashboard",
+        "line": 20
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/mes/dashboard",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)::work_orders,orders,operations,reworks,events"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/mes/dashboard",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "{counts,pending_orders,completed_quantity,busy_equipment,recent_events:mes_event[<=20]}",
+      "types_units_ref": "{counts,pending_orders,completed_quantity,busy_equipment,recent_events:mes_event[<=20]}",
+      "time_semantics": "MES event created_at actual UTC",
+      "correlation_fields": [
+        "recent_events.order_id",
+        "recent_events.work_order_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "recent_events is newest 20, not an event feed",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "mes.work_orders",
+      "source": "MES",
+      "data_object": "mes.work_orders",
+      "producer": {
+        "file": "minimal_factory/mes/api.py",
+        "function": "work_orders",
+        "line": 24
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/mes/work-orders",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)::work_orders,orders,mes_dispatch_inbox,operations"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/mes/work-orders",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "work_order[] (scalar summary only)",
+      "types_units_ref": "work_order[] (scalar summary only)",
+      "time_semantics": "created_at/released_at/completed_at actual UTC; planned_date/due_date calendar dates",
+      "correlation_fields": [
+        "work_order_id",
+        "order_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "[] when empty; sorted priority, planned_date IS NULL, planned_date, created_at DESC",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "mes.work_order",
+      "source": "MES",
+      "data_object": "mes.work_order",
+      "producer": {
+        "file": "minimal_factory/mes/api.py",
+        "function": "work_order",
+        "line": 36
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/mes/work-orders/{wo_id}",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)::work_orders,operations,production_reports,inspections,events,reworks,rework_actions"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/mes/work-orders/{wo_id}",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "work_order",
+      "types_units_ref": "work_order",
+      "time_semantics": "MES wall timestamps; operations.minutes = minutes/piece",
+      "correlation_fields": [
+        "work_order_id",
+        "order_id",
+        "operations.operation_id",
+        "operations.equipment_id",
+        "reworks.rework_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "404 for unknown identifier; validation 422 where applicable",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "mes.export",
+      "source": "MES",
+      "data_object": "mes.export",
+      "producer": {
+        "file": "minimal_factory/mes/api.py",
+        "function": "export",
+        "line": 56
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/mes/work-orders/{wo_id}/export",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/mes/work-orders/{wo_id}/export",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "{format_version:1,source:local_mes,exported_at,work_order:work_order}",
+      "types_units_ref": "{format_version:1,source:local_mes,exported_at,work_order:work_order}",
+      "time_semantics": "exported_at actual export time, not production virtual time",
+      "correlation_fields": [
+        "work_order.work_order_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "404 for unknown identifier; validation 422 where applicable",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "mes.equipment",
+      "source": "MES",
+      "data_object": "mes.equipment",
+      "producer": {
+        "file": "minimal_factory/mes/api.py",
+        "function": "equipment",
+        "line": 82
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/mes/equipment",
+        "database_or_files": "minimal_factory/data/erp.db (default, ERP+MES shared)::equipment,operations,reworks"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/mes/equipment",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "equipment[]",
+      "types_units_ref": "equipment[]",
+      "time_semantics": "created_at actual UTC; no virtual time in formal DB",
+      "correlation_fields": [
+        "equipment_id",
+        "occupied_by",
+        "work_order_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "available does not mean idle; check occupied_by; rework occupancy uses rework_id",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "simulation.history",
+      "source": "MES+field",
+      "data_object": "simulation.history",
+      "producer": {
+        "file": "minimal_factory/simulation/api.py",
+        "function": "history",
+        "line": 28
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/simulation/runs",
+        "database_or_files": "<simulation_root>/SIM-*/run.json"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/simulation/runs",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "run[]",
+      "types_units_ref": "run[]",
+      "time_semantics": "created_at descending, then run_id descending",
+      "correlation_fields": [
+        "run_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "[] if no batches; not an event subscription",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "simulation.result",
+      "source": "MES+CNC+Robot+Vision",
+      "data_object": "simulation.result",
+      "producer": {
+        "file": "minimal_factory/simulation/api.py",
+        "function": "result",
+        "line": 32
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/simulation/runs/{run_id}",
+        "database_or_files": "<simulation_root>/<run_id>/{run,input,mapping,summary}.json + events/protocol JSONL"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/simulation/runs/{run_id}",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "simulation_result",
+      "types_units_ref": "simulation_result",
+      "time_semantics": "run actual UTC; event sim_time_min and protocol virtual_minute are SimPy minutes",
+      "correlation_fields": [
+        "run_id",
+        "events.detail.message_id",
+        "input.orders.work_order_id"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "404 invalid/unknown SIM id; incomplete prefix available for noncompleted; summary=null; completed files missing/corrupt -> not guaranteed graceful response",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "simulation.export",
+      "source": "MES+CNC+Robot+Vision",
+      "data_object": "simulation.export",
+      "producer": {
+        "file": "minimal_factory/simulation/api.py",
+        "function": "export",
+        "line": 36
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/simulation/runs/{run_id}/export",
+        "database_or_files": "same plus completed sandbox mes.db"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/simulation/runs/{run_id}/export",
+        "query": {
+          "format": [
+            "json (default)",
+            "events_csv",
+            "summary_csv"
+          ]
+        },
+        "authentication": "none in current app"
+      },
+      "structure_ref": "simulation_result + mes_work_orders[] (JSON), or CSV",
+      "types_units_ref": "simulation_result + mes_work_orders[] (JSON), or CSV",
+      "time_semantics": "same as simulation.result",
+      "correlation_fields": [
+        "run_id",
+        "message_id via detail/full JSON"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "404 unknown; 422 invalid format; 409 summary_csv on noncompleted; CSV omits detail/source context",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "vision.image",
+      "source": "Vision",
+      "data_object": "vision.image",
+      "producer": {
+        "file": "minimal_factory/simulation/assets.py",
+        "function": "vision_image",
+        "line": 15
+      },
+      "output_location": {
+        "method": "GET",
+        "path": "/static/rendered_v1/{filename}",
+        "database_or_files": "minimal_factory/synthetic_images/rendered_v1/{filename}"
+      },
+      "protocol": "HTTP",
+      "implementation_status": "implemented_and_independently_read_verified",
+      "connection": {
+        "base_url": "operator supplied; typical launch http://127.0.0.1:8000; no listener observed at audit time",
+        "path": "/static/rendered_v1/{filename}",
+        "query": {},
+        "authentication": "none in current app"
+      },
+      "structure_ref": "image/png",
+      "types_units_ref": "image/png",
+      "time_semantics": "no image acquisition timestamp in assets",
+      "correlation_fields": [
+        "sample_hash via file SHA256, sample_id via manifest; no business id in PNG"
+      ],
+      "update_mechanism": "client polling; no pagination/cursor/subscription; interval undefined",
+      "exception_behavior": "404 for all nonwhitelisted/missing files; four allowed files normal_front.png, normal_side.png, defect_front.png, defect_side.png",
+      "verification": {
+        "test": "minimal_factory/tests/test_output_contract.py",
+        "method": "urllib over real uvicorn loopback TCP; raw responses retained in .task_work/p04_20261119/interface-evidence"
+      }
+    },
+    {
+      "id": "mes.database",
+      "source": "ERP+MES",
+      "data_object": "business tables",
+      "producer": {
+        "file": "minimal_factory/mes/service.py",
+        "function": "log",
+        "line": 182
+      },
+      "output_location": "minimal_factory/data/erp.db (default, ERP+MES shared)",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "sqlite": "mode=ro; PRAGMA query_only=ON; BEGIN; no initializers"
+      },
+      "structure_ref": "order/work_order/operation/equipment/mes_event/execution_records",
+      "types_units_ref": "order/work_order/operation/equipment/mes_event/execution_records",
+      "time_semantics": "wall-clock timestamps except explicit virtual times in parsed simulation detail",
+      "correlation_fields": [
+        "order_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "rework_id"
+      ],
+      "update_mechanism": "committed transactions; read snapshot",
+      "exception_behavior": "missing DB must fail, never create; no standalone protocol_messages table in formal DB",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    },
+    {
+      "id": "run.bundle",
+      "source": "MES+CNC+Robot+Vision",
+      "data_object": "batch lifecycle and evidence",
+      "producer": {
+        "file": "minimal_factory/simulation/service.py",
+        "function": "start",
+        "line": 120
+      },
+      "output_location": "<simulation_root>/<run_id>/",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "default_simulation_root": "minimal_factory/data/erp.simulations",
+        "custom_rule": "source_path.parent/(source_path.stem + .simulations), or explicit SimulationService(root=...)",
+        "files": [
+          "run.json",
+          "input.json",
+          "mapping.json",
+          "mes.db",
+          "events.jsonl",
+          "protocol_messages.jsonl",
+          "source_context.jsonl",
+          "summary.json (completed only)"
+        ]
+      },
+      "structure_ref": "run/simulation_result/summary",
+      "types_units_ref": "run/simulation_result/summary",
+      "time_semantics": "run wall clock, SimPy events/summary minutes; preserved business times in input",
+      "correlation_fields": [
+        "run_id",
+        "work_order_id",
+        "order_id"
+      ],
+      "update_mechanism": "run.json atomically replaced, JSONL append+flush; summary at completion",
+      "exception_behavior": "require completed AND summary; failed/interrupted prefixes are partial; legacy A2 absence explicitly provenance-unavailable",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    },
+    {
+      "id": "field.messages",
+      "source": "CNC+Robot+Vision+MES",
+      "data_object": "all four local protocol envelopes",
+      "producer": {
+        "file": "minimal_factory/simulation/field_runtime.py",
+        "function": "message",
+        "line": 57
+      },
+      "output_location": "<run>/protocol_messages.jsonl + mes.db::protocol_messages.raw_json + summary.protocol_messages + mes.db::events.detail",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "network": "none; transport_mode=local_frame"
+      },
+      "structure_ref": "protocol_envelope",
+      "types_units_ref": "protocol_envelope",
+      "time_semantics": "virtual_minute; wall recorded_at from events joined by detail.message_id",
+      "correlation_fields": [
+        "run_id",
+        "message_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "device_code"
+      ],
+      "update_mechanism": "MQTT at processing start, sensor/result at processing end, also repair/reinspection",
+      "exception_behavior": "P0.3 validates relationships before writes; cross-output atomicity not guaranteed on I/O crash; compare channels",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    },
+    {
+      "id": "field.sources",
+      "source": "CNC+Robot+Vision+MES",
+      "data_object": "A2 source context",
+      "producer": {
+        "file": "minimal_factory/simulation/field_protocols.py",
+        "function": "_source_context",
+        "line": 105
+      },
+      "output_location": "<run>/source_context.jsonl",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "join": "within same run folder by message_id; no current HTTP route"
+      },
+      "structure_ref": "source_context",
+      "types_units_ref": "source_context",
+      "time_semantics": "sample_time_s and source_time_s asset/upstream seconds; undefined -> null",
+      "correlation_fields": [
+        "message_id",
+        "sample_id",
+        "sample_index",
+        "source_file",
+        "sample_hash"
+      ],
+      "update_mechanism": "one row per persisted protocol, immediately after protocol line",
+      "exception_behavior": "new completed run must have one-to-one mapping; known pre-A2 historical run may lack entire file; do not invent missing times",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    },
+    {
+      "id": "field.events",
+      "source": "MES",
+      "data_object": "execution context",
+      "producer": {
+        "file": "minimal_factory/simulation/engine.py",
+        "function": "emit",
+        "line": 81
+      },
+      "output_location": "<run>/events.jsonl",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "join": "protocol events detail.message_id"
+      },
+      "structure_ref": "simulation_event",
+      "types_units_ref": "simulation_event",
+      "time_semantics": "sim_time_min SimPy minutes; recorded_at actual UTC",
+      "correlation_fields": [
+        "run_id",
+        "sequence",
+        "order_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "quantity",
+        "phase",
+        "rework_id"
+      ],
+      "update_mechanism": "each emit appends flushed newline",
+      "exception_behavior": "ignore unfinished last line while running; completed batch must be fully parseable; event detail differs from MES string detail",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    },
+    {
+      "id": "cnc.samples",
+      "source": "CNC",
+      "data_object": "four OPC UA style nodes",
+      "producer": {
+        "file": "minimal_factory/simulation/field_protocols.py",
+        "function": "build_cnc_opcua_message",
+        "line": 142
+      },
+      "output_location": "<run>/protocol_messages.jsonl where protocol=OPC-UA; minimal_factory/synthetic_signals/generated_v1/cnc_{normal|overload}.jsonl",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "descriptive_endpoint": "opc.tcp://127.0.0.1:4840/freeopcua/server/",
+        "network_service_implemented": false
+      },
+      "structure_ref": "protocol_envelope/cnc_payload",
+      "types_units_ref": "protocol_envelope/cnc_payload",
+      "time_semantics": "virtual_minute at processing end; source sample_index 0..11, local sample time 0..11 s (1 s asset spacing), upstream time separate",
+      "correlation_fields": [
+        "run_id",
+        "message_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "device_code"
+      ],
+      "update_mechanism": "one selected sample per processing completion; no continuous generator",
+      "exception_behavior": "missing/corrupt asset or invalid index raises; service records failed; never use endpoint as a tested URL",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    },
+    {
+      "id": "robot.registers",
+      "source": "Robot",
+      "data_object": "FC03 holding registers and state evidence",
+      "producer": {
+        "file": "minimal_factory/simulation/field_protocols.py",
+        "function": "build_robot_modbus_message",
+        "line": 197
+      },
+      "output_location": "<run>/protocol_messages.jsonl where protocol=Modbus-TCP; minimal_factory/synthetic_signals/generated_v1/robot_{normal|overload}.jsonl",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "descriptive_endpoint": "modbus://192.168.10.30:502",
+        "network_service_implemented": false,
+        "unit_id": 1,
+        "function_code": 3,
+        "wire_start_address": 0,
+        "register_count": 4
+      },
+      "structure_ref": "protocol_envelope/robot_payload",
+      "types_units_ref": "protocol_envelope/robot_payload",
+      "time_semantics": "virtual_minute at processing end; asset/upstream seconds independent",
+      "correlation_fields": [
+        "run_id",
+        "message_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "device_code"
+      ],
+      "update_mechanism": "one selected sample per completion; status/fault in sandbox equipment/events/summary",
+      "exception_behavior": "no separate robot state register; scaling rounds to integer; no live Modbus request performed",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    },
+    {
+      "id": "mes.commands",
+      "source": "MES -> CNC/Robot/Vision",
+      "data_object": "MQTT PUBLISH descriptor",
+      "producer": {
+        "file": "minimal_factory/simulation/field_protocols.py",
+        "function": "build_mqtt_dispatch_message",
+        "line": 114
+      },
+      "output_location": "<run>/protocol_messages.jsonl where protocol=MQTT",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "descriptive_endpoint": "mqtt://127.0.0.1:1883",
+        "network_service_implemented": false,
+        "topic": "factory/line1/{device_code}/command"
+      },
+      "structure_ref": "protocol_envelope/mqtt_payload",
+      "types_units_ref": "protocol_envelope/mqtt_payload",
+      "time_semantics": "virtual_minute at processing start; source sample times null",
+      "correlation_fields": [
+        "run_id",
+        "message_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id"
+      ],
+      "update_mechanism": "one command per processing start including repair/reinspection",
+      "exception_behavior": "no publish/PUBACK/real broker; packet_id=1 not dedup key; is_anomaly=false for command",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    },
+    {
+      "id": "vision.results",
+      "source": "Vision",
+      "data_object": "label replay result + linked PNG",
+      "producer": {
+        "file": "minimal_factory/simulation/field_protocols.py",
+        "function": "build_vision_http_message",
+        "line": 162
+      },
+      "output_location": "<run>/protocol_messages.jsonl where protocol=HTTP-Vision-Webhook; summary.protocol_messages; manifest.field_samples",
+      "protocol": "local file/SQLite",
+      "implementation_status": "local_artifacts_independently_read_verified",
+      "connection": {
+        "descriptive_endpoint": "http://127.0.0.1:8000/mes/vision/webhook",
+        "webhook_implemented": false,
+        "image_http": "GET /static/rendered_v1/{filename}",
+        "camera_ip": "192.168.10.22 descriptor only"
+      },
+      "structure_ref": "protocol_envelope/vision_payload",
+      "types_units_ref": "protocol_envelope/vision_payload",
+      "time_semantics": "virtual_minute at inspection end; sample/source times null; no real image inference/acquisition time",
+      "correlation_fields": [
+        "run_id",
+        "message_id",
+        "work_order_id",
+        "operation_id",
+        "equipment_id",
+        "sample_id via source_context"
+      ],
+      "update_mechanism": "label count replay per inspection completion; engine default front view",
+      "exception_behavior": "PNG read+hash and labels used, no CV model; result endpoint is simulation GET, not webhook GET",
+      "verification": {
+        "test": "tests/test_output_contract.py::read_batch",
+        "evidence": ".task_work/p04_20261119/real-read-evidence.json"
+      }
+    }
+  ],
+  "cnc_nodes": [
+    {
+      "node_id": "ns=2;s=Channel1.CNC_01.SpindleCurrent",
+      "data_type": "Float",
+      "source_field": "current_a",
+      "unit": "A"
+    },
+    {
+      "node_id": "ns=2;s=Channel1.CNC_01.MotorTemperature",
+      "data_type": "Float",
+      "source_field": "temperature_c",
+      "unit": "degC"
+    },
+    {
+      "node_id": "ns=2;s=Channel1.CNC_01.SpindleLoad",
+      "data_type": "Float",
+      "source_field": "load_percent",
+      "unit": "%"
+    },
+    {
+      "node_id": "ns=2;s=Channel1.CNC_01.AlarmCode",
+      "data_type": "UInt16",
+      "source_field": "alarm_code",
+      "unit": "0 normal / 1 alarm"
+    }
+  ],
+  "robot_registers": [
+    {
+      "reference": 40001,
+      "wire_offset": 0,
+      "data_type": "UInt16",
+      "decode": "raw/1000 A"
+    },
+    {
+      "reference": 40002,
+      "wire_offset": 1,
+      "data_type": "UInt16",
+      "decode": "raw/10 degC"
+    },
+    {
+      "reference": 40003,
+      "wire_offset": 2,
+      "data_type": "UInt16",
+      "decode": "raw/10 %"
+    },
+    {
+      "reference": 40004,
+      "wire_offset": 3,
+      "data_type": "UInt16",
+      "decode": "0 normal / 1 alarm"
+    }
+  ],
+  "asset_contract": {
+    "dataset_id": "FIELD-ASSETS-V1",
+    "source_git_commit": "d53fb7b9c5f4e2fcea520de2cd62a323e802fd07",
+    "preparation_script": "tools/prepare_field_assets.py",
+    "preparation_script_sha256": "1e2b8b116892716ca2455aa070c0564856dd3365eaa3ab8f54123a2339b1e681",
+    "time_semantics": "sample_time_s is local asset time; bind to new run at consumption",
+    "business_binding": "template_run_id is provenance; assign current work order at consumption",
+    "files": [
+      {
+        "equipment_id": "E-ASM",
+        "equipment_name": "CNC_01",
+        "scenario": "normal",
+        "path": "cnc_normal.jsonl",
+        "sample_count": 12,
+        "sha256": "97a08b59961355d2f6d0b25a0372eb49aec5612c00227d32029c31eafe66f8b2",
+        "thresholds": {
+          "current_a": 4.0,
+          "temperature_c": 70.0,
+          "load_percent": 80.0
+        },
+        "ranges": {
+          "current_a": [
+            2.864671,
+            3.154232
+          ],
+          "temperature_c": [
+            30.0,
+            34.01
+          ],
+          "load_percent": [
+            47.745,
+            52.571
+          ]
+        },
+        "feature_model": {
+          "current_scale": 1.0,
+          "base_current_a": 3.0,
+          "base_temperature_c": 30.0,
+          "temperature_gain_c_per_a": 26.0,
+          "rated_current_a": 6.0
+        }
+      },
+      {
+        "equipment_id": "E-ASM",
+        "equipment_name": "CNC_01",
+        "scenario": "overload",
+        "path": "cnc_overload.jsonl",
+        "sample_count": 12,
+        "sha256": "3c14e9f6e2019709c843ba15460360efcbace0d3eea4a00401ef3713b28433e0",
+        "thresholds": {
+          "current_a": 4.0,
+          "temperature_c": 70.0,
+          "load_percent": 80.0
+        },
+        "ranges": {
+          "current_a": [
+            5.339504,
+            5.659302
+          ],
+          "temperature_c": [
+            90.827,
+            99.142
+          ],
+          "load_percent": [
+            88.992,
+            94.322
+          ]
+        },
+        "feature_model": {
+          "current_scale": 1.0,
+          "base_current_a": 3.0,
+          "base_temperature_c": 30.0,
+          "temperature_gain_c_per_a": 26.0,
+          "rated_current_a": 6.0
+        }
+      },
+      {
+        "equipment_id": "E-MOVE",
+        "equipment_name": "Robot_01",
+        "scenario": "normal",
+        "path": "robot_normal.jsonl",
+        "sample_count": 12,
+        "sha256": "a37163a7c4ef91726a6f6c61a7b5a3bc58aed694e320d70503ec88061f868ab0",
+        "thresholds": {
+          "current_a": 3.5,
+          "temperature_c": 70.0,
+          "load_percent": 90.0
+        },
+        "ranges": {
+          "current_a": [
+            2.291737,
+            2.523386
+          ],
+          "temperature_c": [
+            28.0,
+            31.702
+          ],
+          "load_percent": [
+            57.293,
+            63.085
+          ]
+        },
+        "feature_model": {
+          "current_scale": 0.8,
+          "base_current_a": 2.4,
+          "base_temperature_c": 28.0,
+          "temperature_gain_c_per_a": 30.0,
+          "rated_current_a": 4.0
+        }
+      },
+      {
+        "equipment_id": "E-MOVE",
+        "equipment_name": "Robot_01",
+        "scenario": "overload",
+        "path": "robot_overload.jsonl",
+        "sample_count": 12,
+        "sha256": "757a49637fb78472c13dc2e1e32132c5e345efe2a694cd2d24a5cfc4aa629a1e",
+        "thresholds": {
+          "current_a": 3.5,
+          "temperature_c": 70.0,
+          "load_percent": 90.0
+        },
+        "ranges": {
+          "current_a": [
+            4.271603,
+            4.527442
+          ],
+          "temperature_c": [
+            84.148,
+            91.823
+          ],
+          "load_percent": [
+            106.79,
+            113.186
+          ]
+        },
+        "feature_model": {
+          "current_scale": 0.8,
+          "base_current_a": 2.4,
+          "base_temperature_c": 28.0,
+          "temperature_gain_c_per_a": 30.0,
+          "rated_current_a": 4.0
+        }
+      }
+    ],
+    "units": {
+      "current_a": "A",
+      "temperature_c": "degC",
+      "load_percent": "%"
+    },
+    "feature_formula": "current=template*scale; temperature=base+max(0,current-base_current)*gain; load=100*current/rated_current",
+    "alarm_rule": "any feature strictly exceeds its threshold",
+    "register_map": {
+      "40001": "current_a * 1000",
+      "40002": "temperature_c * 10",
+      "40003": "load_percent * 10",
+      "40004": "alarm_code"
+    },
+    "register_addressing": "40001..40004 are holding-register reference labels; wire offsets 0..3"
+  },
+  "target_interfaces": [
+    {
+      "id": "target.cnc.opcua",
+      "source": "CNC",
+      "status": "not_implemented",
+      "protocol": "OPC UA",
+      "endpoint": null,
+      "recommendation": "serve the documented CNC node names/types; preserve namespace URI identity instead of relying only on ns=2 index; read/subscribe using a real client",
+      "required_before_acceptance": [
+        "real server lifecycle and source binding",
+        "endpoint/security/certificates/auth and namespace URI defined",
+        "sample ordering/time mapping and history API defined",
+        "actual client read+subscription verification"
+      ],
+      "producer": {
+        "status": "future implementation; no current server function"
+      },
+      "current_output_reference": "cnc.samples",
+      "output_location": null,
+      "structure_reference": "cnc_payload + protocol_envelope metadata",
+      "time_semantics": "proposed preserve separate simulation/asset/source/wall times; actual network acquisition timestamp TBD",
+      "update_mechanism": "TBD; not currently implemented",
+      "exception_behavior": "TBD real transport timeouts/retry/duplicate/missing policy",
+      "verification": "future real network client verification required; current local frames do not count"
+    },
+    {
+      "id": "target.robot.modbus",
+      "source": "Robot",
+      "status": "not_implemented",
+      "protocol": "Modbus TCP",
+      "endpoint": null,
+      "recommendation": "FC03 unit1 offsets0..3 UInt16, same scaling; snapshot consistency and out-of-range handling required",
+      "required_before_acceptance": [
+        "real server and lifecycle",
+        "host/port/unit security and poll interval defined",
+        "business/time metadata available out of band; Modbus registers alone cannot carry all correlation fields",
+        "actual FC03 client verification"
+      ],
+      "producer": {
+        "status": "future implementation; no current server function"
+      },
+      "current_output_reference": "robot.registers",
+      "output_location": null,
+      "structure_reference": "robot_payload + out-of-band protocol_envelope metadata",
+      "time_semantics": "proposed preserve separate simulation/asset/source/wall times; actual network acquisition timestamp TBD",
+      "update_mechanism": "TBD; not currently implemented",
+      "exception_behavior": "TBD real transport timeouts/retry/duplicate/missing policy",
+      "verification": "future real network client verification required; current local frames do not count"
+    },
+    {
+      "id": "target.commands.mqtt",
+      "source": "MES -> CNC/Robot/Vision",
+      "status": "not_implemented",
+      "protocol": "MQTT",
+      "endpoint": null,
+      "recommendation": "retain current command topics and JSON; QoS1/retain=false recommended; add run/message context via explicit versioned contract without altering V1 originals",
+      "required_before_acceptance": [
+        "real broker publisher subscriber and acknowledgments",
+        "broker URI/TLS/auth/reconnect/retention/de-dup policy",
+        "telemetry/state topics and ordering separate from command topics, names TBD",
+        "actual client publish/subscribe verification"
+      ],
+      "producer": {
+        "status": "future implementation; no current server function"
+      },
+      "current_output_reference": "mes.commands",
+      "output_location": null,
+      "structure_reference": "mqtt_payload + explicitly versioned context",
+      "time_semantics": "proposed preserve separate simulation/asset/source/wall times; actual network acquisition timestamp TBD",
+      "update_mechanism": "TBD; not currently implemented",
+      "exception_behavior": "TBD real transport timeouts/retry/duplicate/missing policy",
+      "verification": "future real network client verification required; current local frames do not count"
+    },
+    {
+      "id": "target.vision.publisher",
+      "source": "Vision",
+      "status": "not_implemented",
+      "protocol": "HTTP results/webhook",
+      "endpoint": null,
+      "recommendation": "existing PNG GET can be reused; define versioned result publisher/query with run/message correlation, immutable image identities and explicit result_source; model inference remains separate capability",
+      "required_before_acceptance": [
+        "define whether results are pushed or polled and real route/method",
+        "authentication/idempotency/retry/retention and capture timestamp",
+        "actual HTTP delivery/query tests; model/version fields only if inference implemented"
+      ],
+      "producer": {
+        "status": "future implementation; no current server function"
+      },
+      "current_output_reference": "vision.results",
+      "output_location": null,
+      "structure_reference": "vision_payload + explicitly versioned context",
+      "time_semantics": "proposed preserve separate simulation/asset/source/wall times; actual network acquisition timestamp TBD",
+      "update_mechanism": "TBD; not currently implemented",
+      "exception_behavior": "TBD real transport timeouts/retry/duplicate/missing policy",
+      "verification": "future real network client verification required; current local frames do not count"
+    }
+  ],
+  "extensions_p1_p2": {
+    "status": "design_only",
+    "required_sample_order_key": [
+      "run_id",
+      "equipment_id",
+      "stream_id (proposed)",
+      "sample_sequence (proposed)"
+    ],
+    "time_rule": "proposed virtual_time_s = virtual_minute*60; map asset sample time using explicit replay origin/rate, not equality; no mapping exists today",
+    "required_metadata": [
+      "sample_period_s and time origin",
+      "stream schema_version",
+      "message_id idempotency",
+      "actual acquisition/recording time and source quality",
+      "run/order/work-order/operation/device/phase/rework context with nullable idle attribution",
+      "portable relative asset identity+hash and manifest export",
+      "real-time delivery and separate immutable historical read API"
+    ],
+    "undefined_today": [
+      "continuous publication rate",
+      "real endpoints/TLS/auth",
+      "MQTT telemetry topics",
+      "OPC UA namespace URI and source timestamps",
+      "real device state register expansion",
+      "image capture timestamp/model inference",
+      "portable asset download outside the four allowed PNGs"
+    ]
+  },
+  "validation": {
+    "test_file": "minimal_factory/tests/test_output_contract.py",
+    "specialized": {
+      "suite": "interfaces",
+      "command": [
+        "<project>\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v",
+        "-p",
+        "test_output_contract.py"
+      ],
+      "started_at_beijing": "2026-11-19T16:54:23.561978+08:00",
+      "finished_at_beijing": "2026-11-19T16:54:29.660409+08:00",
+      "exit_code": 0,
+      "wall_seconds": 6.098,
+      "test_count": 4,
+      "seconds": 3.704,
+      "frontend_46": false,
+      "log_sha256": "160e678cd36e059e8b087e7bc155ffd0df89ab2c77959b80ee28ae08461f78cf"
+    },
+    "full_regression": {
+      "suite": "full",
+      "command": [
+        "<project>\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "started_at_beijing": "2026-11-19T16:55:31.617422+08:00",
+      "finished_at_beijing": "2026-11-19T16:55:59.403771+08:00",
+      "exit_code": 0,
+      "wall_seconds": 27.786,
+      "test_count": 93,
+      "seconds": 26.671,
+      "frontend_46": true,
+      "log_sha256": "63b31f1ce2cf22d2b159278bb0ae546b0879b574a8489bed1ad514c3e32d6f11"
+    },
+    "real_runs": {
+      "normal": {
+        "run_id": "SIM-5de28441ab024df5b791b4a73c4e4ac4",
+        "status": "completed",
+        "protocol_count": 6,
+        "source_count": 6,
+        "event_count": 24,
+        "makespan_min": 12,
+        "rework_quantity": 0,
+        "folder": ".task_work/p04_20261119/real-runs/SIM-5de28441ab024df5b791b4a73c4e4ac4"
+      },
+      "rework": {
+        "run_id": "SIM-98f4cc6065264c7ba75f575825405f83",
+        "status": "completed",
+        "protocol_count": 10,
+        "source_count": 10,
+        "event_count": 42,
+        "makespan_min": 17,
+        "rework_quantity": 1,
+        "folder": ".task_work/p04_20261119/real-runs/SIM-98f4cc6065264c7ba75f575825405f83"
+      },
+      "all_faults": {
+        "run_id": "SIM-34c81eca3588403a9f5d1e494ba2301b",
+        "status": "completed",
+        "protocol_count": 10,
+        "source_count": 10,
+        "event_count": 46,
+        "makespan_min": 28,
+        "rework_quantity": 1,
+        "folder": ".task_work/p04_20261119/real-runs/SIM-34c81eca3588403a9f5d1e494ba2301b"
+      }
+    },
+    "contract_completeness": {
+      "current_interfaces": 23,
+      "http_get_paths": 14,
+      "target_interfaces": 4,
+      "producer_references_valid": true,
+      "required_columns_present": true,
+      "http_inventory_exact": true,
+      "document_examples_executed": 3,
+      "example_base_url": "http://127.0.0.1:61788"
+    },
+    "protection": {
+      "checked_at_beijing": "2026-11-19T17:07:54.329514+08:00",
+      "prior_count": 305,
+      "total": 561,
+      "differences": [],
+      "source_before_count": 36,
+      "existing_source_differences": [],
+      "unrelated_existing_differences": []
+    },
+    "final_regression": {
+      "suite": "final",
+      "command": [
+        "<project>\\minimal_factory\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "started_at_beijing": "2026-11-19T17:11:31.913424+08:00",
+      "finished_at_beijing": "2026-11-19T17:11:58.044683+08:00",
+      "exit_code": 0,
+      "wall_seconds": 26.131,
+      "test_count": 93,
+      "seconds": 25.059,
+      "frontend_46": true,
+      "log_sha256": "f2721e126920e24bb70d24f91cbd72c3de9f36cf6b61ae100a8238eda33030ed"
+    }
+  }
+}
