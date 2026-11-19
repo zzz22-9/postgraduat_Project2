@@ -55,12 +55,28 @@ class FieldRecorder:
             mes.log(conn, action, json.dumps(detail, ensure_ascii=False), wo, op, operator="SimPy")
 
     def message(self, message, action, wo, op, emit, alarm_summary="", *,
-                quantity, phase, rework_id, source):
+                quantity, phase, rework_id, source, expected_run_id, expected_virtual_minute):
         raw = json.dumps(message, ensure_ascii=False, allow_nan=False)
         source_raw = json.dumps(source, ensure_ascii=False, allow_nan=False)
         fields = ("message_id", "virtual_minute", "protocol", "work_order_id", "operation_id",
                   "equipment_id", "device_code", "is_anomaly")
         with mes.transaction(self.path) as conn:
+            mes.require(message["work_order_id"] == wo["work_order_id"],
+                        "协议 work_order_id 与本次执行工单不一致")
+            actual_op = mes.operation(conn, message["operation_id"])
+            mes.require(actual_op["work_order_id"] == wo["work_order_id"],
+                        "协议 operation_id 不属于本次执行工单")
+            mes.require(message["operation_id"] == op["operation_id"],
+                        "协议 operation_id 与本次执行工序不一致")
+            mes.require(actual_op["equipment_id"] == op["equipment_id"] == message["equipment_id"],
+                        "协议 equipment_id 与工序实际设备不一致")
+            mes.require(message["device_code"] == DEVICES[actual_op["equipment_id"]],
+                        "协议 device_code 与实际设备映射不一致")
+            mes.require(message["run_id"] == expected_run_id, "协议 run_id 与当前仿真批次不一致")
+            mes.require(message["virtual_minute"] == expected_virtual_minute,
+                        "协议 virtual_minute 与 SimPy 当前时间不一致")
+            mes.require(source["message_id"] == message["message_id"],
+                        "来源 message_id 与当前协议消息不一致")
             conn.execute("""INSERT INTO protocol_messages(message_id,virtual_minute,protocol,work_order_id,
                          operation_id,equipment_id,device_code,is_anomaly,alarm_summary,source_file,
                          sample_hash,raw_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",

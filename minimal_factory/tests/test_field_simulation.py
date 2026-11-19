@@ -1,18 +1,25 @@
 """四协议沙盒与数据驱动故障级联验收；所有数据库均在临时目录。"""
 import hashlib
+import io
 import json
+import sqlite3
 import tempfile
 import threading
 import time
 import unittest
+from collections import Counter
+from copy import deepcopy
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from pydantic import ValidationError
 
+from erp.dispatch import prepare_message
 from mes import service as mes
+from mes.schemas import ERPDispatchRequest, Note
 from simulation import engine, field_protocols
-from simulation.inputs import configure, demo_snapshot
+from simulation.field_runtime import FieldRecorder
+from simulation.inputs import configure, demo_snapshot, readonly_source, source_snapshot
 from simulation.schemas import FieldScenario, Override, RunRequest
 from simulation.service import SimulationService
 
@@ -56,7 +63,12 @@ class FieldSimulationTests(unittest.TestCase):
         observer = DatabaseObserver(folder / "mes.db")
         result = engine.simulate(folder, "SIM-" + "a"*32, snapshot,
                                  threading.Event(), lambda *_: None, observer)
-        with mes.connect(folder / "mes.db") as conn:
+        self.assert_protocol_storage_matches(folder, result)
+        return folder, result, observer
+
+    def assert_protocol_storage_matches(self, folder, result):
+        """复用原 simulate() 的存储一致性断言，供篡改副本后再次检查。"""
+        with readonly_source(folder / "mes.db") as conn:
             self.assertEqual(conn.execute("PRAGMA integrity_check").fetchone()[0], "ok")
             self.assertEqual(conn.execute("PRAGMA foreign_key_check").fetchall(), [])
             rows = [dict(r) for r in conn.execute("SELECT * FROM protocol_messages ORDER BY rowid")]
@@ -71,7 +83,338 @@ class FieldSimulationTests(unittest.TestCase):
         self.assertEqual(protocol_events, db_messages)
         self.assertTrue(all(row["alarm_summary"] for row in rows if row["is_anomaly"]))
         self.assertEqual(len({m["message_id"] for m in db_messages}), len(db_messages))
-        return folder, result, observer
+        return rows
+
+    def assert_protocol_relations(self, folder, snapshot, result, *, run_id, sources_required=True):
+        """测试专用只读断言，核对已完成批次，失败时抛出带关系名的 AssertionError。"""
+        rows = self.assert_protocol_storage_matches(folder, result)
+        events = self.protocol_events(folder)
+        messages = result["protocol_messages"]
+        self.assertEqual(Counter(e["detail"]["message_id"] for e in events),
+                         Counter(m["message_id"] for m in messages), "protocol_event_ids")
+        by_event = {event["detail"]["message_id"]: event for event in events}
+        expected_orders = {wo["work_order_id"]: wo for wo in snapshot["orders"]}
+        fields = ("message_id", "virtual_minute", "protocol", "work_order_id", "operation_id",
+                  "equipment_id", "device_code", "is_anomaly", "source_file", "sample_hash")
+        with readonly_source(folder / "mes.db") as conn:
+            for row in rows:
+                message = json.loads(row["raw_json"])
+                self.assertEqual({key: row[key] for key in fields},
+                                 {key: message[key] for key in fields}, "sqlite_raw_json")
+                wo = mes.work_order(conn, message["work_order_id"])
+                op = mes.operation(conn, message["operation_id"])
+                eq = mes.equipment(conn, message["equipment_id"])
+                self.assertEqual(op["work_order_id"], wo["work_order_id"], "operation_work_order")
+                self.assertEqual(op["equipment_id"], eq["equipment_id"], "operation_equipment")
+                self.assertEqual(op["kind"], eq["kind"], "equipment_kind")
+                self.assertEqual(message["device_code"], field_protocols.DEVICES[eq["equipment_id"]],
+                                 "device_code")
+                expected = expected_orders[wo["work_order_id"]]
+                for key in ("order_id", "product_id", "product_name", "quantity"):
+                    self.assertEqual(wo[key], expected[key], "work_order_snapshot " + key)
+                event = by_event[message["message_id"]]
+                self.assertEqual(message["run_id"], run_id, "run_id")
+                self.assertEqual(event["run_id"], run_id, "event_run_id")
+                self.assertEqual(event["order_id"], wo["order_id"], "event_order_id")
+                for key in ("work_order_id", "operation_id", "equipment_id"):
+                    self.assertEqual(event[key], message[key], "event_context " + key)
+                self.assertEqual(event["sim_time_min"], message["virtual_minute"], "virtual_minute")
+                self.assertEqual(event["detail"], message, "event_detail")
+                if event["phase"] == "normal":
+                    self.assertEqual(event["quantity"], wo["quantity"], "normal_quantity")
+                    self.assertIsNone(event["rework_id"], "normal_rework_id")
+                else:
+                    self.assertIn(event["phase"], ("repair", "reinspection"), "execution_phase")
+                    task = conn.execute("SELECT * FROM reworks WHERE rework_id=?",
+                                        (event["rework_id"],)).fetchone()
+                    self.assertIsNotNone(task, "rework_id")
+                    self.assertEqual(task["work_order_id"], wo["work_order_id"], "rework_work_order")
+                    self.assertEqual(event["quantity"], task["quantity"], "rework_quantity")
+                    operation_key = "target_operation_id" if event["phase"] == "repair" else "source_operation_id"
+                    self.assertEqual(op["operation_id"], task[operation_key], "rework_operation")
+        source_path = folder / "source_context.jsonl"
+        if source_path.exists():
+            sources = [json.loads(line) for line in source_path.read_text(encoding="utf-8").splitlines()]
+            self.assertEqual(Counter(source["message_id"] for source in sources),
+                             Counter(message["message_id"] for message in messages), "source_message_ids")
+            by_source = {source["message_id"]: source for source in sources}
+            for message in messages:
+                source = by_source[message["message_id"]]
+                for key in ("source_file", "sample_hash"):
+                    self.assertEqual(source[key], message[key], "source_context " + key)
+        else:
+            self.assertFalse(sources_required, "source_context_required")
+
+    def assert_protocol_rejected(self, snapshot, builder_name, changed_builder, expected_error, case):
+        """在实际拒绝时核对所有通道，保留此前合法输出并记录可复核证据。"""
+        original = FieldRecorder.message
+        rejected = []
+
+        def observe_message(recorder, message, action, wo, op, emit, *args, **options):
+            with readonly_source(recorder.path) as conn:
+                before_db = {table: [dict(row) for row in conn.execute(f"SELECT * FROM {table} ORDER BY rowid")]
+                             for table in ("protocol_messages", "events")}
+            folder = recorder.path.parent
+            before_files = {name: (folder / name).read_bytes() for name in
+                            ("protocol_messages.jsonl", "source_context.jsonl", "events.jsonl")}
+            before_alerts, before_messages = deepcopy(recorder.alerts), deepcopy(recorder.messages)
+            emitted = Mock(wraps=emit)
+            try:
+                return original(recorder, message, action, wo, op, emitted, *args, **options)
+            except mes.BusinessError as error:
+                with readonly_source(recorder.path) as conn:
+                    after_db = {table: [dict(row) for row in conn.execute(f"SELECT * FROM {table} ORDER BY rowid")]
+                                for table in before_db}
+                after_files = {name: (folder / name).read_bytes() for name in before_files}
+                self.assertEqual(after_db, before_db, "rejection_database_unchanged")
+                self.assertEqual(after_files, before_files, "rejection_files_unchanged")
+                self.assertEqual(recorder.alerts, before_alerts, "rejection_alerts_unchanged")
+                self.assertEqual(recorder.messages, before_messages, "rejection_messages_unchanged")
+                emitted.assert_not_called()
+                self.assertNotIn(message["message_id"], [row["message_id"] for row in after_db["protocol_messages"]])
+                self.assertFalse(any(message["message_id"] in row["detail"] for row in after_db["events"]))
+                rejected.append(dict(case=case, runtime_rejected=True, error=str(error),
+                    message=deepcopy(message), source=deepcopy(options["source"]),
+                    context=dict(work_order_id=wo["work_order_id"], operation_id=op["operation_id"],
+                                 equipment_id=op["equipment_id"], run_id=options["expected_run_id"],
+                                 virtual_minute=options["expected_virtual_minute"]),
+                    directory_run_id=folder.name,
+                    protocol_rows_before=len(before_db["protocol_messages"]),
+                    mes_events_before=len(before_db["events"]),
+                    file_sha256_before={name: hashlib.sha256(raw).hexdigest() for name, raw in before_files.items()},
+                    file_sha256_after={name: hashlib.sha256(raw).hexdigest() for name, raw in after_files.items()},
+                    partial_protocol_writes=False, success_emit_calls=emitted.call_count,
+                    alerts_unchanged=True, message_list_unchanged=True))
+                raise
+
+        current_run = "SIM-" + "a"*32
+        (self.root / case).mkdir()
+        with patch("simulation.field_protocols." + builder_name, side_effect=changed_builder), \
+                patch.object(FieldRecorder, "message", new=observe_message), \
+                self.assertRaisesRegex(mes.BusinessError, expected_error):
+            self.simulate(snapshot, str(Path(case) / current_run))
+        self.assertEqual(len(rejected), 1)
+        folder = self.root / case / current_run
+        for name in ("protocol_messages.jsonl", "source_context.jsonl", "events.jsonl"):
+            raw = (folder / name).read_bytes()
+            self.assertNotIn(rejected[0]["message"]["message_id"].encode(), raw)
+            self.assertNotIn(rejected[0]["source"]["message_id"].encode(), raw)
+        events = [json.loads(line) for line in (folder / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+        self.assertTrue(any(event["event_type"] == "processing_started" for event in events))
+        rejected[0]["processing_started_preserved"] = True
+        print("P03_RUNTIME_EVIDENCE " + json.dumps(rejected[0], ensure_ascii=False))
+        return rejected[0]
+
+    def test_relation_rejects_foreign_operation_before_write(self):
+        snapshot = configure(demo_snapshot(), {})
+        first, second = snapshot["orders"]
+        original = field_protocols.build_cnc_opcua_message
+
+        def foreign_operation(work_order_id, operation_id, virtual_minute, **options):
+            if work_order_id == first["work_order_id"]:
+                operation_id = second["operations"][0]["operation_id"]
+            return original(work_order_id, operation_id, virtual_minute, **options)
+
+        self.assert_protocol_rejected(snapshot, "build_cnc_opcua_message", foreign_operation,
+                                      "operation_id", "A")
+
+    def test_relation_rejects_wrong_equipment_before_write(self):
+        snapshot = fixture()
+        original = field_protocols.build_mqtt_dispatch_message
+
+        def wrong_equipment(work_order_id, operation_id, equipment_id, virtual_minute, quantity, **options):
+            if equipment_id == "E-ASM":
+                equipment_id = "E-MOVE"
+            return original(work_order_id, operation_id, equipment_id, virtual_minute, quantity, **options)
+
+        self.assert_protocol_rejected(snapshot, "build_mqtt_dispatch_message", wrong_equipment,
+                                      "equipment_id", "B")
+
+    def test_relation_rejects_foreign_run_before_write(self):
+        snapshot = fixture()
+        current_run = "SIM-" + "a"*32
+        foreign_run = "SIM-" + "b"*32
+        original = field_protocols.build_cnc_opcua_message
+
+        def foreign_batch(*args, **options):
+            options["run_id"] = foreign_run
+            return original(*args, **options)
+
+        observed = self.assert_protocol_rejected(snapshot, "build_cnc_opcua_message", foreign_batch,
+                                                "run_id", "C")
+        self.assertEqual(observed["directory_run_id"], current_run)
+        self.assertEqual(observed["context"]["run_id"], current_run)
+        service = SimulationService(self.root / "unused-source.db", self.root / "service-runs")
+        service.startup()
+        self.addCleanup(service.shutdown)
+        with patch("simulation.field_protocols.build_cnc_opcua_message", side_effect=foreign_batch), \
+                self.assertLogs(level="ERROR") as logged:
+            started = service.start(RunRequest(source="demo"))
+            deadline = time.monotonic() + 10
+            record = service.get(started["run_id"])
+            while record["status"] == "running" and time.monotonic() < deadline:
+                time.sleep(.01)
+                record = service.get(started["run_id"])
+        self.assertEqual(record["status"], "failed", record.get("error"))
+        self.assertIn("run_id", record["error"])
+        self.assertIsNone(record["summary"])
+        self.assertFalse((service.folder(started["run_id"]) / "summary.json").exists())
+        self.assertGreater(len(record["protocol_messages"]), 0)
+        self.assertTrue(all(message["run_id"] == started["run_id"] for message in record["protocol_messages"]))
+        self.assertTrue(any(event["event_type"] == "processing_started" for event in record["events"]))
+        print("P03_RUNTIME_EVIDENCE " + json.dumps(dict(case="C-service", status=record["status"],
+            error=record["error"], summary_absent=True, preserved_protocols=len(record["protocol_messages"]),
+            processing_started_preserved=True, logged_error=logged.output[0]), ensure_ascii=False))
+
+    def test_relation_rejects_wrong_virtual_minute_before_write(self):
+        original = field_protocols.build_cnc_opcua_message
+
+        def wrong_time(work_order_id, operation_id, virtual_minute, **options):
+            return original(work_order_id, operation_id, virtual_minute + 1, **options)
+
+        self.assert_protocol_rejected(fixture(), "build_cnc_opcua_message", wrong_time,
+                                      "virtual_minute", "C-time")
+
+    def test_relation_rejects_wrong_device_code_before_write(self):
+        original = field_protocols.build_cnc_opcua_message
+
+        def wrong_code(*args, **options):
+            message, source = original(*args, **options)
+            message["device_code"] = field_protocols.DEVICES["E-MOVE"]
+            return message, source
+
+        self.assert_protocol_rejected(fixture(), "build_cnc_opcua_message", wrong_code,
+                                      "device_code", "B-code")
+
+    def test_relation_sqlite_columns_disagree_with_raw_json(self):
+        snapshot = configure(demo_snapshot(), {})
+        other = snapshot["orders"][1]
+        changes = {"work_order_id": other["work_order_id"],
+                   "operation_id": other["operations"][0]["operation_id"], "equipment_id": "E-MOVE"}
+        for column, value in changes.items():
+            with self.subTest(column=column):
+                folder, result, _ = self.simulate(snapshot, column)
+                message = next(m for m in result["protocol_messages"] if m["protocol"] == "OPC-UA")
+                with mes.transaction(folder / "mes.db") as conn:
+                    conn.execute(f"UPDATE protocol_messages SET {column}=? WHERE message_id=?",
+                                 (value, message["message_id"]))
+                self.assert_protocol_storage_matches(folder, result)
+                with self.assertRaisesRegex(AssertionError, "sqlite_raw_json") as caught:
+                    self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32)
+                print("P03_EVIDENCE " + json.dumps(dict(case="D", column=column,
+                    sqlite_update_rejected=False, runtime_rejected=None, offline_detected=True,
+                    existing_storage_checks_passed=True, message_id=message["message_id"],
+                    raw_value=message[column], sqlite_value=value, assertion=str(caught.exception))))
+
+    def test_relation_sources_detect_duplicate_orphan_missing_and_foreign(self):
+        snapshot = fixture()
+        folder, result, _ = self.simulate(snapshot)
+        source_path = folder / "source_context.jsonl"
+        sources = [json.loads(line) for line in source_path.read_text(encoding="utf-8").splitlines()]
+        other_folder = self.root / ("SIM-" + "b"*32)
+        other_folder.mkdir()
+        other = engine.simulate(other_folder, other_folder.name, snapshot,
+                                threading.Event(), lambda *_: None)
+        self.assert_protocol_relations(other_folder, snapshot, other, run_id=other_folder.name)
+        foreign = json.loads((other_folder / "source_context.jsonl").read_text(encoding="utf-8").splitlines()[0])
+        self.assertNotIn(foreign["message_id"], {m["message_id"] for m in result["protocol_messages"]})
+        mutations = {"duplicate": sources + [sources[0]],
+                     "orphan": sources + [{**sources[0], "message_id": "MSG-" + "0"*32}],
+                     "missing": sources[:-1], "foreign": [foreign] + sources[1:]}
+        for name, changed in mutations.items():
+            with self.subTest(case=name):
+                source_path.write_text("".join(json.dumps(row) + "\n" for row in changed), encoding="utf-8")
+                self.assert_protocol_storage_matches(folder, result)
+                with self.assertRaisesRegex(AssertionError, "source_message_ids"):
+                    self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32)
+                print("P03_EVIDENCE " + json.dumps(dict(case="E-" + name, offline_detected=True,
+                    runtime_rejected=None, injection="completed temporary source file",
+                    protocol_ids=[m["message_id"] for m in result["protocol_messages"]],
+                    source_ids=[s["message_id"] for s in changed])))
+
+    def test_relation_rejects_foreign_source_before_write(self):
+        snapshot = fixture()
+        original = field_protocols.build_cnc_opcua_message
+
+        def foreign_source(*args, **options):
+            message, _ = original(*args, **options)
+            _, source = original(*args, **{**options, "run_id": "SIM-" + "b"*32})
+            return message, source
+
+        self.assert_protocol_rejected(snapshot, "build_cnc_opcua_message", foreign_source,
+                                      "message_id", "E-writer")
+
+    def test_relation_existing_foreign_key_and_duplicate_message_guards(self):
+        snapshot = fixture()
+        folder, result, _ = self.simulate(snapshot)
+        wo = snapshot["orders"][0]
+        op = wo["operations"][0]
+        existing = result["protocol_messages"][0]
+        missing, missing_source = field_protocols.build_mqtt_dispatch_message(
+            "missing-work-order", op["operation_id"], op["equipment_id"], 0, wo["quantity"],
+            run_id="SIM-" + "a"*32, return_source=True)
+        existing_source = json.loads((folder / "source_context.jsonl").read_text(encoding="utf-8").splitlines()[0])
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "FOREIGN KEY"):
+            with mes.transaction(folder / "mes.db") as conn:
+                conn.execute("UPDATE protocol_messages SET work_order_id=? WHERE message_id=?",
+                             (missing["work_order_id"], existing["message_id"]))
+        with io.StringIO() as protocol_stream, io.StringIO() as source_stream:
+            recorder = FieldRecorder(folder / "mes.db", protocol_stream, snapshot["equipment"],
+                                     source_stream=source_stream)
+            emitted = Mock()
+            for message, source, error_type, expected_error in (
+                (missing, missing_source, mes.BusinessError, "work_order_id"),
+                (existing, existing_source, sqlite3.IntegrityError, "UNIQUE"),
+            ):
+                with self.subTest(error=expected_error):
+                    with self.assertRaisesRegex(error_type, expected_error):
+                        recorder.message(message, "mes_to_field_mqtt_dispatched", wo, op, emitted,
+                                         quantity=wo["quantity"], phase="normal", rework_id=None, source=source,
+                                         expected_run_id="SIM-" + "a"*32, expected_virtual_minute=0)
+            self.assertEqual((protocol_stream.getvalue(), source_stream.getvalue()), ("", ""))
+            emitted.assert_not_called()
+        self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32)
+        print("P03_EVIDENCE " + json.dumps(dict(case="existing-guards", runtime_rejected=True,
+            checks=["missing foreign key", "duplicate message_id"], output_streams_empty=True)))
+
+    def test_relation_valid_cancelled_history_and_received_snapshot(self):
+        initial = fixture()
+        wo = initial["orders"][0]
+        source = self.root / "source.db"
+        engine.seed_database(source, initial)
+        mes.cancel(source, wo["work_order_id"], Note(operator="测试", note="历史撤回"))
+        instruction = ERPDispatchRequest(order_id=wo["order_id"], message_id="relation-snapshot",
+            steps=[{key: op[key] for key in ("name", "kind", "minutes")} for op in wo["operations"]])
+        envelope = prepare_message(source, instruction)
+        with mes.transaction(source) as conn:
+            conn.execute("UPDATE orders SET product_id=?,product_name=?,quantity=? WHERE order_id=?",
+                         ("changed-product", "ERP后续名称", 9, wo["order_id"]))
+        received = mes.dispatch(source, envelope)
+        mes.release(source, received["work_order_id"])
+        snapshot = configure(source_snapshot(source, [received["work_order_id"]]), {})
+        selected = snapshot["orders"][0]
+        self.assertEqual((selected["product_id"], selected["product_name"], selected["quantity"]),
+                         (wo["product_id"], wo["product_name"], wo["quantity"]))
+        with readonly_source(source) as conn:
+            history = [dict(row) for row in conn.execute(
+                "SELECT work_order_id,status FROM work_orders WHERE order_id=?", (wo["order_id"],))]
+        self.assertEqual(Counter(row["status"] for row in history), Counter(["cancelled", "released"]))
+        folder, result, _ = self.simulate(snapshot)
+        self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32)
+        print("P03_EVIDENCE " + json.dumps(dict(case="F-snapshot-history", offline_detected=False,
+            valid=True, order_id=wo["order_id"], history=history, erp_current_quantity=9,
+            received_quantity=selected["quantity"], completed_quantity=result["completed_quantity"])))
+
+    def test_relation_valid_legacy_without_source_context_is_explicit(self):
+        snapshot = fixture()
+        folder, result, _ = self.simulate(snapshot)
+        (folder / "source_context.jsonl").unlink()  # 仅临时夹具模拟 A2 前的文件集合。
+        self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32,
+                                       sources_required=False)
+        with self.assertRaisesRegex(AssertionError, "source_context_required"):
+            self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32)
+        print("P03_EVIDENCE " + json.dumps(dict(case="F-legacy", valid=True,
+            fixture="temporary pre-A2 file layout", legacy_accepted=True, current_missing_detected=True)))
 
     def test_source_context_matches_consumed_signal_rows(self):
         for mode, index, expected_time, expected_upstream in (
@@ -122,7 +465,9 @@ class FieldSimulationTests(unittest.TestCase):
                     self.assertEqual(source["sample_id"], "vision_normal_front")
 
     def test_normal_12_minutes_no_fault_and_four_protocols(self):
-        folder, result, observer = self.simulate(fixture())
+        snapshot = fixture()
+        folder, result, observer = self.simulate(snapshot)
+        self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32)
         self.assertEqual(result["makespan_min"], 12)
         self.assertEqual(result["delay_summary"][0], dict(work_order_id="DEMO-WO-1",
             planned_minutes=12, actual_minutes=12, delay_minutes=0, anomaly_status="NORMAL"))
@@ -152,7 +497,9 @@ class FieldSimulationTests(unittest.TestCase):
             self.assertEqual(event["detail"], messages[event["detail"]["message_id"]])
 
     def test_partial_rework_protocol_events_keep_quantity_phase_and_rework_id(self):
-        folder, result, _ = self.simulate(fixture("anomaly", ["E-QC"]))
+        snapshot = fixture("anomaly", ["E-QC"])
+        folder, result, _ = self.simulate(snapshot)
+        self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32)
         self.assertEqual(result["makespan_min"], 17)
         self.assertEqual(result["completed_quantity"], 2)
         self.assertEqual(result["rework_quantity"], 1)
@@ -160,6 +507,12 @@ class FieldSimulationTests(unittest.TestCase):
         wo = mes.get_work_order(folder / "mes.db", "DEMO-WO-1")
         rework_id = wo["reworks"][0]["rework_id"]
         self.assertEqual(wo["reworks"][0]["status"], "completed")
+        task = wo["reworks"][0]
+        self.assertNotEqual(task["source_operation_id"], task["target_operation_id"])
+        with readonly_source(folder / "mes.db") as conn:
+            business_log = dict(conn.execute(
+                "SELECT operation_id,equipment_id FROM events WHERE action='rework_inspect_start'").fetchone())
+        self.assertEqual(business_log, dict(operation_id=task["target_operation_id"], equipment_id="E-QC"))
         events = self.protocol_events(folder)
         messages = {m["message_id"]: m for m in result["protocol_messages"]}
         self.assertEqual(len(events), 10)
@@ -178,6 +531,10 @@ class FieldSimulationTests(unittest.TestCase):
                 self.assertEqual(event["detail"], message)
                 for field in ("work_order_id", "operation_id", "equipment_id"):
                     self.assertEqual(event[field], message[field])
+        print("P03_EVIDENCE " + json.dumps(dict(case="F-rework", valid=True, rework_id=rework_id,
+            quantity=task["quantity"], source_operation_id=task["source_operation_id"],
+            target_operation_id=task["target_operation_id"], business_log=business_log,
+            protocol_reinspection_operation_ids=[e["operation_id"] for e in events if e["phase"] == "reinspection"])))
 
     def test_all_anomalies_real_fault_repair_rework_and_delay(self):
         folder, result, observer = self.simulate(fixture("anomaly"))
@@ -240,7 +597,8 @@ class FieldSimulationTests(unittest.TestCase):
         snapshot = demo_snapshot()
         snapshot = configure(snapshot, {w["work_order_id"]: Override(field_protocols=FieldScenario(mode="anomaly"))
                                         for w in snapshot["orders"]})
-        _, result, observer = self.simulate(snapshot)
+        folder, result, observer = self.simulate(snapshot)
+        self.assert_protocol_relations(folder, snapshot, result, run_id="SIM-" + "a"*32)
         self.assertEqual(len(result["orders"]), 2)
         self.assertTrue(all(w["anomaly_status"] == "DELAYED_BY_FAULT" for w in result["orders"]))
         self.assertEqual(sum(r["status"] == "fault" for _, r in observer.states), 6)

@@ -116,7 +116,8 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
                     message, source = field.build_mqtt_dispatch_message(wo["work_order_id"], op["operation_id"],
                         op["equipment_id"], env.now, quantity, run_id=run_id, return_source=True)
                     recorder.message(message, "mes_to_field_mqtt_dispatched", wo, op, emit,
-                                     quantity=quantity, phase=phase, rework_id=rework_id, source=source)
+                                     quantity=quantity, phase=phase, rework_id=rework_id, source=source,
+                                     expected_run_id=run_id, expected_virtual_minute=env.now)
                 completed = env.timeout(op["minutes"] * quantity)
                 if observer is not None:
                     observation_context = dict(run_id=run_id, order_id=wo["order_id"],
@@ -143,7 +144,8 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
                         extra = config.cnc_repair_minutes if op["equipment_id"] == "E-ASM" else config.robot_repair_minutes
                     alarm = alarm_text(message, extra) if message["is_anomaly"] else ""
                     recorder.message(message, action, wo, op, emit, alarm,
-                                     quantity=quantity, phase=phase, rework_id=rework_id, source=source)
+                                     quantity=quantity, phase=phase, rework_id=rework_id, source=source,
+                                     expected_run_id=run_id, expected_virtual_minute=env.now)
                     if message["is_anomaly"]:
                         fault = recorder.fault(message, wo, op, env.now, alarm, extra, emit)
                         active_faults[(wo["work_order_id"], op["operation_id"])] = fault
