@@ -1,6 +1,6 @@
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 
 from mes.service import BusinessError
@@ -27,6 +27,10 @@ def create_router(service):
     @router.get("/runs", summary="实验运行历史")
     def history():
         return call(service.list_runs)
+
+    @router.get("/runs/{run_id}/telemetry", summary="CNC/Robot连续合成时序数据")
+    def telemetry(run_id: str, offset: int = Query(0, ge=0), limit: int = Query(500, ge=1, le=1000)):
+        return call(service.telemetry, run_id, offset, limit)
 
     @router.get("/runs/{run_id}", summary="输入、来源、事件和结果")
     def result(run_id: str):
