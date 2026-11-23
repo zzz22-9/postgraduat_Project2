@@ -67,6 +67,9 @@ def make_record(message, source, context, sequence, virtual_minute, elapsed_s, d
     base = _base_metrics(message)
     metrics = base if terminal else _intermediate_metrics(base, elapsed_s, duration_s)
     payload = message["payload"] if terminal else _encode_payload(message, metrics)
+    if message["equipment_id"] == "E-MOVE":
+        # Engineering values describe the quantized UInt16 payload exactly.
+        metrics = _base_metrics({**message, "payload": payload})
     sample_key = [context[k] for k in ("run_id", "work_order_id", "operation_id", "phase", "rework_id")]
     sample_key.append(sequence)
     sample_id = "TEL-" + hashlib.sha256(json.dumps(sample_key, ensure_ascii=False).encode()).hexdigest()[:32]
