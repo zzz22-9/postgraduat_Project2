@@ -177,6 +177,25 @@ class SimulationService:
         return sorted((read_json(p) for p in self.root.glob("SIM-*/run.json")),
                       key=lambda r: (r["created_at"], r["run_id"]), reverse=True)
 
+    def telemetry(self, run_id, offset=0, limit=500):
+        """Read complete synthetic telemetry JSONL lines; bounded for Connector polling."""
+        folder = self.folder(run_id)
+        path = folder / "telemetry.jsonl"
+        if not path.exists():
+            return dict(run_id=run_id, available=False, total=0, offset=offset,
+                        limit=limit, items=[], next_offset=None)
+        items, total = [], 0
+        with path.open("r", encoding="utf-8") as stream:
+            for line in stream:
+                if not line.endswith("\n"):
+                    break  # Incomplete line may exist during an ongoing run.
+                if total >= offset and len(items) < limit:
+                    items.append(json.loads(line))
+                total += 1
+        next_offset = offset + len(items) if offset + len(items) < total else None
+        return dict(run_id=run_id, available=True, total=total, offset=offset,
+                    limit=limit, items=items, next_offset=next_offset)
+
     def get(self, run_id):
         folder = self.folder(run_id)
         record = read_json(folder / "run.json")
