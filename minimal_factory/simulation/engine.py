@@ -177,11 +177,12 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
                     if message["is_anomaly"] and op["equipment_id"] != "E-QC":
                         extra = config.cnc_repair_minutes if op["equipment_id"] == "E-ASM" else config.robot_repair_minutes
                     alarm = alarm_text(message, extra) if message["is_anomaly"] else ""
-                    if op["equipment_id"] in CONTINUOUS_DEVICES:
-                        write_tlm(message, source, duration_s, terminal=True)
                     recorder.message(message, action, wo, op, emit, alarm,
                                      quantity=quantity, phase=phase, rework_id=rework_id, source=source,
                                      expected_run_id=run_id, expected_virtual_minute=env.now)
+                    if op["equipment_id"] in CONTINUOUS_DEVICES:
+                        # Never persist a terminal sample until the original P0.3 relation check passes.
+                        write_tlm(message, source, duration_s, terminal=True)
                     if message["is_anomaly"]:
                         fault = recorder.fault(message, wo, op, env.now, alarm, extra, emit)
                         active_faults[(wo["work_order_id"], op["operation_id"])] = fault
