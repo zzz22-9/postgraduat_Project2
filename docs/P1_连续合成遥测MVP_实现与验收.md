@@ -226,6 +226,8 @@ limit100三场景分别5/7/7页，合并与JSONL逐条相等；next_offset最终
 
 正式库SHA256仍 `04097e34e1571f418eb7b6b84da05de2a45e186668293c7ef6ec595a07bf60f8`；只读计数4订单、9工单、3设备、27工序、20事件、收发箱各8，报工/检验/返工/返工动作0；完整性ok、外键0，正式历史仍1批 `SIM-50cb01e187b741adadf46f023144df4f`。最终交付收尾另在本机protection-after.json及最终回复核对。未reset/clean/checkout覆盖、删除用户数据或强推；未修改master。
 
+GitHub交付时两次原生Git直连分别出现Connection reset及443连接失败；连接器确认尚为旧报告。随后只读核对本机已有127.0.0.1:7890代理处于监听，Git原未配置代理；仅在本次命令使用http.proxy及HTTP/1.1，不修改全局配置，不强推。最终交付SHA与远端核验见本分支HEAD、最终回复及本机delivery-attempts.json。
+
 ## 8. 已知限制与停止点
 
 - 当前是已有合成素材的确定性派生，非真实物理采集或校准模型。`sample_hash`是所引用素材行的哈希；中间点以generation_method标明派生，终态直接复用原协议样本。素材秒/上游秒和SimPy分钟明确分开。
@@ -242,7 +244,7 @@ limit100三场景分别5/7/7页，合并与JSONL逐条相等；next_offset最终
 请审阅 Project 2 的 P1 连续合成数据 Windows 本地验收。仅评审，不继续开发。
 仓库 zzz22-9/postgraduat_Project2，唯一远程功能分支 feat/p1-continuous-telemetry；先读该分支的 AGENTS.md、md/项目索引.md、md/项目推进日志.md、minimal_factory/当前进度.md 和 docs/P1_连续合成遥测MVP_实现与验收.md，再看 continuous.py、engine.py、service.py、api.py、test_continuous_telemetry.py、tools/accept_p1_telemetry.py。
 用户本轮一次授权隔离集成、必要修复、测试验收及提交GitHub，替代早期逐步确认，仅限P1。禁止task21/、Data Connector、真实协议Server/Broker、新数据库、语义层及无关重构。目标已在本地技术验收通过；用户掌握与导师验收仍待确认。
-原工作区分支 feat/p04-data-output-contract，HEAD f8547bdca288420a98fd3fc0d18485356151ca99，原有27项未提交路径保持；独立工作树 D:\AAA-Myproject\postgraduate\Project 2\.task_work\p1_local_20261123\worktree，本地分支 codex/p1-local-acceptance-20261123。P1来源 447a5c6d409edbafbe59d9b030066e4ccbeacb40；本轮代码提交 94da92597eef666c7dda9a6a00bff7b56e8537d6，报告和三份摘要的提交以远程该分支最终HEAD及最终回复为准。本轮共两个提交（代码及记录）；不得把父提交当成最终HEAD。不使用被禁的REST分支，不合并master、不强推。
+原工作区分支 feat/p04-data-output-contract，HEAD f8547bdca288420a98fd3fc0d18485356151ca99，原有27项未提交路径保持；独立工作树 D:\AAA-Myproject\postgraduate\Project 2\.task_work\p1_local_20261123\worktree，本地分支 codex/p1-local-acceptance-20261123。P1来源 447a5c6d409edbafbe59d9b030066e4ccbeacb40；本轮代码提交 94da92597eef666c7dda9a6a00bff7b56e8537d6，报告和三份摘要的提交以远程该分支最终HEAD及最终回复为准。本轮共三个提交（代码、验收记录及传输故障记录）；不得把父提交当成最终HEAD。不使用被禁的REST分支，不合并master、不强推。
 实际本地运行时代码仅 continuous.py 3行修复：Robot工程量由最终量化寄存器反算，消除28.534℃与28.5℃等矛盾。增强原专项并新增真实TCP HTTP和P0.3拒绝终态保护两项，另新增已执行的独立验收脚本；engine/service/api按原P1内容集成，无本轮修改。无新依赖；Python3.14.6，新venv按原requirements-dev安装，环境冻结留本机。
 本轮增强断言修复前Ran3、3个失败断言（两场景subTest和正常），原HTTP分页方法通过；修复后专项5/5、2.473秒墙钟，完整98/98、29.821秒墙钟、0失败0错误，内含46前端断言。首次pip网络受限失败；首次受限专项在TestClient停滞，按唯一完整命令确认PID35996/36496后停止，100.228秒、退出4294967295，不计通过。受控复跑全部通过；失败日志未删、未降低断言或改期望。
 自动测试外，以正式库只读SQLite备份为临时源，HTTP实际创建三批：normal12分钟/6协议/482遥测；rework17/10/663；all_faults28/10/663，工单2件。CNC正常0–6分钟361点；返工10–13或16–19分钟181点；Robot10–12、15–17、21–23分钟各121点。每段含首尾，1虚拟秒，序号0起；业务ID、phase/返工号、素材行/清单/上游哈希和所有工程量独立核对。全故障仅两个设备终态报警；部分返工是Vision异常，因此CNC/Robot无异常点。同输入同run_id、不同隔离目录与P0.4引擎对照，26协议及26来源逐字节一致，完整summary/events仅移除recorded_at并映射独立返工UUID后相等，资源/延迟/报工/最终完成和P0.3检查保留。
