@@ -130,7 +130,7 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
                 def write_tlm(protocol_message, provenance, elapsed_s, *, terminal=False):
                     item = make_record(protocol_message, provenance, tlm_context,
                         tlm_count[0], env.now, elapsed_s, duration_s, terminal=terminal)
-                    telemetry_file.write(json.dumps(item, ensure_ascii=False, allow_nan=False) + "\\n")
+                    telemetry_file.write(json.dumps(item, ensure_ascii=False, allow_nan=False) + "\n")
                     telemetry_file.flush()
                     tlm_count[0] += 1
 
