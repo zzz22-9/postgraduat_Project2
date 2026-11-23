@@ -10,6 +10,7 @@ from mes import service as mes
 from mes.schemas import Inspection, Note, Report, ReworkAction
 from . import field_protocols as field
 from .field_runtime import FieldRecorder, alarm_text, initialize_sandbox
+from .continuous import SAMPLE_PERIOD_S, SUPPORTED as CONTINUOUS_DEVICES, make_record
 from .schemas import FieldScenario
 
 
@@ -76,7 +77,8 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
 
     with (folder / "events.jsonl").open("w", encoding="utf-8") as event_file, \
             (folder / "protocol_messages.jsonl").open("w", encoding="utf-8") as protocol_file, \
-            (folder / "source_context.jsonl").open("w", encoding="utf-8") as source_file:
+            (folder / "source_context.jsonl").open("w", encoding="utf-8") as source_file, \
+            (folder / "telemetry.jsonl").open("w", encoding="utf-8") as telemetry_file:
         recorder = FieldRecorder(path, protocol_file, snapshot["equipment"], source_stream=source_file)
         def emit(event_type, wo, op=None, quantity=None, phase="normal", rework_id=None, **extra):
             nonlocal sequence
@@ -118,6 +120,38 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
                     recorder.message(message, "mes_to_field_mqtt_dispatched", wo, op, emit,
                                      quantity=quantity, phase=phase, rework_id=rework_id, source=source,
                                      expected_run_id=run_id, expected_virtual_minute=env.now)
+                # In-process synthetic derived telemetry; preserve legacy end-of-operation frames.
+                duration_s = op["minutes"] * quantity * 60
+                tlm_context = dict(run_id=run_id, order_id=wo["order_id"],
+                    work_order_id=wo["work_order_id"], operation_id=op["operation_id"],
+                    phase=phase, rework_id=rework_id)
+                tlm_count = [0]
+
+                def write_tlm(protocol_message, provenance, elapsed_s, *, terminal=False):
+                    item = make_record(protocol_message, provenance, tlm_context,
+                        tlm_count[0], env.now, elapsed_s, duration_s, terminal=terminal)
+                    telemetry_file.write(json.dumps(item, ensure_ascii=False, allow_nan=False) + "\\n")
+                    telemetry_file.flush()
+                    tlm_count[0] += 1
+
+                if op["equipment_id"] in CONTINUOUS_DEVICES:
+                    tlm_builder = (field.build_cnc_opcua_message if op["equipment_id"] == "E-ASM"
+                                   else field.build_robot_modbus_message)
+                    tlm_template, tlm_source = tlm_builder(wo["work_order_id"], op["operation_id"],
+                        env.now, is_anomaly=False, run_id=run_id, return_source=True)
+                    write_tlm(tlm_template, tlm_source, 0)
+
+                    def observe_tlm():
+                        elapsed_s = 0
+                        while elapsed_s + SAMPLE_PERIOD_S < duration_s - 1e-7:
+                            yield env.timeout(SAMPLE_PERIOD_S / 60)
+                            elapsed_s += SAMPLE_PERIOD_S
+                            if stop.is_set():
+                                raise Interrupted("服务关闭，连续观测中断")
+                            write_tlm(tlm_template, tlm_source, elapsed_s)
+
+                    env.process(observe_tlm())
+
                 completed = env.timeout(op["minutes"] * quantity)
                 if observer is not None:
                     observation_context = dict(run_id=run_id, order_id=wo["order_id"],
@@ -143,6 +177,8 @@ def simulate(folder: Path, run_id, snapshot, stop, progress, observer=None):
                     if message["is_anomaly"] and op["equipment_id"] != "E-QC":
                         extra = config.cnc_repair_minutes if op["equipment_id"] == "E-ASM" else config.robot_repair_minutes
                     alarm = alarm_text(message, extra) if message["is_anomaly"] else ""
+                    if op["equipment_id"] in CONTINUOUS_DEVICES:
+                        write_tlm(message, source, duration_s, terminal=True)
                     recorder.message(message, action, wo, op, emit, alarm,
                                      quantity=quantity, phase=phase, rework_id=rework_id, source=source,
                                      expected_run_id=run_id, expected_virtual_minute=env.now)
